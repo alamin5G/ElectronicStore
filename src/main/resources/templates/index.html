@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+    <!--all content will be placed here-->
+
+    <div th:replace="~{layout/slider :: slider}">
+
+    </div>
+    <!-- Main Section: Featured Products -->
+    <section class="featured-products py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-4">Featured Products</h2>
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+                <!-- Product 1 -->
+                <div class="col">
+                    <div class="card">
+                        <img src="/product/fan.png" class="card-img-top" alt="Product 1">
+                        <div class="card-body">
+                            <h5 class="card-title">Product 1</h5>
+                            <p class="card-text">$29.99</p>
+                            <button class="btn btn-dark w-100">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 2 -->
+                <div class="col">
+                    <div class="card">
+                        <img src="/product/game-controller.png" class="card-img-top" alt="Product 2">
+                        <div class="card-body">
+                            <h5 class="card-title">Product 2</h5>
+                            <p class="card-text">$49.99</p>
+                            <button class="btn btn-dark w-100">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 3 -->
+                <div class="col">
+                    <div class="card">
+                        <img src="/product/headphones.png" class="card-img-top" alt="Product 3">
+                        <div class="card-body">
+                            <h5 class="card-title">Product 3</h5>
+                            <p class="card-text">$19.99</p>
+                            <button class="btn btn-dark w-100">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product 4 -->
+                <div class="col">
+                    <div class="card">
+                        <img src="/product/scanner.png" class="card-img-top" alt="Product 4">
+                        <div class="card-body">
+                            <h5 class="card-title">Product 4</h5>
+                            <p class="card-text">$39.99</p>
+                            <button class="btn btn-dark w-100">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script src="/js/script.js"></script>
+</body>
+</html>
