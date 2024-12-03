@@ -5,7 +5,6 @@ import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
 import com.goonok.electronicstore.services.UserService;
 import com.goonok.electronicstore.services.VerificationService;
-import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
