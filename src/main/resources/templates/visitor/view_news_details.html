@@ -1,0 +1,25 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+  <!--all content will be placed here-->
+
+
+  <div class="row">
+    <h2 class="text-center mb-4" th:text="${news.title}"></h2>
+    <p class="text-center"><strong>Author:</strong> <span th:text="${news.author}"></span></p>
+    <p class="text-center"><strong>Published:</strong> <span th:text="${#dates.format(news.publishedDate, 'dd MMM yyyy HH:mm')}"></span></p>
+    <div class="col-md-12">
+      <img th:src="${news.imageUrl}" class="img-fluid mb-4" alt="News Image">
+      <p th:utext="${news.content}"></p>
+    </div>
+  </div>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+

@@ -1,0 +1,31 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+  <!--all content will be placed here-->
+
+
+  <div class="row">
+    <h2 class="text-center mb-4">Latest News</h2>
+    <div class="row" th:each="news : ${newsList}">
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <img th:src="${news.imageUrl}" class="card-img-top" alt="News Image">
+          <div class="card-body">
+            <h5 class="card-title" th:text="${news.title}"></h5>
+            <p class="card-text" th:text="${#strings.abbreviate(news.content, 100)}"></p>
+            <a th:href="@{/news/{id}(id=${news.id})}" class="btn btn-primary">Read More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+

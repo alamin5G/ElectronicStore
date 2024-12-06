@@ -1,0 +1,63 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+    <!--all content will be placed here-->
+
+
+    <div class="row mt-3">
+        <div class="col-md-6 offset-3 alert alert-success  text-success text-center mb-2 mt-3">
+            <h2 th:text="${successMessage != null ? successMessage : 'Manage Admins'}"></h2>
+        </div>
+        <div class="mb-4">
+            <a th:href="@{/admin/create}" class="btn btn-primary">Create Admin</a>
+
+        </div>
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="admin : ${admins}">
+                <td th:text="${admin.id}"></td>
+                <td th:text="${admin.username}"></td>
+                <td th:text="${admin.fullName}"></td>
+                <td th:text="${admin.email}"></td>
+                <td th:text="${admin.phone}"></td>
+                <td th:text="${admin.enabled ? 'Enabled' : 'Disabled'}"></td>
+                <td>
+                    <form th:action="@{/admin/admins/approve}" method="post" style="display:inline;">
+                        <input type="hidden" th:value="${admin.id}" name="userId">
+                        <button type="submit" class="btn btn-success btn-sm" th:disabled="${admin.enabled}">Approve
+                        </button>
+                    </form>
+                    <form th:action="@{/admin/admins/disable}" method="post" style="display:inline;">
+                        <input type="hidden" th:value="${admin.id}" name="userId">
+                        <button type="submit" class="btn btn-warning btn-sm" th:disabled="${!admin.enabled}">Disable
+                        </button>
+                    </form>
+                    <!--I think don't need to change the password-->
+                    <!-- <a href="#" th:data-bs-toggle="modal" th:data-bs-target="'#editPasswordModal-' + ${admin.id}" class="btn btn-primary btn-sm">Edit Password</a>-->
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+

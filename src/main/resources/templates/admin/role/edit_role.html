@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: page_head}">
+    <title>Edit Role</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <nav th:replace="~{layout :: page_navbar}"></nav>
+    </div>
+
+    <div class="row">
+        <h2 class="text-center mb-4">Edit Role</h2>
+        <form th:action="@{/admin/roles/edit/{id}(id=${role.id})}" th:object="${role}" method="post">
+            <div class="form-group">
+                <label for="name">Role Name</label>
+                <input type="text" class="form-control" id="name" th:field="*{name}" placeholder="Enter role name" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Role</button>
+            <a th:href="@{/admin/roles}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

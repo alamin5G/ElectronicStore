@@ -1,0 +1,50 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+    <!--all content will be placed here-->
+
+
+    <div class="row">
+        <h2 class="text-center mb-4">Role Management</h2>
+
+        <!-- Success Message -->
+        <div class="text-success text-center mb-4" th:if="${successMessage}">
+            <h4 th:text="${successMessage}"></h4>
+        </div>
+
+        <!-- Create Role Button -->
+        <div class="mb-3 text-end">
+            <a th:href="@{/admin/roles/create}" class="btn btn-success">Create New Role</a>
+        </div>
+
+        <!-- Roles Table -->
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Role Name</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="role : ${roles}">
+                <td th:text="${role.id}"></td>
+                <td th:text="${role.name}"></td>
+                <td>
+                    <a th:href="@{/admin/roles/edit/{id}(id=${role.id})}" class="btn btn-primary btn-sm">Edit</a>
+                    <a th:href="@{/admin/roles/delete/{id}(id=${role.id})}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+

@@ -1,0 +1,53 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+    <!--all content will be placed here-->
+
+    <div class="row">
+        <!-- Services Section -->
+        <section class="container mt-5">
+            <h2>Our Services</h2>
+            <div class="text-success text-center mb-4" th:if="${successMessage}">
+                <h4 th:text="${successMessage}"></h4>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <img th:src="@{/images/gold-testing.jpg}" class="card-img-top" alt="Gold Testing">
+                        <div class="card-body">
+                            <h5 class="card-title">Gold Testing</h5>
+                            <p class="card-text">Ensure your gold's purity with our state-of-the-art testing services.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img th:src="@{/images/jeweler-workspace-1.jpg}" class="card-img-top" alt="Hallmarking">
+                        <div class="card-body">
+                            <h5 class="card-title">Hallmarking</h5>
+                            <p class="card-text">Certified hallmarking services to guarantee the authenticity of your gold.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <img th:src="@{/images/hallmarked-jewelry.jpg}" class="card-img-top" alt="Jewelry Design">
+                        <div class="card-body">
+                            <h5 class="card-title">Jewelry Design</h5>
+                            <p class="card-text">Custom jewelry design services to bring your unique visions to life.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+

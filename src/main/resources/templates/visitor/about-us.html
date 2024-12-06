@@ -1,0 +1,23 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+    <!--all content will be placed here-->
+
+    <div class="row">
+        <!-- About Us Section -->
+        <section class="container mt-5">
+            <h2 class="text-center">About Us</h2>
+            <img th:src="@{/images/logo.png}" class="img-fluid text-center" alt="About Us">
+            <p>Welcome to Baro Vai Gold and Hallmark Lab. We provide advanced testing and hallmarking services to ensure the purity of your gold.</p>
+        </section>
+    </div>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+

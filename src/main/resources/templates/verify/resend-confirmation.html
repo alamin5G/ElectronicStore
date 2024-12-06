@@ -1,0 +1,23 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+    <!--all content will be placed here-->
+
+    <div class="row">
+        <div class="alert alert-success text-center" role="alert" th:text="${successMessage != null ? successMessage : 'There was something wrong with you'}">
+            A new verification email has been sent to your registered email address.
+        </div>
+        <div class="text-center">
+            <a th:href="@{/}" class="btn btn-primary">Back to Home</a>
+        </div>
+    </div>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+

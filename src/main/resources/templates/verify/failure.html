@@ -1,0 +1,28 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+    <!--all content will be placed here-->
+
+    <div class="row">
+        <div class="alert alert-danger text-center" role="alert" th:if="${error}">
+            <!-- Dynamically display the error message -->
+            <p th:text="${error}">Email verification failed. The token may be invalid or expired.</p>
+        </div>
+        <div class="text-center">
+            <a th:href="@{/register}" class="btn btn-primary">Register Again</a>
+            <!-- Ensure the userId is passed correctly -->
+            <h4>or</h4>
+            <a th:href="@{/verify/resend/{userId}(userId=${userId})}" class="btn btn-secondary">Resend Verification in
+                Email</a>
+        </div>
+    </div>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+

@@ -1,0 +1,36 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+    <!--all content will be placed here-->
+
+    <div class="row">
+        <div class="card col-8">
+            <div class="card-header text-center">
+                <h1 class="mb-2">User Profile</h1>
+                <div th:if="${successMessage}" class="text-warning alert alert-warning text-center">
+                    <h5 th:text="${successMessage}"></h5>
+                </div>
+            </div>
+            <div class="card-body" th:if="${user != null}">
+                <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+                <p><strong>Full Name:</strong> <span th:text="${user.fullName}"></span></p>
+                <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                <p><strong>Phone:</strong> <span th:text="${user.phone}"></span></p>
+                <a href="/user/edit-profile" class="btn btn-primary">Edit Profile</a>
+                <a href="/user/change-password" class="btn btn-warning">Change Password</a>
+            </div>
+            <div th:if="${user == null}">
+                <p>User not found.</p>
+            </div>
+        </div>
+    </div>
+
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+

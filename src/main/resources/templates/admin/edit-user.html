@@ -1,0 +1,64 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+    <!--all content will be placed here-->
+
+
+
+    <div class="row col-md-6 offset-md-3 mt-3">
+        <h2 class="text-center mb-4">Edit User</h2>
+
+
+
+        <form th:action="@{/admin/users/update-info}" method="post" th:object="${editUserByAdminDto}">
+
+
+            <!--validation errors -->
+            <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                <ul>
+                    <li th:each=" err : ${#fields.errors('*')}" th:text="${err}"></li>
+                </ul>
+            </div>
+
+
+
+            <div class="mb-3">
+                <label for="id" class="form-label text-danger">User ID (cannot edit):</label>
+                <input type="text" id="id" name="id" class="form-control text-danger" th:field="*{id}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control" th:field="*{email}">
+                <div th:if="${#fields.hasErrors('email')}" class="text-danger">
+                    <p th:errors="*{email}" ></p>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input id="phone" type="text" name="phone" class="form-control" th:field="*{phone}">
+                <div th:if="${#fields.hasErrors('phone')}" class="text-danger" th:errors="*{phone}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="enabled" class="form-label">Status</label>
+                <select id="enabled" name="enabled" class="form-control" th:field="*{enabled}">
+                    <option th:value="true" th:text="'Enabled'"></option>
+                    <option th:value="false" th:text="'Disabled'"></option>
+                </select>
+            </div>
+            <!--<div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-control" th:field="*{password}">
+            </div>-->
+            <button type="submit" class="btn btn-success">Update User</button>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>
+
