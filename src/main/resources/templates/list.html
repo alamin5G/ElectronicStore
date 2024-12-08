@@ -1,0 +1,36 @@
+<!-- layout/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4">
+  <h2>Your Shopping Cart</h2>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Total</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${cartItems}">
+      <td th:text="${item.product.name}"></td>
+      <td th:text="${item.quantity}"></td>
+      <td th:text="${item.product.price}"></td>
+      <td th:text="${item.product.price * item.quantity}"></td>
+      <td>
+        <a th:href="@{/cart/remove/{id}(id=${item.cartId})}" class="btn btn-danger btn-sm">Remove</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <a href="/products" class="btn btn-primary">Continue Shopping</a>
+  <a href="/orders/checkout" class="btn btn-success">Checkout</a>
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>

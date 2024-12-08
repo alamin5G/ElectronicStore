@@ -14,8 +14,11 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
+    @Column(nullable = false)
     private String name;
     private String description;
+
+    @Column(nullable = false)
     private Double price;
     private Integer stockQuantity;
     private Integer minimumStockLevel;
@@ -54,6 +57,16 @@ public class Product {
     @JoinColumn(name = "discount_id")
     private Discount discount;  // New relationship with Discount entity
     // Getters and setters
+
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
 
 

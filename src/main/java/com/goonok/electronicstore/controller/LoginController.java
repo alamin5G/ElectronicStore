@@ -2,6 +2,7 @@ package com.goonok.electronicstore.controller;
 
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
+import com.goonok.electronicstore.service.GreetingService;
 import com.goonok.electronicstore.service.SecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,8 @@ public class LoginController {
     @Autowired
     private SecurityService securityService;
 
-
+    @Autowired
+    private GreetingService greetingService;
 
     @GetMapping("/login")
     public String showLoginForm(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -51,12 +53,12 @@ public class LoginController {
         log.info("login success");
         if (role != null) {
             log.info("role not null: " + role);
-            if (role.equals("ADMIN")) {
+            if (role.equals("[ROLE_ADMIN]")) {
                 //set the greetings
                 redirectAttributes.addFlashAttribute("successMessage", greetingService.greet(LocalTime.now()) + ", " + loginUserName + "!" );
                 log.info("role admin redirected to admin/dashboard");
                 return "redirect:/admin/dashboard";
-            } else if (role.equals("USER")) {
+            } else if (role.equals("[ROLE_USER]")) {
                 redirectAttributes.addFlashAttribute("successMessage", greetingService.greet(LocalTime.now()) + ", " + loginUserName + "!" );
                 log.info("role admin redirected to user/profile");
                 return "redirect:/user/profile";

@@ -83,9 +83,11 @@
                 <!-- Links for Visitors (available to all users including visitors) -->
                 <li class="nav-item"
                 th:if="${#authorization.expression('isAnonymous()')}">
-
-                    <a class="nav-link" th:href="@{/category}">Category</a>
+                     <a class="nav-link" th:href="@{/category}">Category</a>
                 </li>
+                <li class="nav-item"
+                    th:if="${#authorization.expression('isAnonymous()')}">
+                    <a class="nav-link" th:href="@{/product}">Product</a>
                 <li class="nav-item"
                     th:if="${#authorization.expression('isAnonymous()')}">
                     <a class="nav-link" th:href="@{/brand}">Brand</a>

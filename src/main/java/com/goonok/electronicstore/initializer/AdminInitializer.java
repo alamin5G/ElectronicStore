@@ -9,6 +9,7 @@ import com.goonok.electronicstore.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,20 +22,22 @@ public class AdminInitializer implements ApplicationRunner {
     private RoleRepository roleRepository;
     @Autowired
     private AdminRepository adminRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
         // Check if there are any admin users
         if (userRepository.count() == 0) {
             // If no users exist, create the first admin
-            Role adminRole = roleRepository.findByRoleName("ADMIN");
-            Role userRole = roleRepository.findByRoleName("USER");
+            Role adminRole = roleRepository.findByRoleName("ROLE_ADMIN").orElse(null);
+            Role userRole = roleRepository.findByRoleName("ROLE_USER").orElse(null);
             if (adminRole == null || userRole == null) {
                 // Ensure the ADMIN role exists
                 adminRole = new Role();
-                adminRole.setRoleName("ADMIN");
+                adminRole.setRoleName("ROLE_ADMIN");
                 userRole = new Role();
-                userRole.setRoleName("USER");
+                userRole.setRoleName("ROLE_USER");
                 roleRepository.save(userRole);
                 roleRepository.save(adminRole);
             }
@@ -43,7 +46,7 @@ public class AdminInitializer implements ApplicationRunner {
             User admin = new User();
             admin.setName("admin");
             admin.setEmail("admin@store.com");
-            admin.setPassword("admin123");  // The password will be encoded automatically
+            admin.setPassword(passwordEncoder.encode("admin123"));  // The password will be encoded automatically
             admin.getRoles().add(adminRole);
             admin.setCreatedAt(java.time.LocalDateTime.now());
             admin.setUpdatedAt(java.time.LocalDateTime.now());
