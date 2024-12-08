@@ -31,10 +31,18 @@ public class RegistrationController {
     // Handle user registration
     @PostMapping("/register")
     public String registerUser(@Valid User user, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+
+        if (userService.isEmailExists(user.getEmail())) {
+            model.addAttribute("error", "An account already exists for this email.");
+            return "registration";
+        }
+        
         if (bindingResult.hasErrors()) {
             model.addAttribute("error", "Please fix the errors in the form.");
             return "registration";
         }
+
+
 
 
 

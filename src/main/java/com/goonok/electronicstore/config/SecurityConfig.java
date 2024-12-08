@@ -1,5 +1,6 @@
 package com.goonok.electronicstore.config;
 
+
 import com.goonok.electronicstore.security.CustomLogoutSuccessHandler;
 import com.goonok.electronicstore.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
@@ -33,7 +34,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();  // Returning BCryptPasswordEncoder as the PasswordEncoder
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -46,15 +47,14 @@ public class SecurityConfig {
         return new CustomLogoutSuccessHandler();
     }
 
-    /*
-    String[] publicUrl = { "/", "/login", "/register", "/verify/**", "/specialAccessForAdmin", "/images/**", "/product/**", "/css/**", "/js/**",
+    String[] publicUrl = { "/", "/login", "/register", "/verify/**", "/specialAccessForAdmin", "/images/**", "/css/**", "/read-news",
             "/about", "/services", "/contact", "/latest-news" , "/layout/**"};
-    */
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/register").permitAll() // Publicly accessible URLs
+                        .requestMatchers(publicUrl).permitAll() // Publicly accessible URLs
                         .requestMatchers("/admin/**", "/customers/**", "/jewellers/**", "/items/**").hasRole("ADMIN") // Admin access only
                         .requestMatchers("/user/**").hasRole("USER") // User access only
                         .anyRequest().authenticated() // All other URLs require authentication
@@ -62,8 +62,9 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login") // Custom login page
                         .loginProcessingUrl("/login") // URL for form submission
+                        .usernameParameter("email") // Username parameter in the form
                         .failureUrl("/login?error=true") // Redirect to this URL on login failure
-                        .defaultSuccessUrl("/login/success", true) // This is handled in LoginController now
+                        .defaultSuccessUrl("/login/success", true) // Redirect after successful login
                         .permitAll() // Allow everyone to access the login page
                 )
                 .logout(logout -> logout
@@ -74,13 +75,12 @@ public class SecurityConfig {
                 .userDetailsService(customUserDetailsService);
 
         // Custom filter to redirect authenticated users from /login, /register, /specialAccessForAdmin
-        //http.addFilterBefore(new RedirectAuthenticatedUserFilter(), UsernamePasswordAuthenticationFilter.class); //uncomment if you want to use the custom filter to redirect authenticated users
+        http.addFilterBefore(new RedirectAuthenticatedUserFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     // Custom filter to redirect authenticated users
-    /*
     public static class RedirectAuthenticatedUserFilter extends OncePerRequestFilter {
 
         @Override
@@ -93,9 +93,9 @@ public class SecurityConfig {
             if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
                 for (String url : protectedUrls) {
                     if (request.getRequestURI().equals(url)) {
-                        if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"))) {
+                        if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
                             response.sendRedirect("/admin/dashboard");
-                        } else if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("USER"))) {
+                        } else if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_USER"))) {
                             response.sendRedirect("/user/profile");
                         }
                         return;
@@ -106,6 +106,4 @@ public class SecurityConfig {
             filterChain.doFilter(request, response);
         }
     }
-    */
-
 }

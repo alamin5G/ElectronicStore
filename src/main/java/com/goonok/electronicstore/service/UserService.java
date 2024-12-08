@@ -1,6 +1,8 @@
 package com.goonok.electronicstore.service;
 
+import com.goonok.electronicstore.dto.UserProfileUpdateDto;
 import com.goonok.electronicstore.model.Address;
+import com.goonok.electronicstore.model.Role;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.AddressRepository;
 import com.goonok.electronicstore.repository.UserRepository;
@@ -8,13 +10,16 @@ import com.goonok.electronicstore.repository.RoleRepository;
 import com.goonok.electronicstore.verification.EmailService;
 import com.goonok.electronicstore.verification.VerificationService;
 import com.goonok.electronicstore.verification.VerificationToken;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -42,17 +47,24 @@ public class UserService {
         // Encrypt the password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // Assign the USER role to the new user
-        user.getRoles().add(roleRepository.findByRoleName("USER"));
+        user.setVerified(false); // User needs to verify their email
+        user.setEnabled(false);  // if email is verified than enabled
+        user.setCreatedAt(LocalDateTime.now()); // Set the current date and time
+        user.setUpdatedAt(LocalDateTime.now()); // Set the current date and time
 
-        // Set user as not enabled (it will be enabled after email verification)
-        user.setEnabled(false);
-        user.setVerified(false);
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
+        Role userRole = roleRepository.findByRoleName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("User Role not found"));
 
-        // Save the user to the database
+
+        // Add the role to the user's set of roles
+        user.getRoles().add(userRole);
+
+
+        // Save the user (this will save the association in the users_roles table)
         User savedUser = userRepository.save(user);
+        log.info("User created successfully : " + user);
+
+
 
         // Create and save the address for the user (if provided)
         if (savedUser.getAddresses() != null && !savedUser.getAddresses().isEmpty()) {
@@ -86,6 +98,46 @@ public class UserService {
     // Find a user by their ID
     public User getUserById(long userId) {
         return userRepository.findByUserId(userId);
+    }
+
+    // Find a user by their email
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(email);
+    }
+
+    public void updateUser(UserProfileUpdateDto user) {
+        User existingUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Update the existing user's fields
+        existingUser.setName(user.getFullName());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPhoneNumber(user.getPhone());
+
+        // Save the updated user back to the repository
+        userRepository.save(existingUser);
+    }
+
+    // Check if the provided old password is correct
+    public boolean checkIfValidOldPassword(User user, String oldPassword) {
+        return passwordEncoder.matches(oldPassword, user.getPassword());
+    }
+
+    // Update the user's password
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    // Enable the user's account
+    public void enableUserAccount(User user) {
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
+
+    // check if there is a user with the provided email
+    public boolean isEmailExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
 }

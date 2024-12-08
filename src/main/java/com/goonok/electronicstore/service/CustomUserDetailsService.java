@@ -2,6 +2,7 @@ package com.goonok.electronicstore.service;
 
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
@@ -21,13 +23,18 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            log.info("User not found: "+ email);
+        }
+
 
         // Check if the user is enabled and verified
         if (!user.isVerified()) {
             throw new UsernameNotFoundException("User not verified or enabled");
         }
+        log.info("User found: {}", user.getEmail());
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
