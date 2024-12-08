@@ -1,4 +1,4 @@
-package com.goonok.electronicstore.services;
+package com.goonok.electronicstore.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

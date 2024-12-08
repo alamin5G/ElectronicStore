@@ -1,7 +1,7 @@
 package com.goonok.electronicstore.config;
 
 import com.goonok.electronicstore.security.CustomLogoutSuccessHandler;
-import com.goonok.electronicstore.services.CustomUserDetailsService;
+import com.goonok.electronicstore.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder();  // Returning BCryptPasswordEncoder as the PasswordEncoder
     }
 
     @Bean
@@ -45,7 +45,8 @@ public class SecurityConfig {
     public LogoutSuccessHandler logoutSuccessHandler() {
         return new CustomLogoutSuccessHandler();
     }
-    String[] publicUrl = { "/", "/login", "/register", "/verify/**", "/specialAccessForAdmin", "/images/**", "/css/**", "/read-news",
+
+    String[] publicUrl = { "/", "/login", "/register", "/verify/**", "/specialAccessForAdmin", "/images/**", "/product/**", "/css/**", "/js/**",
             "/about", "/services", "/contact", "/latest-news" , "/layout/**"};
 
     @Bean
@@ -61,7 +62,7 @@ public class SecurityConfig {
                         .loginPage("/login") // Custom login page
                         .loginProcessingUrl("/login") // URL for form submission
                         .failureUrl("/login?error=true") // Redirect to this URL on login failure
-                        .defaultSuccessUrl("/login/success", true) // Redirect after successful login
+                        .defaultSuccessUrl("/login/success", true) // This is handled in LoginController now
                         .permitAll() // Allow everyone to access the login page
                 )
                 .logout(logout -> logout
@@ -90,9 +91,9 @@ public class SecurityConfig {
             if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
                 for (String url : protectedUrls) {
                     if (request.getRequestURI().equals(url)) {
-                        if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
+                        if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"))) {
                             response.sendRedirect("/admin/dashboard");
-                        } else if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_USER"))) {
+                        } else if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("USER"))) {
                             response.sendRedirect("/user/profile");
                         }
                         return;

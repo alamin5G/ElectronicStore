@@ -7,16 +7,17 @@ import java.util.List;
 
 @Data
 @Entity
-public class Role {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roleId;
+    private Long categoryId;
 
-    private String roleName;
+    private String name;
+    private String description;
 
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 
     // Getters and setters
 }

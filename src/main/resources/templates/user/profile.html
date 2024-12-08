@@ -16,12 +16,24 @@
                 </div>
             </div>
             <div class="card-body" th:if="${user != null}">
-                <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
-                <p><strong>Full Name:</strong> <span th:text="${user.fullName}"></span></p>
-                <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
-                <p><strong>Phone:</strong> <span th:text="${user.phone}"></span></p>
+                <h4>Name: <span th:text="${user.name}"></span></h4>
+                <h4>Email: <span th:text="${user.email}"></span></h4>
+                <h4>Phone: <span th:text="${user.phoneNumber}"></span></h4>
+                <h4>Address: <span th:text="${user.address}"></span></h4>
+                <h4>City: <span th:text="${user.city}"></span></h4>
+                <h4>State: <span th:text="${user.state}"></span></h4>
+                <h4>Country: <span th:text="${user.country}"></span></h4>
+                <h4>Zip Code: <span th:text="${user.zipCode}"></span></h4>
+                <!-- You can add more user details here -->
+
+
+                <!-- Edit Profile and Change Password Button -->
                 <a href="/user/edit-profile" class="btn btn-primary">Edit Profile</a>
                 <a href="/user/change-password" class="btn btn-warning">Change Password</a>
+                <!-- Logout Button -->
+                <form action="/logout" method="post">
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
             </div>
             <div th:if="${user == null}">
                 <p>User not found.</p>

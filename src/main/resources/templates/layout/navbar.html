@@ -14,15 +14,15 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav nav-tabs">
-                <!--
+
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/}">Home</a>
                 </li>
-                -->
+
 
                 <!-- Links for Admin -->
 
-               <!-- <li class="nav-item dropdown"
+               <li class="nav-item dropdown"
                     th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                     <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
@@ -71,32 +71,32 @@
                     </div>
                 </li>
 
-                &lt;!&ndash; Links for Users &ndash;&gt;
+                 <!--Links for Users -->
                 <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
                     <a class="nav-link" th:href="@{/user/profile}">Profile</a>
                 </li>
                 <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
                     <a class="nav-link" th:href="@{/user/verify-voucher}">Verify Voucher</a>
                 </li>
--->
+
 
                 <!-- Links for Visitors (available to all users including visitors) -->
-                <li class="nav-item">
-                <!--th:if="${#authorization.expression('isAnonymous()')}"-->
+                <li class="nav-item"
+                th:if="${#authorization.expression('isAnonymous()')}">
 
                     <a class="nav-link" th:href="@{/category}">Category</a>
                 </li>
-                <li class="nav-item">
-                    <!--th:if="${#authorization.expression('isAnonymous()')}">-->
+                <li class="nav-item"
+                    th:if="${#authorization.expression('isAnonymous()')}">
                     <a class="nav-link" th:href="@{/brand}">Brand</a>
                 </li>
-                <li class="nav-item" >
-                   <!-- th:if="${#authorization.expression('isAnonymous()')}">-->
+                <li class="nav-item"
+                   th:if="${#authorization.expression('isAnonymous()')}">
                     <a class="nav-link" th:href="@{/warranty}">Warranty</a>
                 </li>
 
                 <!-- Account Links for all users -->
-                <!--<li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
+                <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
                     <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
                         Account
@@ -104,13 +104,12 @@
                     <ul class="dropdown-menu" aria-labelledby="accountDropdown">
                         <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
                     </ul>
-                </li>-->
-                <li class="nav-item" >
-                    <!--th:if="${#authorization.expression('!isAuthenticated()')}">-->
+                </li>
+                <li class="nav-item"
+                    th:if="${#authorization.expression('!isAuthenticated()')}">
                     <a class="nav-link" th:href="@{/register}">Register</a>
                 </li>
-                <li class="nav-item" >
-                    <!--th:if="${#authorization.expression('!isAuthenticated()')}">-->
+                <li class="nav-item" th:if="${#authorization.expression('!isAuthenticated()')}">
                     <a class="nav-link" th:href="@{/login}">Login</a>
                 </li>
             </ul>

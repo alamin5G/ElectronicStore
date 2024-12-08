@@ -1,4 +1,4 @@
-package com.goonok.electronicstore.services;
+package com.goonok.electronicstore.service;
 
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
@@ -33,8 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 /* this line of code is working.. so, don't delete this
 
@@ -63,12 +62,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         //user.getRoles().forEach(role -> Hibernate.initialize(role.getUsers()));
 
         return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
+                user.getEmail(),
                 user.getPassword(),
                 user.isEnabled(),
                 true, true, true, //this line of true is required if you want to verify the user and then access to login
                 user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getName()))
+                        .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                         .collect(Collectors.toList())
         );
     }

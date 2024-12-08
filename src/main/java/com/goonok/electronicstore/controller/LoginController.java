@@ -1,72 +1,51 @@
 package com.goonok.electronicstore.controller;
 
-
 import com.goonok.electronicstore.model.User;
-import com.goonok.electronicstore.repository.UserRepository;
-import com.goonok.electronicstore.services.GreetingService;
-import com.goonok.electronicstore.services.SecurityService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.goonok.electronicstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalTime;
-import java.util.Optional;
-
 @Controller
 public class LoginController {
 
     @Autowired
-    private UserRepository userRepository;
-
-    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
-    @Autowired
-    private SecurityService securityService;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    private GreetingService greetingService;
+    private UserService userService;
 
+    // Show the login form
     @GetMapping("/login")
-    public String showLoginForm(@RequestParam(value = "error", required = false) String error, Model model) {
-
-        if (error != null) {
-            model.addAttribute("error", "Invalid username or password. Please try again.");
-        }
-
-        model.addAttribute("pageTitle", "Login");
-        return "login"; // No need to add an empty User object
+    public String loginPage() {
+        return "login"; // Return the login.html view
     }
 
+    // Handle login form submission
     @GetMapping("/login/success")
-    public String loginRedirect(RedirectAttributes redirectAttributes, Model model) {
-        String loginUserName = securityService.findLoggedInUsername();
-        System.out.println("Current Login User : " + loginUserName  );
-
-        Optional<User> user = userRepository.findByUsername(loginUserName);
-
-        String role = securityService.findLoggedInUserRoles().toString();
-
-        log.info("role : " + role);
-        log.info("login success");
-        if (role != null) {
-            log.info("role not null: " + role);
-            if (role.equals("[ROLE_ADMIN]")) {
-                //set the greetings
-                redirectAttributes.addFlashAttribute("successMessage", greetingService.greet(LocalTime.now()) + ", " + loginUserName + "!" );
-                log.info("role admin redirected to admin/dashboard");
-                return "redirect:/admin/dashboard";
-            } else if (role.equals("[ROLE_USER]")) {
-                redirectAttributes.addFlashAttribute("successMessage", greetingService.greet(LocalTime.now()) + ", " + loginUserName + "!" );
-                log.info("role admin redirected to user/profile");
-                return "redirect:/user/profile";
+    public String loginSuccess(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"))) {
+                return "redirect:/admin/dashboard"; // Admin redirect
+            } else if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("USER"))) {
+                return "redirect:/"; // User redirect
             }
         }
-        log.info("redirect to login");
-        model.addAttribute("error", "There was error. Please try again or contact us!");
-        return "login"; // Fallback
+        return "redirect:/login?error=true"; // Fallback in case of error
+    }
+
+    // Handle login failure
+    @GetMapping("/login?error=true")
+    public String loginError(Model model) {
+        model.addAttribute("error", "Invalid credentials. Please try again.");
+        return "login"; // Return to login page with error message
     }
 }

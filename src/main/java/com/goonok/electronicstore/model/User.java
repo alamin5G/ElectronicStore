@@ -1,80 +1,74 @@
 package com.goonok.electronicstore.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.HashSet;
-import java.util.Set;
-
-@Entity
-@Table(name = "users")
-@Transactional
 @Data
+@Entity
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @NotEmpty( message = "username is required")
-    @Size(min = 3, message = " username can't less than 3 characters")
-    private String username;
-
-    //@Convert(converter = PasswordEncoder.class)
-    @NotEmpty(message = "password is required")
-    @Size(min = 6, message = "Password must be at least 6 character")
-    private String password;
+    private Long userId;
 
     @NotEmpty(message = "Name is required")
-    @Size(min = 3, message = "at least 3 character to be a name")
-    private String fullName;
+    @Size(min = 3, max = 50, message = "Name must be between 2 and 50 characters")
+    private String name;
 
-    @NotEmpty(message = "email is required")
     @Email
+    @NotEmpty(message = "Email is required")
     private String email;
 
-    @NotEmpty(message = "phone is required")
-    @Size(min = 11, max = 11, message = "Phone number can't be less or more than 11 digit")
-    @Pattern(regexp = "^\\+?[0-9. ()-]{11}$", message = "Phone number is invalid")
-    private String phone;
-
-    private boolean enabled;
-    private boolean verified;
-
-    //how to implement the address model in the user? will see later on
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private Set<Role> roles = new HashSet<>();
+    @NotEmpty(message = "Password is required")
+    private String password;
 
 
-  /*  public void addRole(Role role) {
-        this.roles.add(role);
-        role.getUsers().add(this);
-    }
 
-    public void removeRole(Role role) {
-        this.roles.remove(role);
-        role.getUsers().remove(this);
-    }*/
+    @Size(min = 11, max = 11, message = "Phone number must be 11 digits")
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", enabled=" + enabled +
-                ", roles=" + roles +
-                '}';
-    }
+    @Pattern(regexp = "^(01[3-9]\\d{8})$", message = "Phone number must be a valid Bangladeshi number starting with 01 followed by 3-9 and 9 digits")
+    private String phoneNumber;
+
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Address> addresses;  // One user can have multiple addresses
+
+    @OneToMany(mappedBy = "user")
+    private List<Order> orders;
+
+    @OneToMany(mappedBy = "user")
+    private List<Review> reviews;
+
+    @OneToOne(mappedBy = "user")
+    private ShoppingCart shoppingCart;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles = new ArrayList<>();
+
+
+    private boolean isEnabled = false;  // Default is false until email verification
+    private boolean isVerified = false; // Default is false until email verification
+
+
 
 }
+

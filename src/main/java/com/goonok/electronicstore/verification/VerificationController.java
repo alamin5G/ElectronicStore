@@ -1,7 +1,7 @@
 package com.goonok.electronicstore.verification;
 
 import com.goonok.electronicstore.model.User;
-import com.goonok.electronicstore.services.UserService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class VerificationController {
     private VerificationService verificationService;
 
     @Autowired
-    private UserService userService;
+    private com.goonok.electronicstore.service.UserService userService;
 
 
 
@@ -37,16 +37,16 @@ public class VerificationController {
     public String verifyAccount(@RequestParam("token") String token, Model model, RedirectAttributes redirectAttributes) {
         Optional<VerificationToken> verificationToken = tokenRepository.findByToken(token);
 
-        int userId = verificationToken.map(value -> value.getUser().getId()).orElse(0);
+        int userId = verificationToken.map(value -> value.getUser().getUserId()).orElse(0L).intValue();
 
-        Optional<User> user = userService.getUserById(userId);
+        Optional<User> user = Optional.ofNullable(userService.getUserById((long) userId));
 
-        log.info("Verifying account for user {}", user);
+        log.info("Verifying account for user {}", user.orElse(null));
 
-        int registeredNewUserId = 0;
+        Long registeredNewUserId = 0L;
 
         if (user.isPresent()) {
-             registeredNewUserId = user.get().getId();
+             registeredNewUserId = user.get().getUserId();
         }
 
         if (verificationToken.isPresent() && verificationToken.get().isVerified()) {
@@ -84,10 +84,10 @@ public class VerificationController {
 
     // Resend verification email
     @GetMapping("/resend/{userId}")
-    public String resendVerificationEmail(@PathVariable("userId") Integer userId, Model model, RedirectAttributes redirectAttributes) {
-        Optional<VerificationToken> verificationToken = tokenRepository.findByUserId(userId);
+    public String resendVerificationEmail(@PathVariable("userId") Long userId, Model model, RedirectAttributes redirectAttributes) {
+        Optional<VerificationToken> verificationToken = tokenRepository.findUserById(userId);
 
-        User user = userService.getUserById(userId).get();
+        User user = userService.getUserById(userId);
         if(user.isVerified() && user.isEnabled()){
             redirectAttributes.addFlashAttribute("error", " You are already verified, We cannot re-send verification email again. Please login");
             return "redirect:/login";

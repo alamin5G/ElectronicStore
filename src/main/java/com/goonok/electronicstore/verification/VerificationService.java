@@ -105,7 +105,7 @@ public class VerificationService {
 
     public Optional<VerificationToken> updateToken(User user) {
 
-        Optional<VerificationToken> optionalToken = verificationTokenRepository.findByUserId(user.getId());
+        Optional<VerificationToken> optionalToken = verificationTokenRepository.findUserById(user.getUserId());
 
         if (optionalToken.isEmpty()) {
             log.info("Token not found");

@@ -23,9 +23,11 @@ public class EmailService {
     private String reply_to;
 
     public void sendVerificationEmail(User user, String token) {
-        String subject = "Account Verification : " + user.getUsername() + ", please verify your account";
+
+
+        String subject = "Email Account Verification - Electronics Store: verify your account";
         //String confirmationUrl = "http://localhost:8081/verify?token=" + token;
-        String content = "Hello dear " + user.getFullName() + ", \nYour account is created successfully! To use your account (" + user.getUsername()
+        String content = "Hello dear " + user.getName() + ", \nYour account is created successfully! To use your account (" + user.getName()
                 + ") Please verify your email between 24 Hours by clicking the link below:\n"
                 + "<a href='http://localhost:8081/verify?token=" + token + "'>Verify Email</a>";;
 
