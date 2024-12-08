@@ -46,14 +46,15 @@ public class SecurityConfig {
         return new CustomLogoutSuccessHandler();
     }
 
+    /*
     String[] publicUrl = { "/", "/login", "/register", "/verify/**", "/specialAccessForAdmin", "/images/**", "/product/**", "/css/**", "/js/**",
             "/about", "/services", "/contact", "/latest-news" , "/layout/**"};
-
+    */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(publicUrl).permitAll() // Publicly accessible URLs
+                        .requestMatchers("/login", "/register").permitAll() // Publicly accessible URLs
                         .requestMatchers("/admin/**", "/customers/**", "/jewellers/**", "/items/**").hasRole("ADMIN") // Admin access only
                         .requestMatchers("/user/**").hasRole("USER") // User access only
                         .anyRequest().authenticated() // All other URLs require authentication
@@ -73,12 +74,13 @@ public class SecurityConfig {
                 .userDetailsService(customUserDetailsService);
 
         // Custom filter to redirect authenticated users from /login, /register, /specialAccessForAdmin
-        http.addFilterBefore(new RedirectAuthenticatedUserFilter(), UsernamePasswordAuthenticationFilter.class);
+        //http.addFilterBefore(new RedirectAuthenticatedUserFilter(), UsernamePasswordAuthenticationFilter.class); //uncomment if you want to use the custom filter to redirect authenticated users
 
         return http.build();
     }
 
     // Custom filter to redirect authenticated users
+    /*
     public static class RedirectAuthenticatedUserFilter extends OncePerRequestFilter {
 
         @Override
@@ -104,4 +106,6 @@ public class SecurityConfig {
             filterChain.doFilter(request, response);
         }
     }
+    */
+
 }

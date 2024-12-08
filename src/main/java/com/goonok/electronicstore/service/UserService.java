@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserService {
 
@@ -46,6 +48,8 @@ public class UserService {
         // Set user as not enabled (it will be enabled after email verification)
         user.setEnabled(false);
         user.setVerified(false);
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
 
         // Save the user to the database
         User savedUser = userRepository.save(user);
@@ -60,7 +64,7 @@ public class UserService {
 
 
         // Generate and create a verification token for the new user
-        VerificationToken verificationToken = verificationService.createVerificationToken(user);
+        VerificationToken verificationToken = verificationService.createVerificationToken(savedUser);
 
         // Send a verification email with the token
         emailService.sendVerificationEmail(user, verificationToken.getToken());
@@ -80,9 +84,8 @@ public class UserService {
     }
 
     // Find a user by their ID
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public User getUserById(long userId) {
+        return userRepository.findByUserId(userId);
     }
 
 }

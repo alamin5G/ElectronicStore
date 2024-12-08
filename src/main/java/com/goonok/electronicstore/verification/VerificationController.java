@@ -37,9 +37,9 @@ public class VerificationController {
     public String verifyAccount(@RequestParam("token") String token, Model model, RedirectAttributes redirectAttributes) {
         Optional<VerificationToken> verificationToken = tokenRepository.findByToken(token);
 
-        int userId = verificationToken.map(value -> value.getUser().getUserId()).orElse(0L).intValue();
+        long userId = verificationToken.map(value -> value.getUser().getUserId()).orElse(0L);
 
-        Optional<User> user = Optional.ofNullable(userService.getUserById((long) userId));
+        Optional<User> user = Optional.ofNullable(userService.getUserById(userId));
 
         log.info("Verifying account for user {}", user.orElse(null));
 
