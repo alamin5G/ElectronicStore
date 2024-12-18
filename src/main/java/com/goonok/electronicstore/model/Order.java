@@ -1,8 +1,11 @@
 package com.goonok.electronicstore.model;
 
+import com.goonok.electronicstore.enums.OrderStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,9 +18,13 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
-    private Double totalPrice;
+    @NotNull
+    private BigDecimal totalPrice;
     private String shippingAddress;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status; // e.g., PENDING, SHIPPED, DELIVERED
+
     private String paymentStatus;
     private String trackingNumber;
 
@@ -43,5 +50,15 @@ public class Order {
     @JoinColumn(name = "discount_id")
     private Discount discount;  // New relationship with Discount entity
 
+    @PrePersist
+    public void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
     // Getters and setters
 }

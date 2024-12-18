@@ -7,6 +7,7 @@ import com.goonok.electronicstore.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,35 +20,42 @@ public class BrandController {
     private BrandService brandService;
 
     @GetMapping
-    public ResponseEntity<List<Brand>> getAllBrands() {
-        return ResponseEntity.ok(brandService.getAllBrands());
+    public String listBrands(Model model) {
+        model.addAttribute("brands", brandService.getAllBrands());
+        return "brand/list"; // Path to brand list.html
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Brand> getBrandById(@PathVariable Long id) {
-        return brandService.getBrandById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @GetMapping("/add")
+    public String showAddBrandForm(Model model) {
+        model.addAttribute("brand", new Brand());
+        return "brand/add"; // Path to add.html
     }
 
-    @PostMapping
-    public ResponseEntity<Brand> addBrand(@RequestBody Brand Brand) {
-        return ResponseEntity.ok(brandService.addBrand(Brand));
+    @PostMapping("/add")
+    public String addBrand(@ModelAttribute Brand brand) {
+        brandService.addBrand(brand);
+        return "redirect:/brands";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Brand> updateBrand(@PathVariable Long id, @RequestBody Brand Brand) {
-        try {
-            return ResponseEntity.ok(brandService.updateBrand(id, Brand));
-        } catch (RuntimeException ex) {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/edit/{id}")
+    public String showEditBrandForm(@PathVariable Long id, Model model) {
+        Brand brand = brandService.getBrandById(id)
+                .orElseThrow(() -> new RuntimeException("Brand not found"));
+        model.addAttribute("brand", brand);
+        return "brand/edit"; // Path to edit.html
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBrand(@PathVariable Long id) {
+    @PostMapping("/edit/{id}")
+    public String updateBrand(@PathVariable Long id, @ModelAttribute Brand brand) {
+        brandService.updateBrand(id, brand);
+        return "redirect:/brands";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteBrand(@PathVariable Long id) {
         brandService.deleteBrand(id);
-        return ResponseEntity.noContent().build();
+        return "redirect:/brands";
     }
+
 }
 

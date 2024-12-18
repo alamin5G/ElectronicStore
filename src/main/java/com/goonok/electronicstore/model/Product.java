@@ -3,6 +3,7 @@ package com.goonok.electronicstore.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class Product {
     private String description;
 
     @Column(nullable = false)
-    private Double price;
+    private BigDecimal price;
     private Integer stockQuantity;
     private Integer minimumStockLevel;
 

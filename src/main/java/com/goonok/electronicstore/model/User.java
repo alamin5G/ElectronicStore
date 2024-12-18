@@ -36,7 +36,6 @@ public class User {
 
 
     @Size(min = 11, max = 11, message = "Phone number must be 11 digits")
-
     @Pattern(regexp = "^(01[3-9]\\d{8})$", message = "Phone number must be a valid Bangladeshi number starting with 01 followed by 3-9 and 9 digits")
     private String phoneNumber;
 
