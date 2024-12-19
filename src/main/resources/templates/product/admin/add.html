@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/header :: head}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
 <header th:replace="~{layout/navbar :: header}"></header>
-<main class="container mt-4">
+<main class="container mt-4 flex-grow-1">
     <!--all content will be placed here-->
     <h2>Add Product</h2>
-    <form th:action="@{/products/add}" th:object="${product}" method="post">
+    <form th:action="@{/admin/products/add}" th:object="${product}" method="post">
         <div class="mb-3">
             <label for="name" class="form-label">Name</label>
             <input type="text" id="name" name="name" class="form-control" th:field="*{name}" required>
@@ -29,7 +29,7 @@
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
-        <a href="/products" class="btn btn-secondary">Cancel</a>
+        <a href="/admin/products" class="btn btn-secondary">Cancel</a>
     </form>
 
 </main>

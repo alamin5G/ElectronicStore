@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/header :: head}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
 <header th:replace="~{layout/navbar :: header}"></header>
-<main class="container mt-4">
+<main class="container mt-4 flex-grow-1">
     <!--all content will be placed here-->
     <div class="row">
         <p>Your account has been verified. You can now <a th:href="@{/login}">login</a>.</p>

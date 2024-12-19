@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/header :: head}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
 <header th:replace="~{layout/navbar :: header}"></header>
-<main class="container mt-4">
+<main class="container mt-4 flex-grow-1">
     <h2>Your Orders</h2>
     <table class="table table-striped">
         <thead>

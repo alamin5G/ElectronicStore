@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/header :: head}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
 <header th:replace="~{layout/navbar :: header}"></header>
-<main class="container mt-4">
+<main class="container mt-4 flex-grow-1">
     <!--all content will be placed here-->
     <h2>Products</h2>
-    <a href="/products/add" class="btn btn-primary mb-3">Add Product</a>
+    <a href="/admin/products/add" class="btn btn-primary mb-3">Add Product</a>
     <table class="table table-striped">
         <thead>
         <tr>
@@ -27,8 +27,8 @@
             <td th:text="${product.brand.name}"></td>
             <td th:text="${product.stockQuantity}"></td>
             <td>
-                <a th:href="@{/products/edit/{id}(id=${product.productId})}" class="btn btn-warning btn-sm">Edit</a>
-                <a th:href="@{/products/delete/{id}(id=${product.productId})}"
+                <a th:href="@{/admin/products/edit/{id}(id=${product.productId})}" class="btn btn-warning btn-sm">Edit</a>
+                <a th:href="@{/admin/products/delete/{id}(id=${product.productId})}"
                    class="btn btn-danger btn-sm"
                    onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
             </td>

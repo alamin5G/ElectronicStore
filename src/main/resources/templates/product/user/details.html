@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4 flex-grow-1">
+  <div class="row">
+    <div class="col-md-6">
+      <img th:src="${product.imageUrl}" class="img-fluid" alt="Product Image">
+    </div>
+    <div class="col-md-6">
+      <h2 th:text="${product.name}"></h2>
+      <p th:text="${product.description}"></p>
+      <p><strong>Price:</strong> $<span th:text="${product.price}"></span></p>
+      <p><strong>Stock:</strong> <span th:text="${product.stockQuantity}"></span></p>
+      <p><strong>Category:</strong> <span th:text="${product.category.name}"></span></p>
+      <p><strong>Brand:</strong> <span th:text="${product.brand.name}"></span></p>
+      <form th:action="@{/cart/add/{id}(id=${product.productId})}" method="post">
+        <div class="mb-3">
+          <label for="quantity" class="form-label">Quantity</label>
+          <input type="number" id="quantity" name="quantity" class="form-control" value="1" min="1" max="${product.stockQuantity}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
+      </form>
+    </div>
+  </div>
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>

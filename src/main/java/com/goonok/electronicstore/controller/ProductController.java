@@ -10,7 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/products")
+@RequestMapping("/admin/products")
 public class ProductController {
 
     @Autowired
@@ -25,7 +25,7 @@ public class ProductController {
     @GetMapping
     public String getAllProducts(Model model) {
         model.addAttribute("products", productService.getAllProducts());
-        return "product/list";
+        return "product/admin/list";
     }
 
     @GetMapping("/add")
@@ -33,7 +33,7 @@ public class ProductController {
         model.addAttribute("product", new Product());
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("brands", brandService.getAllBrands());
-        return "product/add";
+        return "product/admin/add";
     }
 
     @PostMapping("/add")
@@ -48,7 +48,7 @@ public class ProductController {
         model.addAttribute("product", product);
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("brands", brandService.getAllBrands());
-        return "product/edit";
+        return "product/admin/edit";
     }
 
     @PostMapping("/edit/{id}")
@@ -62,4 +62,6 @@ public class ProductController {
         productService.deleteProduct(id);
         return "redirect:/products";
     }
+
+
 }

@@ -5,15 +5,13 @@ package com.goonok.electronicstore.controller;
 import com.goonok.electronicstore.model.Brand;
 import com.goonok.electronicstore.service.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Controller
-@RequestMapping("/brand")
+@RequestMapping("/admin/brand")
 public class BrandController {
 
     @Autowired

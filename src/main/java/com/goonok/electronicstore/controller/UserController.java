@@ -3,8 +3,12 @@ package com.goonok.electronicstore.controller;
 
 import com.goonok.electronicstore.dto.ChangePasswordDto;
 import com.goonok.electronicstore.dto.UserProfileUpdateDto;
+import com.goonok.electronicstore.model.Product;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
+import com.goonok.electronicstore.service.BrandService;
+import com.goonok.electronicstore.service.CategoryService;
+import com.goonok.electronicstore.service.ProductService;
 import com.goonok.electronicstore.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
@@ -16,13 +20,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -33,9 +35,15 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private BrandService brandService;
+
     @Autowired
     private View error;
 
@@ -165,4 +173,21 @@ public class UserController {
             return "/user/error";
         }
     }
+
+    @GetMapping("/products")
+    public String listProductsForUsers(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long brandId,
+            @RequestParam(required = false) String priceRange,
+            Model model) {
+
+        List<Product> products = productService.getFilteredProducts(categoryId, brandId, priceRange);
+        model.addAttribute("products", products);
+
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("brands", brandService.getAllBrands());
+
+        return "product/user/list"; // New user template
+    }
+
 }

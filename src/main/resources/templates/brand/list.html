@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/header :: head}"></head>
-<body>
+<body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
 <header th:replace="~{layout/navbar :: header}"></header>
-<main class="container mt-4">
+<main class="container mt-4 flex-grow-1">
   <h2>Brands</h2>
-  <a href="/brands/add" class="btn btn-primary mb-3">Add Brand</a>
+  <a href="/admin/brands/add" class="btn btn-primary mb-3">Add Brand</a>
   <table class="table table-striped">
     <thead>
     <tr>
@@ -19,8 +19,8 @@
       <td th:text="${brand.name}"></td>
       <td th:text="${brand.description}"></td>
       <td>
-        <a th:href="@{/brands/edit/{id}(id=${brand.brandId})}" class="btn btn-warning btn-sm">Edit</a>
-        <a th:href="@{/brands/delete/{id}(id=${brand.brandId})}"
+        <a th:href="@{/admin/brand/edit/{id}(id=${brand.brandId})}" class="btn btn-warning btn-sm">Edit</a>
+        <a th:href="@{/admin/brand/delete/{id}(id=${brand.brandId})}"
            class="btn btn-danger btn-sm"
            onclick="return confirm('Are you sure you want to delete this brand?');">Delete</a>
       </td>

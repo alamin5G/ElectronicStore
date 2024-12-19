@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4 flex-grow-1">
+    <h2>Product Listing</h2>
+
+    <!-- Filters -->
+    <form th:action="@{/products}" method="get" class="mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="category" class="form-label">Category</label>
+                <select id="category" name="categoryId" class="form-select">
+                    <option value="">All Categories</option>
+                    <option th:each="category : ${categories}" th:value="${category.categoryId}" th:text="${category.name}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="brand" class="form-label">Brand</label>
+                <select id="brand" name="brandId" class="form-select">
+                    <option value="">All Brands</option>
+                    <option th:each="brand : ${brands}" th:value="${brand.brandId}" th:text="${brand.name}"></option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="price" class="form-label">Price Range</label>
+                <select id="price" name="priceRange" class="form-select">
+                    <option value="">All Prices</option>
+                    <option value="low">Under $50</option>
+                    <option value="mid">$50 - $200</option>
+                    <option value="high">Above $200</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Filter</button>
+    </form>
+
+    <!-- Product List -->
+    <div class="row">
+        <div class="col-md-4 mb-4" th:each="product : ${products}">
+            <div class="card">
+                <img th:src="${product.imageUrl}" class="card-img-top" alt="Product Image">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${product.name}"></h5>
+                    <p class="card-text">$<span th:text="${product.price}"></span></p>
+                    <a th:href="@{/products/{id}(id=${product.productId})}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+</body>
+</html>

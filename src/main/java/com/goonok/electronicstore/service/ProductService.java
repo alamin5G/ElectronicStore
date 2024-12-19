@@ -5,8 +5,10 @@ import com.goonok.electronicstore.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -43,4 +45,36 @@ public class ProductService {
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
+
+    // New method to filter products based on category, brand, and price range
+    public List<Product> getFilteredProducts(Long categoryId, Long brandId, String priceRange) {
+        List<Product> products = productRepository.findAll();
+
+        if (categoryId != null) {
+            products = products.stream()
+                    .filter(product -> product.getCategory().getCategoryId().equals(categoryId))
+                    .collect(Collectors.toList());
+        }
+
+        if (brandId != null) {
+            products = products.stream()
+                    .filter(product -> product.getBrand().getBrandId().equals(brandId))
+                    .collect(Collectors.toList());
+        }
+
+        if (priceRange != null) {
+            products = products.stream().filter(product -> {
+                switch (priceRange) {
+                    case "low": return product.getPrice().compareTo(BigDecimal.valueOf(50)) < 0;
+                    case "mid": return product.getPrice().compareTo(BigDecimal.valueOf(50)) >= 0 &&
+                            product.getPrice().compareTo(BigDecimal.valueOf(200)) <= 0;
+                    case "high": return product.getPrice().compareTo(BigDecimal.valueOf(200)) > 0;
+                    default: return true;
+                }
+            }).collect(Collectors.toList());
+        }
+
+        return products;
+    }
+
 }
