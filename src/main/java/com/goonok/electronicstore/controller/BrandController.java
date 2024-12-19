@@ -32,7 +32,7 @@ public class BrandController {
     @PostMapping("/add")
     public String addBrand(@ModelAttribute Brand brand) {
         brandService.addBrand(brand);
-        return "redirect:/brands";
+        return "redirect:/admin/brand";
     }
 
     @GetMapping("/edit/{id}")
@@ -46,13 +46,13 @@ public class BrandController {
     @PostMapping("/edit/{id}")
     public String updateBrand(@PathVariable Long id, @ModelAttribute Brand brand) {
         brandService.updateBrand(id, brand);
-        return "redirect:/brands";
+        return "redirect:/admin/brand";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteBrand(@PathVariable Long id) {
         brandService.deleteBrand(id);
-        return "redirect:/brands";
+        return "redirect:/admin/brand";
     }
 
 }

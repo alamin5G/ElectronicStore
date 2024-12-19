@@ -19,6 +19,22 @@ public class ProductService {
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
+    public List<Product> getFeaturedProducts() {
+        return productRepository.findByIsFeaturedTrue(); // Ensure this method exists in your repository
+    }
+
+    public List<Product> getNewProducts() {
+        return productRepository.findByIsNewArrivalTrue(); // Ensure this method exists in your repository
+    }
+
+    public List<Product> getProductsByCategory(Long categoryId) {
+        return productRepository.findByCategory_CategoryId(categoryId);
+    }
+
+    public List<Product> getProductsByBrand(Long brandId) {
+        return productRepository.findByBrand_BrandId(brandId);
+    }
+
 
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
@@ -37,7 +53,9 @@ public class ProductService {
             product.setMinimumStockLevel(productDetails.getMinimumStockLevel());
             product.setCategory(productDetails.getCategory());
             product.setBrand(productDetails.getBrand());
-            product.setImageUrl(productDetails.getImageUrl());
+            product.setImagePath(productDetails.getImagePath());
+            product.setFeatured(productDetails.isFeatured());
+            product.setNewArrival(productDetails.isNewArrival());
             return productRepository.save(product);
         }).orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
     }

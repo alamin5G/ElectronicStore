@@ -36,7 +36,13 @@ public class Product {
     @JoinColumn(name = "warranty_id")
     private Warranty warranty;
 
-    private String imageUrl;
+    //private String imageUrl;
+    private String imagePath;
+    @Column(nullable = false)
+    private boolean isFeatured = false; // Default to false
+    private boolean isAvailable = true; // Default to true
+    private boolean isNewArrival = true; // Default to false
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

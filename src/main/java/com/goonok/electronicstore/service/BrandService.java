@@ -2,7 +2,6 @@ package com.goonok.electronicstore.service;
 
 
 import com.goonok.electronicstore.model.Brand;
-import com.goonok.electronicstore.model.Brand;
 import com.goonok.electronicstore.repository.BrandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +23,7 @@ public class BrandService {
         return brandRepository.findById(id);
     }
 
+
     public Brand addBrand(Brand Brand) {
         return brandRepository.save(Brand);
     }
@@ -32,13 +32,14 @@ public class BrandService {
         brandRepository.deleteById(id);
     }
 
-    public Brand updateBrand(Long id, Brand Brand) {
+    public void updateBrand(Long id, Brand Brand) {
         Optional<Brand> existingBrand = brandRepository.findById(id);
         if (existingBrand.isPresent()) {
             Brand updatedBrand = existingBrand.get();
             updatedBrand.setName(Brand.getName());
             updatedBrand.setDescription(Brand.getDescription());
-            return brandRepository.save(updatedBrand);
+            brandRepository.save(updatedBrand);
+            return;
         }
         throw new RuntimeException("Brand not found with ID: " + id);
     }

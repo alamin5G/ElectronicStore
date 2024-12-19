@@ -3,12 +3,10 @@ package com.goonok.electronicstore.controller;
 import com.goonok.electronicstore.model.Category;
 import com.goonok.electronicstore.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin/categories")
@@ -32,7 +30,7 @@ public class CategoryController {
     @PostMapping("/add")
     public String addCategory(@ModelAttribute Category category) {
         categoryService.addCategory(category);
-        return "redirect:/categories";
+        return "redirect:/admin/categories";
     }
 
     @GetMapping("/edit/{id}")
@@ -44,12 +42,12 @@ public class CategoryController {
     @PostMapping("/edit/{id}")
     public String updateCategory(@PathVariable Long id, @ModelAttribute Category category) {
         categoryService.updateCategory(id, category);
-        return "redirect:/categories";
+        return "redirect:/admin/categories";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
-        return "redirect:/categories";
+        return "redirect:/admin/categories";
     }
 }

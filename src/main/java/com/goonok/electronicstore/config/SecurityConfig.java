@@ -48,7 +48,9 @@ public class SecurityConfig {
     }
 
     String[] publicUrl = { "/", "/login", "/register", "/verify/**", "/specialAccessForAdmin", "/images/**", "/product/**", "/css/**", "/read-news",
-            "/about", "/services", "/contact", "/latest-news" , "/layout/**"};
+            "/uploads/**",
+            "/about", "/services", "/contact", "/latest-news" , "/layout/**", "/products/**", "/category/**", "/brand/**", "/search/**", "/cart/**",
+            "/checkout/**", "/order/**", "/payment" };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
