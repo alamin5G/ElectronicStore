@@ -15,7 +15,12 @@
       <p><strong>Category:</strong> <span th:text="${product.category.name}"></span></p>
       <p><strong>Brand:</strong> <span th:text="${product.brand.name}"></span></p>
       <p><strong>Stock:</strong> <span th:text="${product.stockQuantity}"></span></p>
-      <button class="btn btn-dark">Add to Cart</button>
+      <form th:action="@{/cart/add/{id}(id=${product.productId})}" method="post">
+        <div class="input-group mb-2">
+          <input type="number" name="quantity" class="form-control" placeholder="Qty" value="1" min="1">
+          <button class="btn btn-dark" type="submit">Add to Cart</button>
+        </div>
+      </form>
     </div>
   </div>
 </main>

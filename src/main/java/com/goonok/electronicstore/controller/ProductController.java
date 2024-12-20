@@ -78,7 +78,11 @@ public class ProductController {
     public String updateProduct(@PathVariable Long id, @ModelAttribute Product product, @RequestParam Long category, @RequestParam Long brand,
                                 @RequestParam("image") MultipartFile imageFile) throws IOException {
 
-        if (!imageFile.isEmpty()) {
+        if (imageFile.isEmpty()) {
+            // No new image uploaded, keep the existing image
+            Product existingProduct = productService.getProductById(id).orElseThrow(() -> new RuntimeException("Product not found"));
+            product.setImagePath(existingProduct.getImagePath());
+        }else {
             // Save the file to a specific directory
             String filename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
             Path filePath = Paths.get("uploads/images", filename);

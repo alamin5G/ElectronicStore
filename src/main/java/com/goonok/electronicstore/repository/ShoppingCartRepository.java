@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long> {
-    List<ShoppingCart> findByUser_UserId(Long userId);
-    List<ShoppingCart> findByUser_UserIdAndProduct_ProductId(Long userId, Long productId);
+
+    Optional<ShoppingCart> findByUser_UserId(Long userId);
+
     void deleteByUser_UserId(Long userId);
     void deleteByUser_UserIdAndProduct_ProductId(Long userId, Long productId);
 
+    Optional<ShoppingCart> findByUser_UserIdAndProduct_ProductId(Long userId, Long productId);
 
     int countByUser(User user);
 
@@ -24,11 +26,7 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long
 
     Optional<ShoppingCart> findByUserAndProduct(User user, Product product);
 
-    // For guest users
-    List<ShoppingCart> findBySessionId(String sessionId);
 
-    Optional<ShoppingCart> findBySessionIdAndProduct(String sessionId, Product product);
-
-    void deleteBySessionId(String sessionId);
+    Optional<ShoppingCart> findByUserAndProduct_ProductId(User user, Long productId);
 }
 

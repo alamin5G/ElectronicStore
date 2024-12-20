@@ -24,7 +24,7 @@
         </thead>
         <tbody>
         <tr th:each="product : ${products}">
-            <td><img th:src="@{/images/{filename}(filename=${product.imagePath})}" alt="Product Image" class="img-thumbnail" style="max-width: 100px;"></td>
+            <td><img th:src="@{/images/{filename}(filename=${product.imagePath})}" alt="Product Image" class="img-thumbnail" style="max-width: 80px;"></td>
             <td th:text="${product.name}"></td>
             <td th:text="${product.price}"></td>
             <td th:text="${product.category?.name}"></td>

@@ -1,6 +1,7 @@
 package com.goonok.electronicstore.controller;
 
 import com.goonok.electronicstore.model.Product;
+import com.goonok.electronicstore.model.ShoppingCart;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
 import com.goonok.electronicstore.service.ProductService;
@@ -12,7 +13,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/cart")
@@ -28,20 +31,28 @@ public class ShoppingCartController {
     private UserRepository userRepository;
 
     @GetMapping
-    public String showCart(Model model, Principal principal, HttpSession session) {
+    public String showCart(Model model, Principal principal) {
+        List<ShoppingCart> cartItems = List.of(); // Default to an empty list
+
         if (principal != null) {
             User currentUser = getUserFromPrincipal(principal);
-            model.addAttribute("cartItems", shoppingCartService.getCartItemsByUser(currentUser));
-        } else {
-            String sessionId = session.getId();
-            model.addAttribute("cartItems", shoppingCartService.getCartItemsBySessionId(sessionId));
+            cartItems = shoppingCartService.getCartItemsByUser(currentUser);
         }
+
+        // Calculate the total price
+        BigDecimal totalPrice = cartItems.stream()
+                .map(item -> item.getProduct().getPrice().multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("totalPrice", totalPrice); // Pass total price to the view
         return "cart/list";
     }
 
+
     @PostMapping("/add/{productId}")
     public String addToCart(@PathVariable Long productId, @RequestParam Integer quantity,
-                            Principal principal, HttpSession session, RedirectAttributes redirectAttributes) {
+                            Principal principal, RedirectAttributes redirectAttributes) {
         Product product = productService.getProductById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
@@ -51,37 +62,30 @@ public class ShoppingCartController {
             return "redirect:/products"; // Redirect to products page or handle error appropriately
         }
 
-        if (principal == null) {
-            // Store product ID and quantity in session for guest users
-            session.setAttribute("pendingCartProductId", productId);
-            session.setAttribute("pendingCartQuantity", quantity);
-
-            // Redirect to login page with a return URL
-            return "redirect:/login/?redirect=/cart/add/" + productId;
-        } else {
+        if (principal != null) {
             // Process cart for logged-in users
             User currentUser = getUserFromPrincipal(principal);
             shoppingCartService.addOrUpdateCartItem(currentUser, product, quantity);
             redirectAttributes.addFlashAttribute("successMessage", "Product added to cart successfully!");
             return "redirect:/cart";
         }
+
+        return "redirect:/login";
     }
 
 
-    @GetMapping("/remove/{productId}")
-    public String removeCartItem(@PathVariable Long productId, Principal principal, HttpSession session) {
-        Product product = productService.getProductById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        if (principal != null) {
-            User currentUser = getUserFromPrincipal(principal);
-            shoppingCartService.removeCartItemByUserAndProduct(currentUser, product);
-        } else {
-            String sessionId = session.getId();
-            shoppingCartService.removeCartItemBySessionIdAndProduct(sessionId, product);
+    @GetMapping("/remove/{cartId}")
+    public String removeCartItem(@PathVariable Long cartId, RedirectAttributes redirectAttributes) {
+        try {
+            shoppingCartService.removeCartItemById(cartId);
+            redirectAttributes.addFlashAttribute("successMessage", "Item removed from cart successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Failed to remove item from cart.");
         }
         return "redirect:/cart";
     }
+
 
     private User getUserFromPrincipal(Principal principal) {
         if (principal == null) {

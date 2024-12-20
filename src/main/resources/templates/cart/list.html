@@ -5,14 +5,19 @@
 <header th:replace="~{layout/navbar :: header}"></header>
 <main class="container mt-4 flex-grow-1">
   <h2>Your Shopping Cart</h2>
+
+  <!-- Empty Cart Message -->
   <div th:if="${cartItems.isEmpty()}" class="alert alert-warning">
     Your cart is empty. <a href="/products">Continue shopping</a>
   </div>
+
+  <!-- Success and Error Messages -->
   <div class="container mt-3">
     <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-    <div th:if="${error}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
   </div>
 
+  <!-- Cart Items Table -->
   <div th:if="${!cartItems.isEmpty()}">
     <table class="table">
       <thead>
@@ -31,13 +36,18 @@
         <td th:text="${item.quantity}"></td>
         <td>৳ <span th:text="${item.product.price.multiply(new java.math.BigDecimal(item.quantity))}"></span></td>
         <td>
-          <a th:href="@{/cart/remove/{id}(id=${item.id})}" class="btn btn-danger btn-sm">Remove</a>
+          <a th:href="@{/cart/remove/{id}(id=${item.cartId})}" class="btn btn-danger btn-sm">Remove</a>
+
         </td>
       </tr>
       </tbody>
     </table>
+
+    <!-- Total and Checkout -->
     <div class="text-end">
-      <h4>Total: ৳ <span th:text="${cartItems.stream().map(item -> item.product.price.multiply(new java.math.BigDecimal(item.quantity))).reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add)}"></span></h4>
+
+        <h4>Total: ৳ <span th:text="${totalPrice}"></span></h4>
+
       <a href="/checkout" class="btn btn-primary">Checkout</a>
     </div>
   </div>
