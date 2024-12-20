@@ -28,7 +28,13 @@
                                 <a th:href="@{/products/{id}(id=${product.productId})}" th:text="${product.name}"></a>
                             </h5>
                             <p class="card-text">৳<span th:text="${product.price}"></span></p>
-                            <button class="btn btn-dark w-100">Add to Cart</button>
+                            <!-- Add to Cart Form -->
+                            <form th:action="@{/cart/add/{id}(id=${product.productId})}" method="post">
+                                <div class="input-group mb-2">
+                                    <input type="number" name="quantity" class="form-control" placeholder="Qty" value="1" min="1">
+                                    <button class="btn btn-dark" type="submit">Add to Cart</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -61,7 +67,13 @@
                                 <a th:href="@{/products/{id}(id=${product.productId})}" th:text="${product.name}"></a>
                             </h5>
                             <p class="card-text">৳<span th:text="${product.price}"></span></p>
-                            <button class="btn btn-dark w-100">Add to Cart</button>
+                            <!-- Add to Cart Form -->
+                            <form th:action="@{/cart/add/{id}(id=${product.productId})}" method="post">
+                                <div class="input-group mb-2">
+                                    <input type="number" name="quantity" class="form-control" placeholder="Qty" value="1" min="1">
+                                    <button class="btn btn-dark" type="submit">Add to Cart</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

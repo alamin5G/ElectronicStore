@@ -58,7 +58,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(publicUrl).permitAll() // Publicly accessible URLs
                         .requestMatchers("/admin/**", "/customers/**", "/jewellers/**", "/items/**").hasRole("ADMIN") // Admin access only
-                        .requestMatchers("/user/**").hasRole("USER") // User access only
+                        .requestMatchers("/user/**", "/verify-warranty", "/cart/**").hasRole("USER") // User access only
                         .anyRequest().authenticated() // All other URLs require authentication
                 )
                 .formLogin(form -> form

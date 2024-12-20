@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head}"></head>
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4 flex-grow-1">
+    <h2 class="text-center mb-4">Explore Our Products</h2>
+
+    <!-- Filters Section -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <form th:action="@{/products}" method="get" class="border p-3 rounded bg-light">
+                <h5>Filter by:</h5>
+
+                <!-- Category Filter -->
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select id="category" name="categoryId" class="form-select">
+                        <option value="" th:selected="${selectedCategoryId == null}">All Categories</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.categoryId}"
+                                th:text="${category.name}"
+                                th:selected="${category.categoryId == selectedCategoryId}">
+                        </option>
+
+                    </select>
+                </div>
+
+                <!-- Brand Filter -->
+                <div class="mb-3">
+                    <label for="brand" class="form-label">Brand</label>
+                    <select id="brand" name="brandId" class="form-select">
+                        <option value="" th:selected="${selectedBrandId == null}">All Brands</option>
+                        <option th:each="brand : ${brands}"
+                                th:value="${brand.brandId}"
+                                th:text="${brand.name}"
+                                th:selected="${brand.brandId == selectedBrandId}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Price Range Filter -->
+                <div class="mb-3">
+                    <label for="priceRange" class="form-label">Common Price Range</label>
+                    <select id="priceRange" name="priceRange" class="form-select">
+                        <option value="" th:selected="${selectedPriceRange == null}">All Price Ranges</option>
+                        <option value="0-500" th:selected="${'0-500' == selectedPriceRange}">৳ 0 - ৳ 500</option>
+                        <option value="501-3000" th:selected="${'501-3000' == selectedPriceRange}">৳ 501 - ৳ 3000</option>
+                        <option value="3001-8000" th:selected="${'3001-8000' == selectedPriceRange}">৳ 3001 - ৳ 8000</option>
+                        <option value="8000+" th:selected="${'8000+' == selectedPriceRange}">৳ 8001+</option>
+                    </select>
+                </div>
+
+                <!-- User-Defined Price Range -->
+                <div class="mb-3">
+                    <label for="minPrice" class="form-label">Minimum Price</label>
+                    <input type="number" id="minPrice" name="minPrice" class="form-control"
+                           th:value="${minPrice}" placeholder="Enter minimum price (Optional)">
+                </div>
+                <div class="mb-3">
+                    <label for="maxPrice" class="form-label">Maximum Price</label>
+                    <input type="number" id="maxPrice" name="maxPrice" class="form-control"
+                           th:value="${maxPrice}" placeholder="Enter maximum price (Optional)">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+            </form>
+        </div>
+
+        <!-- Products Section -->
+        <div class="col-md-9">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col" th:each="product : ${products}">
+                    <div class="card">
+                        <a th:href="@{/products/{id}(id=${product.productId})}">
+                            <img th:src="@{/images/{filename}(filename=${product.imagePath})}"
+                                 class="card-img-top"
+                                 th:alt="${product.name}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a th:href="@{/products/{id}(id=${product.productId})}" th:text="${product.name}"></a>
+                            </h5>
+                            <p class="card-text">৳ <span th:text="${product.price}"></span></p>
+                            <button class="btn btn-dark w-100">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Products Found -->
+            <div th:if="${products.isEmpty()}" class="alert alert-warning text-center mt-4">
+                No products match the selected filters.
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+
+<!-- Custom JavaScript to toggle price range inputs disable -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const priceRange = document.getElementById("priceRange");
+        const minPrice = document.getElementById("minPrice");
+        const maxPrice = document.getElementById("maxPrice");
+
+        // Disable predefined price range when custom range is used
+        function togglePriceRange() {
+            priceRange.disabled = minPrice.value || maxPrice.value;
+        }
+
+        // Disable custom range when predefined price range is used
+        function toggleCustomRange() {
+            const isPriceRangeSelected = priceRange.value !== "";
+            minPrice.disabled = isPriceRangeSelected;
+            maxPrice.disabled = isPriceRangeSelected;
+        }
+
+        // Add event listeners to the inputs
+        priceRange.addEventListener("change", toggleCustomRange);
+        minPrice.addEventListener("input", togglePriceRange);
+        maxPrice.addEventListener("input", togglePriceRange);
+
+        // Initialize the state on page load
+        togglePriceRange();
+        toggleCustomRange();
+    });
+</script>
+</body>
+</html>

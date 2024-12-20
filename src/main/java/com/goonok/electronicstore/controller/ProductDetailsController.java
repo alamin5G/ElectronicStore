@@ -6,14 +6,17 @@ import com.goonok.electronicstore.model.Product;
 import com.goonok.electronicstore.service.BrandService;
 import com.goonok.electronicstore.service.CategoryService;
 import com.goonok.electronicstore.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 public class ProductDetailsController {
 
@@ -23,6 +26,31 @@ public class ProductDetailsController {
     private CategoryService categoryService;
     @Autowired
     private BrandService brandService;
+
+
+    @GetMapping("/products")
+    public String listProductsForUsers(
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long brandId,
+            @RequestParam(required = false) String priceRange,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            Model model) {
+
+        List<Product> products = productService.getFilteredProducts(categoryId, brandId, priceRange, minPrice, maxPrice);
+        log.info("Products quantity: " + products.size());
+        model.addAttribute("products", products);
+        model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("brands", brandService.getAllBrands());
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("selectedCategoryId", categoryId);
+        model.addAttribute("selectedBrandId", brandId);
+        model.addAttribute("selectedPriceRange", priceRange);
+
+        return "product/user/display";
+    }
+
 
     @GetMapping("/products/{id}")
     public String showProductDetails(@PathVariable Long id, Model model) {
@@ -48,6 +76,8 @@ public class ProductDetailsController {
         model.addAttribute("filterValue", categoryService.getCategoryById(categoryId).map(Category::getName).orElse("Unknown Category"));
         return "product/user/list"; // Points to a generic product list template
     }
+
+
 
 
 }

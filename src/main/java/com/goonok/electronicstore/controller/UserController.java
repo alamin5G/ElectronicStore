@@ -174,20 +174,6 @@ public class UserController {
         }
     }
 
-    @GetMapping("/products")
-    public String listProductsForUsers(
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Long brandId,
-            @RequestParam(required = false) String priceRange,
-            Model model) {
 
-        List<Product> products = productService.getFilteredProducts(categoryId, brandId, priceRange);
-        model.addAttribute("products", products);
-
-        model.addAttribute("categories", categoryService.getAllCategories());
-        model.addAttribute("brands", brandService.getAllBrands());
-
-        return "product/user/list"; // New user template
-    }
 
 }

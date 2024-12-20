@@ -4,8 +4,7 @@
 <body class="d-flex flex-column min-vh-100">
 <header th:replace="~{layout/navbar :: header}"></header>
 <main class="container mt-4 flex-grow-1">
-    <h2 th:text="|Products by ${filterType}: ${filterValue}|"></h2>
-
+    <h2 th:text="'Search Results for: ' + ${query}"></h2>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         <div class="col" th:each="product : ${products}">
             <div class="card">
@@ -16,11 +15,14 @@
                     <h5 class="card-title">
                         <a th:href="@{/products/{id}(id=${product.productId})}" th:text="${product.name}"></a>
                     </h5>
-                    <p class="card-text">৳ <span th:text="${product.price}"></span></p>
+                    <p class="card-text">$<span th:text="${product.price}"></span></p>
                     <button class="btn btn-dark w-100">Add to Cart</button>
                 </div>
             </div>
         </div>
+    </div>
+    <div th:if="${products.isEmpty()}" class="alert alert-warning text-center mt-4">
+        No products found for your search.
     </div>
 </main>
 <footer th:replace="~{layout/footer :: footer}"></footer>

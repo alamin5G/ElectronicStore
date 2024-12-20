@@ -4,6 +4,7 @@ package com.goonok.electronicstore.repository;
 import com.goonok.electronicstore.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -13,21 +14,30 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByIsFeaturedTrue();
     List<Product> findByIsNewArrivalTrue();
 
+    // Filters for missing category or brand
+
+    List<Product> findByBrand_BrandIdAndPriceBetween(Long brandId, BigDecimal minPrice, BigDecimal maxPrice);
+
+    // General price range queries
+    List<Product> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
+    List<Product> findByPriceGreaterThan(BigDecimal minPrice);
+
+    List<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String name, String description);
+
+    List<Product> findByCategory_CategoryIdAndBrand_BrandId(Long categoryId, Long brandId);
+
+    List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetween(Long categoryCategoryId, Long brandBrandId, BigDecimal priceAfter, BigDecimal priceBefore);
+
+    List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceGreaterThan(Long categoryCategoryId, Long brandBrandId, BigDecimal priceIsGreaterThan);
+
     List<Product> findCategoryByCategory_CategoryId(Long categoryCategoryId);
     List<Product> findBrandByBrand_BrandId(Long brandBrandId);
+    List<Product> findByBrand_BrandIdAndPriceGreaterThan(Long brandBrandId, BigDecimal priceIsGreaterThan);
 
-    List<Product> findByPriceBetween(Double minPrice, Double maxPrice);
-    List<Product> findByPriceLessThanEqual(Double price);
-    List<Product> findByPriceGreaterThanEqual(Double price);
-    List<Product> findByPriceLessThanEqualAndPriceGreaterThanEqual(Double maxPrice, Double minPrice);
-    List<Product> findByCategory_CategoryIdAndBrand_BrandId(Long categoryId, Long brandId);
-    List<Product> findByCategory_CategoryIdAndPriceBetween(Long categoryId, Double minPrice, Double maxPrice);
-    List<Product> findByBrand_BrandIdAndPriceBetween(Long brandId, Double minPrice, Double maxPrice);
-    List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetween(Long categoryId, Long brandId, Double minPrice, Double maxPrice);
-    List<Product> findByCategory_CategoryIdAndPriceLessThanEqual(Long categoryId, Double price);
-    List<Product> findByCategory_CategoryIdAndPriceGreaterThanEqual(Long categoryId, Double price);
-    List<Product> findByBrand_BrandIdAndPriceLessThanEqual(Long brandId, Double price);
-    List<Product> findByBrand_BrandIdAndPriceGreaterThanEqual(Long brandId, Double price);
-    List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceLessThanEqual(Long categoryId, Long brandId, Double price);
-    List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceGreaterThanEqual(Long categoryId, Long brandId, Double price);
+    List<Product> findByCategory_CategoryIdAndPriceBetween(Long categoryCategoryId, BigDecimal priceAfter, BigDecimal priceBefore);
+
+    List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceLessThan(Long categoryId, Long brandId, BigDecimal maxPrice);
+    List<Product> findByCategory_CategoryIdAndPriceGreaterThan(Long categoryId, BigDecimal minPrice);
+    List<Product> findByCategory_CategoryIdAndPriceLessThan(Long categoryId, BigDecimal maxPrice);
+
 }

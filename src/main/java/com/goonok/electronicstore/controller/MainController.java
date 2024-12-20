@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -43,6 +44,16 @@ public class MainController {
         return "index"; // Ensure this matches your index template location
     }
 
+
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam("q") String query, Model model) {
+        List<Product> products = productService.searchProducts(query);
+        model.addAttribute("products", products);
+        model.addAttribute("query", query);
+        return "product/user/search-results"; // Points to the search results template
+    }
+
+
     @GetMapping("/about")
     public String about(Model model) {
         model.addAttribute("pageTitle", "About Us");
@@ -55,22 +66,6 @@ public class MainController {
         return "visitor/contact"; // Ensure this matches your contact template location
     }
 
-    @GetMapping("/category")
-    public String category(Model model) {
-        model.addAttribute("pageTitle", "Categories");
-        return "category"; // Ensure this matches your category template location
-    }
 
-    @GetMapping("/product")
-    public String products(Model model) {
-        model.addAttribute("pageTitle", "Products");
-        return "products"; // Ensure this matches your products template location
-    }
-
-    @GetMapping("/brand")
-    public String brands(Model model) {
-        model.addAttribute("pageTitle", "Brands");
-        return "brands"; // Ensure this matches your brands template location
-    }
 }
 

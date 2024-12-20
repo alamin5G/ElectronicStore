@@ -1,9 +1,13 @@
 package com.goonok.electronicstore.controller;
 
+import com.goonok.electronicstore.model.Product;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
 import com.goonok.electronicstore.service.GreetingService;
+import com.goonok.electronicstore.service.ProductService;
 import com.goonok.electronicstore.service.SecurityService;
+import com.goonok.electronicstore.service.ShoppingCartService;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +33,11 @@ public class LoginController {
     @Autowired
     private GreetingService greetingService;
 
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private ShoppingCartService shoppingCartService;
+
     @GetMapping("/login")
     public String showLoginForm(@RequestParam(value = "error", required = false) String error, Model model) {
 
@@ -40,7 +49,7 @@ public class LoginController {
         return "login"; // No need to add an empty User object
     }
 
-    @GetMapping("/login/success")
+    /*@GetMapping("/login/success")
     public String loginRedirect(RedirectAttributes redirectAttributes, Model model) {
         String loginUserName = securityService.findLoggedInUsername();
         System.out.println("Current Login User : " + loginUserName  );
@@ -67,5 +76,48 @@ public class LoginController {
         log.info("redirect to login");
         model.addAttribute("error", "There was error. Please try again or contact us!");
         return "login"; // Fallback
+    }*/
+
+    @GetMapping("/login/success")
+    public String loginRedirect(HttpSession session, RedirectAttributes redirectAttributes) {
+        String loginUserName = securityService.findLoggedInUsername();
+        Optional<User> userOptional = userRepository.findByEmailIgnoreCase(loginUserName);
+
+        if (userOptional.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Login failed. Please try again.");
+            return "redirect:/login";
+        }
+
+        User loggedInUser = userOptional.get();
+
+        // Check if there's a pending cart item
+        Long pendingProductId = (Long) session.getAttribute("pendingCartProductId");
+        Integer pendingQuantity = (Integer) session.getAttribute("pendingCartQuantity");
+
+        if (pendingProductId != null && pendingQuantity != null) {
+            // Process the pending cart item
+            Product product = productService.getProductById(pendingProductId)
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
+
+            shoppingCartService.addOrUpdateCartItem(loggedInUser, product, pendingQuantity);
+
+            // Clear the session attributes
+            session.removeAttribute("pendingCartProductId");
+            session.removeAttribute("pendingCartQuantity");
+
+            redirectAttributes.addFlashAttribute("successMessage", "Product added to cart successfully!");
+        }
+
+        // Redirect based on user role
+        String role = securityService.findLoggedInUserRoles().toString();
+        if ("[ROLE_ADMIN]".equals(role)) {
+            return "redirect:/admin/dashboard";
+        } else if ("[ROLE_USER]".equals(role)) {
+            return "redirect:/cart";
+        }
+
+        redirectAttributes.addFlashAttribute("error", "Unexpected role. Please contact support.");
+        return "redirect:/";
     }
+
 }
