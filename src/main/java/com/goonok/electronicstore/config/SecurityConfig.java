@@ -47,7 +47,7 @@ public class SecurityConfig {
         return new CustomLogoutSuccessHandler();
     }
 
-    String[] publicUrl = { "/", "/login", "/register", "/verify/**", "/specialAccessForAdmin", "/images/**", "/product/**", "/css/**", "/read-news",
+    String[] publicUrl = { "/", "/login", "/register", "/verify/**", "/specialAccessForAdmin", "/images/**", "/product/**", "/css/**",
             "/uploads/**",
             "/about", "/services", "/contact", "/latest-news" , "/layout/**", "/products/**", "/category/**", "/brand/**", "/search/**", "/cart/**",
             "/checkout/**", "/order/**", "/payment" };

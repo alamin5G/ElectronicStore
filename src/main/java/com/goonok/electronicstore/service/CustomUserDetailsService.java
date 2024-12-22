@@ -31,6 +31,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
         // Check if the user is enabled and verified
+
         if (!user.isVerified()) {
             throw new UsernameNotFoundException("User not verified or enabled");
         }

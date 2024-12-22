@@ -32,10 +32,12 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             // Redirect to a custom logout page
             response.sendRedirect("/?logout");
             log.info("After logout " + username + " has redirected to the index page from the CustomLogoutSuccessHandler");
+            //Clearing session attributes
+            request.getSession().invalidate();
         }else{
 
             // Redirect to the homepage or login page after logout
-           // response.sendRedirect("/?logout");
+            response.sendRedirect("/?logout");
             //Clearing session attributes
             request.getSession().invalidate();
             log.info("User logged out successfully. from the customLogoutSuccessHandler");

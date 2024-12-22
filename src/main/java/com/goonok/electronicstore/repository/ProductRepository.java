@@ -15,7 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByIsNewArrivalTrue();
 
     // Filters for missing category or brand
-
     List<Product> findByBrand_BrandIdAndPriceBetween(Long brandId, BigDecimal minPrice, BigDecimal maxPrice);
 
     // General price range queries
