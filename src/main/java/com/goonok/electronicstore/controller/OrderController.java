@@ -4,6 +4,7 @@ import com.goonok.electronicstore.model.ShoppingCart;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.service.OrderService;
 import com.goonok.electronicstore.service.ShoppingCartService;
+import com.goonok.electronicstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +21,8 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
-
+    @Autowired
+    private UserService userService;
     @Autowired
     private ShoppingCartService shoppingCartService;
 
@@ -32,24 +34,13 @@ public class OrderController {
     }
 
     private User getUserFromPrincipal(Principal principal) {
-        // Simulated user retrieval based on Principal
-        // Replace this with your actual user retrieval logic (e.g., from a UserService)
-        return new User(); // Mock user
+        if (principal == null) {
+            return null;
+        }else {
+            return userService.getUserByEmail(principal.getName()).orElse(null);
+        }
     }
 
-    /*
-    @GetMapping("/checkout")
-    public String showCheckoutPage(Model model, Principal principal) {
-        User currentUser = getUserFromPrincipal(principal);
-        List<ShoppingCart> cartItems = shoppingCartService.getCartItemsByUser(currentUser);
 
-        BigDecimal totalPrice = cartItems.stream()
-                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        model.addAttribute("cartItems", cartItems);
-        model.addAttribute("totalPrice", totalPrice);
-        return "order/checkout";
-    } */
 
 }

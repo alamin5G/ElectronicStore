@@ -6,21 +6,27 @@
 <header th:replace="~{layout/navbar :: header}"></header>
 <main class="container mt-4 flex-grow-1">
     <h2>Your Orders</h2>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
     <table class="table table-striped">
         <thead>
         <tr>
             <th>Order ID</th>
             <th>Total Price</th>
+            <th>Payment Type</th>
             <th>Status</th>
             <th>Order Date</th>
+            <th>Address</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="order : ${orders}">
             <td th:text="${order.orderId}"></td>
             <td th:text="${order.totalPrice}"></td>
+            <td th:text="${order.paymentType}"></td>
             <td th:text="${order.status}"></td>
             <td th:text="${order.orderDate}"></td>
+            <td th:text="${order.shippingAddress}"></td>
         </tr>
         </tbody>
     </table>
