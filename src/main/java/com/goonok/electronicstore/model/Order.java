@@ -24,6 +24,8 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status; // e.g., PENDING, SHIPPED, DELIVERED
+    @Column(nullable = false)
+    private String paymentType = "Cash on Delivery"; // Default to COD
 
     private String paymentStatus;
     private String trackingNumber;

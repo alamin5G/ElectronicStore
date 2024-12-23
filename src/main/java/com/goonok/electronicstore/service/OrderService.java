@@ -4,12 +4,15 @@ import com.goonok.electronicstore.enums.OrderStatus;
 import com.goonok.electronicstore.model.*;
 import com.goonok.electronicstore.repository.OrderRepository;
 import com.goonok.electronicstore.repository.OrderItemRepository;
+import com.goonok.electronicstore.repository.ProductRepository;
 import com.goonok.electronicstore.service.ShoppingCartService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,39 +26,51 @@ public class OrderService {
 
     @Autowired
     private ShoppingCartService shoppingCartService;
+    @Autowired
+    private ProductRepository productRepository;
 
-    public Order placeOrder(User user, String shippingAddress) {
-        // Get cart items for the user
-        List<ShoppingCart> cartItems = shoppingCartService.getCartItemsByUser(user);
-
-        // Calculate total price
+    @Transactional
+    public void placeOrder(User user, List<ShoppingCart> cartItems, String shippingAddress) {
         BigDecimal totalPrice = cartItems.stream()
                 .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Create the order
+        // Create a new order
         Order order = new Order();
         order.setUser(user);
-        order.setTotalPrice(totalPrice);
         order.setShippingAddress(shippingAddress);
+        order.setTotalPrice(totalPrice);
         order.setStatus(OrderStatus.PENDING);
+        order.setPaymentStatus("UNPAID");
+        order.setPaymentType("Cash on Delivery");
         order.setOrderDate(LocalDateTime.now());
-        Order savedOrder = orderRepository.save(order);
 
-        // Add order items
+        List<OrderItem> orderItems = new ArrayList<>();
         for (ShoppingCart cartItem : cartItems) {
+            Product product = cartItem.getProduct();
+
+            // Validate stock quantity
+            if (product.getStockQuantity() < cartItem.getQuantity()) {
+                throw new RuntimeException("Not enough stock available for product: " + product.getName());
+            }
+
+            // Create an order item
             OrderItem orderItem = new OrderItem();
-            orderItem.setOrder(savedOrder);
-            orderItem.setProduct(cartItem.getProduct());
+            orderItem.setProduct(product);
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPriceAtTime(cartItem.getProduct().getPrice());
-            orderItemRepository.save(orderItem);
+            orderItem.setPriceAtTime(product.getPrice());
+            orderItem.setOrder(order);
+
+            orderItems.add(orderItem);
+
+            // Deduct stock quantity
+            product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
+            productRepository.save(product);
         }
 
-        // Clear the user's cart
-        shoppingCartService.clearCartForUser(user);
-
-        return savedOrder;
+        // Save the order and its items
+        order.setOrderItems(orderItems);
+        orderRepository.save(order);
     }
 
     public List<Order> getOrdersByUser(User user) {

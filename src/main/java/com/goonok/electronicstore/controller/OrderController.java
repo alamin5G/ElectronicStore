@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.security.Principal;
@@ -36,6 +37,7 @@ public class OrderController {
         return new User(); // Mock user
     }
 
+    /*
     @GetMapping("/checkout")
     public String showCheckoutPage(Model model, Principal principal) {
         User currentUser = getUserFromPrincipal(principal);
@@ -48,13 +50,6 @@ public class OrderController {
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("totalPrice", totalPrice);
         return "order/checkout";
-    }
-
-    @PostMapping("/checkout")
-    public String placeOrder(@RequestParam String shippingAddress, Principal principal) {
-        User currentUser = getUserFromPrincipal(principal);
-        orderService.placeOrder(currentUser, shippingAddress);
-        return "redirect:/orders";
-    }
+    } */
 
 }
