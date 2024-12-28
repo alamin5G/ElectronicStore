@@ -29,14 +29,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceGreaterThan(Long categoryCategoryId, Long brandBrandId, BigDecimal priceIsGreaterThan);
 
-    List<Product> findCategoryByCategory_CategoryId(Long categoryCategoryId);
-    List<Product> findBrandByBrand_BrandId(Long brandBrandId);
     List<Product> findByBrand_BrandIdAndPriceGreaterThan(Long brandBrandId, BigDecimal priceIsGreaterThan);
 
     List<Product> findByCategory_CategoryIdAndPriceBetween(Long categoryCategoryId, BigDecimal priceAfter, BigDecimal priceBefore);
 
-    List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceLessThan(Long categoryId, Long brandId, BigDecimal maxPrice);
+
     List<Product> findByCategory_CategoryIdAndPriceGreaterThan(Long categoryId, BigDecimal minPrice);
     List<Product> findByCategory_CategoryIdAndPriceLessThan(Long categoryId, BigDecimal maxPrice);
+    List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceLessThan(Long categoryId, Long brandId, BigDecimal maxPrice);
+    List<Product> findCategoryByCategory_CategoryId(Long categoryCategoryId);
+    List<Product> findBrandByBrand_BrandId(Long brandBrandId);
 
 }
