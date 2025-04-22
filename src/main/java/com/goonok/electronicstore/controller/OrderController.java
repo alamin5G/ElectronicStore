@@ -1,6 +1,6 @@
 package com.goonok.electronicstore.controller;
 
-import com.goonok.electronicstore.model.ShoppingCart;
+
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.service.OrderService;
 import com.goonok.electronicstore.service.ShoppingCartService;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.security.Principal;

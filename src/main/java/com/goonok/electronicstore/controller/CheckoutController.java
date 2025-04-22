@@ -1,7 +1,7 @@
 package com.goonok.electronicstore.controller;
 
 
-import com.goonok.electronicstore.model.ShoppingCart;
+import com.goonok.electronicstore.model.ShoppingCartItem;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.service.OrderService;
 import com.goonok.electronicstore.service.ShoppingCartService;
@@ -37,7 +37,7 @@ public class CheckoutController {
         }
 
         User currentUser = getUserFromPrincipal(principal);
-        List<ShoppingCart> cartItems = shoppingCartService.getCartItemsByUser(currentUser);
+        List<ShoppingCartItem> cartItems = shoppingCartService.getCartItemsByUser(currentUser);
 
         if (cartItems.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Your cart is empty.");
@@ -70,7 +70,7 @@ public class CheckoutController {
         User currentUser = getUserFromPrincipal(principal);
 
         // Get cart items
-        List<ShoppingCart> cartItems = shoppingCartService.getCartItemsByUser(currentUser);
+        List<ShoppingCartItem> cartItems = shoppingCartService.getCartItemsByUser(currentUser);
 
         if (cartItems == null || cartItems.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Your cart is empty.");

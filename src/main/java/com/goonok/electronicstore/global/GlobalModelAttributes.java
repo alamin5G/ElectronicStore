@@ -2,8 +2,6 @@ package com.goonok.electronicstore.global;
 
 import com.goonok.electronicstore.model.Brand;
 import com.goonok.electronicstore.model.Category;
-import com.goonok.electronicstore.model.ShoppingCart;
-import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.service.BrandService;
 import com.goonok.electronicstore.service.CategoryService;
 import com.goonok.electronicstore.service.ShoppingCartService;

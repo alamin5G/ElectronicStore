@@ -32,7 +32,7 @@ public class OrderService {
     private ProductRepository productRepository;
 
     @Transactional
-    public void placeOrder(User user, List<ShoppingCart> cartItems, String shippingAddress) {
+    public void placeOrder(User user, List<ShoppingCartItem> cartItems, String shippingAddress) {
 
         if (cartItems == null || cartItems.isEmpty()) {
             throw new RuntimeException("Cart is empty. Cannot place order.");
@@ -49,15 +49,15 @@ public class OrderService {
         // Create a new order
         Order order = new Order();
         order.setUser(user);
-        order.setShippingAddress(shippingAddress);
-        order.setTotalPrice(totalPrice);
+        //  order.setShippingAddress(shippingAddress);
+        // order.setTotalPrice(totalPrice);
         order.setStatus(OrderStatus.PENDING);
         order.setPaymentStatus("UNPAID");
-        order.setPaymentType("COD"); // Default to Cash on Delivery
+        // order.setPaymentType("COD"); // Default to Cash on Delivery
         order.setOrderDate(LocalDateTime.now());
 
         List<OrderItem> orderItems = new ArrayList<>();
-        for (ShoppingCart cartItem : cartItems) {
+        for (ShoppingCartItem cartItem : cartItems) {
             Product product = cartItem.getProduct();
 
             // Validate stock quantity
@@ -70,7 +70,7 @@ public class OrderService {
             OrderItem orderItem = new OrderItem();
             orderItem.setProduct(product);
             orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPriceAtTime(product.getPrice());
+            orderItem.setPricePerItem(product.getPrice());
             orderItem.setOrder(order);
 
             orderItems.add(orderItem);

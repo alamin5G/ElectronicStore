@@ -1,7 +1,7 @@
 package com.goonok.electronicstore.service;
 
 import com.goonok.electronicstore.model.Product;
-import com.goonok.electronicstore.model.ShoppingCart;
+import com.goonok.electronicstore.model.ShoppingCartItem;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.ShoppingCartRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class ShoppingCartService {
     @Autowired
     private ShoppingCartRepository shoppingCartRepository;
 
-    public List<ShoppingCart> getCartItemsByUser(User user) {
+    public List<ShoppingCartItem> getCartItemsByUser(User user) {
         return shoppingCartRepository.findByUser(user);
     }
 
@@ -26,11 +26,11 @@ public class ShoppingCartService {
 
     public void addOrUpdateCartItem(User user, Product product, int quantity) {
         // Check if the specific product already exists in the user's cart
-        Optional<ShoppingCart> cartItemOptional = shoppingCartRepository.findByUser_UserIdAndProduct_ProductId(user.getUserId(), product.getProductId());
+        Optional<ShoppingCartItem> cartItemOptional = shoppingCartRepository.findByUser_UserIdAndProduct_ProductId(user.getUserId(), product.getProductId());
         log.info("cartItemOptional this should be empty: " + cartItemOptional.isEmpty());
         if (cartItemOptional.isPresent()) {
             // Update the quantity if the item exists
-            ShoppingCart existingItem = cartItemOptional.get();
+            ShoppingCartItem existingItem = cartItemOptional.get();
             int newQuantity = existingItem.getQuantity() + quantity;
 
             // Ensure the new quantity does not exceed available stock
@@ -42,7 +42,7 @@ public class ShoppingCartService {
             shoppingCartRepository.save(existingItem);
         } else {
 
-                ShoppingCart newCartItem = new ShoppingCart();
+                ShoppingCartItem newCartItem = new ShoppingCartItem();
                 newCartItem.setUser(user);
                 newCartItem.setProduct(product);
 

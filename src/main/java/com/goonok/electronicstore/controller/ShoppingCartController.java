@@ -1,12 +1,11 @@
 package com.goonok.electronicstore.controller;
 
 import com.goonok.electronicstore.model.Product;
-import com.goonok.electronicstore.model.ShoppingCart;
+import com.goonok.electronicstore.model.ShoppingCartItem;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
 import com.goonok.electronicstore.service.ProductService;
 import com.goonok.electronicstore.service.ShoppingCartService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,7 +31,7 @@ public class ShoppingCartController {
 
     @GetMapping
     public String showCart(Model model, Principal principal) {
-        List<ShoppingCart> cartItems = List.of(); // Default to an empty list
+        List<ShoppingCartItem> cartItems = List.of(); // Default to an empty list
 
         if (principal != null) {
             User currentUser = getUserFromPrincipal(principal);
