@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head}">
+    <title th:text="${pageTitle ?: 'Manage Category'}">Manage Category</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9"> <div class="card shadow-sm">
+            <div class="card-header bg-info text-dark"> <h4 class="mb-0" th:text="${pageTitle}">Manage Category</h4>
+            </div>
+            <div class="card-body">
+
+
+                <div class="alert alert-danger text-center" th:if="${errorMessage}">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+
+                <form th:object="${categoryDto}"
+                      th:action="${categoryDto.categoryId == null} ? @{/admin/categories/add} : @{/admin/categories/edit/{id}(id=${categoryDto.categoryId})}"
+                      method="post"
+                      class="needs-validation" novalidate>
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                        <p class="mb-2 fw-bold">Please correct the following errors:</p>
+                        <ul>
+                            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+                        </ul>
+                    </div>
+
+
+                    <input type="hidden" th:if="${categoryDto.categoryId != null}" th:field="*{categoryId}" />
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Category Name <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{name}" class="form-control" id="name" placeholder="Enter category name" required>
+                        <div class="invalid-feedback">Category name is required.</div>
+                        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea th:field="*{description}" class="form-control" id="description" rows="3" placeholder="Enter optional category description"></textarea>
+                        <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-danger small"></div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a th:href="@{/admin/categories}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary" th:text="${categoryDto.categoryId == null} ? 'Add Category' : 'Update Category'">Save</button>
+                    </div>
+
+                </form>
+            </div> </div> </div> </div> </main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+</body>
+</html>
