@@ -1,13 +1,52 @@
-<div class="container" th:fragment="footer">
-    <footer class="bg-dark text-white py-4 mt-5" >
-        <div class="container text-center">
-            <p>&copy; 2024 Electronics Store. All rights reserved.</p>
-            <div class="social-links">
-                <a href="#" class="text-white me-2"><i class="bi bi-facebook"></i></a>
-                <a href="#" class="text-white me-2"><i class="bi bi-twitter"></i></a>
-                <a href="#" class="text-white me-2"><i class="bi bi-instagram"></i></a>
-                <a href="#" class="text-white me-2"><i class="bi bi-linkedin"></i></a>
+<footer class="bg-dark text-white pt-5 pb-4 mt-auto" th:fragment="footer">
+    <div class="container text-center text-md-start">
+    <div class="row text-center text-md-start">
+
+        <div class="col-md-3 col-lg-3 col-xl-3 mx-auto mt-3">
+            <h6 class="text-uppercase mb-4 fw-bold text-warning">Electronics Store</h6>
+            <p>
+                Your trusted source for the latest electronic gadgets and accessories in Bangladesh. Quality products and reliable service.
+            </p>
+        </div>
+
+        <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mt-3">
+            <h6 class="text-uppercase mb-4 fw-bold text-warning">Products</h6>
+            <p><a th:href="@{/products}" class="text-white text-decoration-none">All Products</a></p>
+            <p><a th:href="@{/products?sort=price,asc}" class="text-white text-decoration-none">Deals</a></p>
+            <p><a th:href="@{/products?newArrival=true}" class="text-white text-decoration-none">New Arrivals</a></p> </div>
+
+        <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mt-3">
+            <h6 class="text-uppercase mb-4 fw-bold text-warning">Useful Links</h6>
+            <p><a th:href="@{/user/profile}" class="text-white text-decoration-none">Your Account</a></p>
+            <p><a th:href="@{/orders}" class="text-white text-decoration-none">Track Order</a></p>
+            <p><a th:href="@{/about}" class="text-white text-decoration-none">About Us</a></p>
+            <p><a th:href="@{/contact}" class="text-white text-decoration-none">Help & Contact</a></p>
+        </div>
+
+        <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mt-3">
+            <h6 class="text-uppercase mb-4 fw-bold text-warning">Contact</h6>
+            <p><i class="fas fa-home me-3"></i> Tongi, Dhaka, Bangladesh</p>
+            <p><i class="fas fa-envelope me-3"></i> info@electronicstore.com</p>
+            <p><i class="fas fa-phone me-3"></i> +880 1234 567890</p>
+            <p><i class="fas fa-print me-3"></i> +880 1234 567891</p> </div>
+    </div>
+
+    <hr class="my-3">
+
+    <div class="row align-items-center">
+        <div class="col-md-7 col-lg-8">
+            <p class="text-center text-md-start mb-md-0">
+                &copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> Electronics Store. All rights reserved.
+            </p>
+        </div>
+        <div class="col-md-5 col-lg-4">
+            <div class="text-center text-md-end">
+                <a href="#" class="text-white me-3" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-white me-3" title="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-white me-3" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-white" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
             </div>
         </div>
-    </footer>
+    </div>
 </div>
+</footer>

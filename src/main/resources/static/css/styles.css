@@ -1,36 +1,146 @@
-/* Additional styles */
+/* General Body Styling */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Example modern font stack */
+    color: #333;
 }
 
-/* Header Section */
-header .container {
-    max-width: 1200px;
+/* Navbar Adjustments (Optional) */
+.navbar {
+    /* Add any custom navbar overrides here if needed */
 }
 
-/* Featured Products */
-.featured-products {
-    background-color: #f8f9fa;
+/* Section Title Styling */
+.section-title {
+    margin-bottom: 2.5rem;
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase; /* Example styling */
+    letter-spacing: 1px;   /* Example styling */
+}
+.section-title::after { /* Simple underline effect */
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background-color: var(--bs-primary); /* Use Bootstrap primary color */
+    margin: 0.5rem auto 0;
 }
 
-.card img {
-    height: 200px;
-    object-fit: cover;
+/* Product Card Styling */
+.product-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #eee; /* Subtle border */
+    border-radius: 0.375rem; /* Bootstrap's default card radius */
+    overflow: hidden;
+    background-color: #fff;
+}
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+.product-card .card-img-container {
+    background-color: #fff; /* White background for image area */
+    padding: 0.5rem; /* Reduced padding */
+    height: 200px; /* Slightly smaller fixed height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #eee; /* Separator line */
+}
+.product-card .product-card-img { /* Target image specifically */
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.product-card .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem; /* Consistent padding */
+}
+.product-card .product-card-title {
+    font-size: 0.95rem; /* Slightly smaller title */
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    /* Allow title to take available space, prevent button pushing it */
+    min-height: 3em; /* Adjust based on typical title length */
+}
+.product-card .product-card-title a {
+    color: #212529;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+.product-card .product-card-title a:hover {
+    color: var(--bs-primary);
+}
+/* Make link cover the card title area */
+.product-card .product-card-title a.stretched-link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    content: "";
 }
 
-/* Footer Section */
-footer {
-    background-color: #343a40;
+.product-card .product-card-price {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--bs-primary);
+    margin-bottom: 1rem;
+}
+.product-card .btn-cart {
+    margin-top: auto; /* Pushes button to bottom */
+    font-size: 0.85rem; /* Smaller button text */
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    header .container {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    header nav {
-        margin-top: 10px;
-    }
+/* Category Links Section Styling */
+.category-links-section {
+    background-color: #f8f9fa; /* Light background */
 }
+.category-links-section .category-link-btn {
+    margin: 0.25rem; /* Spacing between buttons */
+    border-radius: 50rem; /* Pill shape */
+}
+
+/* Trust Badge Section Styling */
+.trust-badge-section i {
+    font-size: 2rem;
+    /* color: var(--bs-primary); */ /* Color set inline now */
+    margin-bottom: 0.5rem;
+}
+.trust-badge-section h6 {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+.trust-badge-section p {
+    line-height: 1.4;
+}
+
+/* Footer Styling */
+footer.bg-dark {
+    /* Add custom footer styles if needed */
+}
+
+/* Ensure vertical alignment in tables (useful for admin lists) */
+.table th, .table td {
+    vertical-align: middle;
+}
+
+/* Style for icon only buttons (used in admin lists) */
+.btn-icon-only {
+    padding: 0.25rem 0.5rem;
+    line-height: 1;
+}
+
+/* Style for smaller image thumbnails in tables */
+.img-thumbnail-small {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: contain;
+}
+

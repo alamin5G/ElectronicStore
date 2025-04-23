@@ -1,97 +1,121 @@
-
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{layout/header :: head}">
-    <link rel="stylesheet" href="/css/styles.css">
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
 </head>
-<body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
 <header th:replace="~{layout/navbar :: header}"></header>
-<main class="container mt-4 flex-grow-1">
-    <!--all content will be placed here-->
 
-    <div th:replace="~{layout/slider :: slider}">
+<div th:replace="~{layout/slider :: slider}"></div>
 
+<main class="container mt-4 flex-grow-1 mb-5">
+
+    <div class="alert alert-warning text-center" th:if="${homepageError}">
+        <p th:text="${homepageError}"></p>
     </div>
 
-    <section class="featured-products py-5 bg-light">
-        <div class="container">
-            <h2 class="text-center mb-4">Featured Products</h2>
-            <div class="row row-cols-1 row-cols-md-4 g-4">
-                <!-- Loop Through Products -->
-                <div class="col" th:each="product : ${products}">
-                    <div class="card">
-                        <a th:href="@{/products/{id}(id=${product.productId})}">
-                                              <img th:src="@{/images/{filename}(filename=${product.imagePath})}" class="card-img-top" th:alt="${product.name}">
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <a th:href="@{/products/{id}(id=${product.productId})}" th:text="${product.name}"></a>
-                            </h5>
-                            <p class="card-text">৳<span th:text="${product.price}"></span></p>
-                            <!-- Add to Cart Form -->
-                            <form th:action="@{/cart/add/{id}(id=${product.productId})}" method="post">
-                                <div class="input-group mb-2">
-                                    <input type="number" name="quantity" class="form-control" placeholder="Qty" value="1" min="1">
-                                    <button class="btn btn-dark" type="submit">Add to Cart</button>
-                                </div>
-                            </form>
-                        </div>
+    <section class="featured-products pt-4 pb-5" th:if="${featuredProducts != null and !featuredProducts.isEmpty()}">
+        <h2 class="text-center section-title">Featured Products</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="col" th:each="product : ${featuredProducts}">
+                <div class="card h-100 shadow-sm"> <a th:href="@{/products/{id}(id=${product.productId})}">
+                    <img th:src="@{/product-images/{imageName}(imageName=${product.imagePath ?: 'default-placeholder.png'})}"
+                         class="card-img-top"
+                         th:alt="${product.name}"
+                         onerror="this.onerror=null; this.src='/images/default-placeholder.png';">
+                </a>
+                    <div class="card-body"> <h5 class="card-title fs-6"> <a th:href="@{/products/{id}(id=${product.productId})}" class="text-decoration-none text-dark stretched-link" th:text="${product.name}">Product Name</a>
+                    </h5>
+                        <p class="card-text fw-bold text-primary mb-3" th:text="'৳' + ${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">
+                            Price
+                        </p>
+                        <form th:action="@{/cart/add/{id}(id=${product.productId})}" method="post" class="mt-auto d-grid">
+                            <input type="hidden" name="quantity" value="1">
+                            <button class="btn btn-outline-primary btn-sm" type="submit">
+                                <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="text-center mt-4">
+            <a th:href="@{/products(featured=true)}" class="btn btn-outline-secondary btn-sm">View All Featured</a> </div>
     </section>
 
-    <div class="filter-section">
-        <h4>Filter by Brand</h4>
-        <ul>
-            <li th:each="brand : ${brands}">
-                <a th:href="@{/products/brand/{id}(id=${brand.brandId})}" th:text="${brand.name}"></a>
-            </li>
-        </ul>
-    </div>
 
 
-    <section class="new-products py-5 bg-green">
-        <div class="container">
-            <h2 class="text-center mb-4">New Products</h2>
-            <div class="row row-cols-1 row-cols-md-4 g-4">
-                <!-- Loop Through Products -->
-                <div class="col" th:each="product : ${newProducts}">
-                    <div class="card">
-                        <a th:href="@{/products/{id}(id=${product.productId})}">
-                            <img th:src="@{/images/{filename}(filename=${product.imagePath})}" class="card-img-top" th:alt="${product.name}">
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <a th:href="@{/products/{id}(id=${product.productId})}" th:text="${product.name}"></a>
-                            </h5>
-                            <p class="card-text">৳<span th:text="${product.price}"></span></p>
-                            <!-- Add to Cart Form -->
-                            <form th:action="@{/cart/add/{id}(id=${product.productId})}" method="post">
-                                <div class="input-group mb-2">
-                                    <input type="number" name="quantity" class="form-control" placeholder="Qty" value="1" min="1">
-                                    <button class="btn btn-dark" type="submit">Add to Cart</button>
-                                </div>
-                            </form>
-                        </div>
+    <section class="new-products pt-5 pb-5" th:if="${newProducts != null and !newProducts.isEmpty()}">
+        <h2 class="text-center section-title">New Arrivals</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="col" th:each="product : ${newProducts}">
+                <div class="card h-100 shadow-sm"> <a th:href="@{/products/{id}(id=${product.productId})}">
+                    <img th:src="@{/product-images/{imageName}(imageName=${product.imagePath ?: 'default-placeholder.png'})}"
+                         class="card-img-top"
+                         th:alt="${product.name}"
+                         onerror="this.onerror=null; this.src='/images/default-placeholder.png';">
+                </a>
+                    <div class="card-body">
+                        <h5 class="card-title fs-6">
+                            <a th:href="@{/products/{id}(id=${product.productId})}" class="text-decoration-none text-dark stretched-link" th:text="${product.name}">Product Name</a>
+                        </h5>
+                        <p class="card-text fw-bold text-primary mb-3" th:text="'৳' + ${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">
+                            Price
+                        </p>
+                        <form th:action="@{/cart/add/{id}(id=${product.productId})}" method="post" class="mt-auto d-grid">
+                            <input type="hidden" name="quantity" value="1">
+                            <button class="btn btn-outline-primary btn-sm" type="submit">
+                                <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="text-center mt-4">
+            <a th:href="@{/products(newArrival=true)}" class="btn btn-outline-secondary btn-sm">View All New Arrivals</a> </div>
     </section>
 
-    <div class="filter-section">
-        <h4>Filter by Category</h4>
-        <ul>
-            <li th:each="category : ${categories}">
-                <a th:href="@{/products/category/{id}(id=${category.categoryId})}" th:text="${category.name}"></a>
-            </li>
-        </ul>
+    <section class="category-links-section py-4 border-top border-bottom bg-white" th:if="${categories != null and !categories.isEmpty()}">
+        <h6 class="text-center text-muted mb-3">Shop by Category</h6> <div class="d-flex flex-wrap justify-content-center gap-2">
+        <a th:each="category, iterStat : ${categories}" th:if="${iterStat.index < 10}" th:href="@{/products(categoryId=${category.categoryId})}"
+           class="btn btn-outline-secondary btn-sm category-link-btn"
+           th:text="${category.name}">
+            Category Name
+        </a>
     </div>
+    </section>
+
+    <section class="trust-badge-section py-5 border-top">
+        <div class="row text-center">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <i class="fas fa-truck fa-2x text-primary"></i>
+                <h6 class="mt-2">Fast Shipping</h6>
+                <p class="text-muted small">Reliable delivery across Bangladesh.</p>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <i class="fas fa-shield-alt fa-2x text-primary"></i>
+                <h6 class="mt-2">Secure Payments</h6>
+                <p class="text-muted small">Your transactions are safe with us.</p>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <i class="fas fa-headset fa-2x text-primary"></i>
+                <h6 class="mt-2">Online Support</h6>
+                <p class="text-muted small">Get help when you need it.</p>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <i class="fas fa-undo fa-2x text-primary"></i>
+                <h6 class="mt-2">Easy Returns</h6>
+                <p class="text-muted small">Hassle-free return policy.</p>
+            </div>
+        </div>
+    </section>
 
 </main>
-<footer th:replace="~{layout/footer :: footer}"></footer>
-<script src="/js/script.js"></script>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
 </body>
 </html>

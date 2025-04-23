@@ -1,7 +1,11 @@
 <!-- layout/main.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/header :: head}"></head>
+<head th:replace="~{layout/header :: head}">
+    <th:block th:fragment="pageSpecificCSS">
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+    </th:block>
+</head>
 
 <body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
 <header th:replace="~{layout/navbar :: header}"></header>
