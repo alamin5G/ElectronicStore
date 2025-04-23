@@ -33,6 +33,9 @@ public class Warranty {
     @Column(nullable = false)                                      // Added constraint
     private Integer durationMonths;
 
+    @Column(columnDefinition = "TEXT")
+    private String terms; // Detailed warranty terms and conditions
+
     @OneToMany(mappedBy = "warranty", fetch = FetchType.LAZY) // Added fetch type
     @ToString.Exclude         // Added
     @EqualsAndHashCode.Exclude // Added
