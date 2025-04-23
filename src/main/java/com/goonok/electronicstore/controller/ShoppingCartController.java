@@ -52,8 +52,7 @@ public class ShoppingCartController {
     @PostMapping("/add/{productId}")
     public String addToCart(@PathVariable Long productId, @RequestParam Integer quantity,
                             Principal principal, RedirectAttributes redirectAttributes) {
-        Product product = productService.getProductById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+        Product product = productService.getProductEntityById(productId);
 
         // Validate stock quantity
         if (product.getStockQuantity() < quantity) {

@@ -1,11 +1,9 @@
 <div class="container" th:fragment="header">
     <div class="container d-flex justify-content-between align-items-center">
         <nav class="navbar navbar-expand-lg active bg-warning">
-            <div class="container-fluid">
-                <!--       lOGO
-                    <a class="navbar-brand" th:href="@{/}"><img th:src="@{/images/logo.png}" alt="Logo" width="120" height="40">   </a>
-                    -->
 
+
+            <div class="container-fluid">
                 <a class="navbar-brand" th:href="@{/}">Electronics Store</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,21 +17,22 @@
                             <a class="nav-link" th:href="@{/}">Home</a>
                         </li>
 
-
-                        <!-- Links for Admin -->
-
-                        <li class="nav-item dropdown"
-                            th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
-                            <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                Admin
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-                                <li><a class="dropdown-item" th:href="@{/admin/dashboard}">Dashboard</a></li>
-                                <li><a class="dropdown-item" th:href="@{/admin/users}">View User</a></li>
-                            </ul>
+                        <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                            <div class="dropdown me-1">
+                                <a class="nav-link dropdown-toggle" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Admin </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" th:href="@{/admin/dashboard}">Dashboard</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/users}">View Users</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/products}">Manage Products</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/categories}">Manage Categories</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/brands}">Manage Brands</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/warranties}">Manage Warranties</a></li>
+                                </ul>
+                            </div>
                         </li>
-
 
                         <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                             <div class="dropdown me-1">
@@ -43,20 +42,17 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" th:href="@{/admin/products/add}">Product</a></li>
-                                    <li><a class="dropdown-item" th:href="@{/admin/brand/add}">Brand</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/brands/add}">Brand</a></li>
                                     <li><a class="dropdown-item" th:href="@{/admin/categories/add}">Category</a></li>
+                                    <li><a class="dropdown-item" th:href="@{/admin/warranties/add}">Warranty</a></li>
                                 </ul>
                             </div>
                         </li>
 
-                        <!--Links for Users -->
                         <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
                             <a class="nav-link" th:href="@{/user/profile}">Profile</a>
                         </li>
 
-
-
-                        <!-- Links for Visitors (available to all users including visitors) -->
                         <li class="nav-item" >
                             <a class="nav-link" th:href="@{/products}">Product</a>
                         </li>
@@ -65,11 +61,12 @@
                                href="#">Category</a>
                             <div>
                                 <ul class="dropdown-menu">
-                                    <li th:each="category : ${menuCategories}">
-                                        <a class="dropdown-item"
-                                           th:href="@{/products/category/{id}(id=${category.categoryId})}"
-                                           th:text="${category.name}"></a>
+                                    <li th:each="category : ${menuCategories ?: {}}"> <a class="dropdown-item"
+                                                                                         th:href="@{/products/category/{id}(id=${category.categoryId})}"
+                                                                                         th:text="${category.name}"></a>
                                     </li>
+                                    <li><hr class="dropdown-divider" th:if="${menuCategories != null and !menuCategories.isEmpty()}"></li>
+                                    <li><a class="dropdown-item" th:href="@{/products}">All Products</a></li>
                                 </ul>
                             </div>
                         </li>
@@ -78,16 +75,15 @@
                                href="#">Brand</a>
                             <div>
                                 <ul class="dropdown-menu">
-                                    <li th:each="brand : ${menuBrands}">
-                                        <a class="dropdown-item" th:href="@{/products/brand/{id}(id=${brand.brandId})}"
-                                           th:text="${brand.name}"></a>
+                                    <li th:each="brand : ${menuBrands ?: {}}"> <a class="dropdown-item" th:href="@{/products/brand/{id}(id=${brand.brandId})}"
+                                                                                  th:text="${brand.name}"></a>
                                     </li>
+                                    <li><hr class="dropdown-divider" th:if="${menuBrands != null and !menuBrands.isEmpty()}"></li>
+                                    <li><a class="dropdown-item" th:href="@{/products}">All Products</a></li>
                                 </ul>
                             </div>
                         </li>
 
-
-                        <!-- Account Links for all users -->
                         <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
                             <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button"
                                data-bs-toggle="dropdown" aria-expanded="false">
@@ -111,12 +107,12 @@
                 </div>
             </div>
         </nav>
+
         <div>
             <a th:href="@{/cart}" class="position-relative btn btn-warning">
                 <img src="/images/cart-icons.png" alt="Cart" width="32" height="32">
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                      th:text="${cartItemCount}">0</span>
-            </a>
+                      th:text="${cartItemCount ?: '0'}">0</span> </a>
         </div>
 
         <div class="d-flex align-items-center">
@@ -124,7 +120,6 @@
                 <input type="text" class="form-control me-2" name="q" placeholder="Search for products..." required>
                 <button type="submit" class="btn btn-danger">Search</button>
             </form>
-
         </div>
 
     </div>
