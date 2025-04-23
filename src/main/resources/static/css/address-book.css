@@ -1,0 +1,5 @@
+.address-card { margin-bottom: 1.5rem; }
+.address-card .card-body { padding: 1.25rem; }
+.address-card .badge { font-size: 0.75em; padding: 0.4em 0.6em; }
+.address-actions form { margin-bottom: 0.5rem; }
+.address-actions .btn-sm { font-size: 0.8rem; padding: 0.2rem 0.5rem; }
