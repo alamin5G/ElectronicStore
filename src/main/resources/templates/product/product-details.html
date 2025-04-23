@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head}">
+    <link rel="stylesheet" th:href="@{/css/product-details.css}">
+</head>
+
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+
+    <div class="card shadow-sm mb-5" th:if="${product != null}">
+        <div class="card-body p-lg-5">
+            <div class="row">
+                <div class="col-lg-5 mb-4 mb-lg-0 text-center">
+                    <img th:src="@{/product-images/{imageName}(imageName=${product.imagePath ?: 'default-placeholder.png'})}"
+                         th:alt="${product.name}"
+                         class="img-fluid product-image-main"
+                         onerror="this.onerror=null; this.src='/images/default-placeholder.png';">
+                </div>
+
+                <div class="col-lg-7">
+                    <h2 class="mb-3" th:text="${product.name}">Product Name</h2>
+
+                    <div class="mb-3 small text-muted">
+                        <span>Brand: <a th:if="${product.brandId != null}" th:href="@{/products(brandId=${product.brandId})}" th:text="${product.brandName ?: 'N/A'}">Brand</a><span th:unless="${product.brandId != null}">N/A</span></span>
+                        <span class="mx-2">|</span>
+                        <span>Category: <a th:if="${product.categoryId != null}" th:href="@{/products(categoryId=${product.categoryId})}" th:text="${product.categoryName ?: 'N/A'}">Category</a><span th:unless="${product.categoryId != null}">N/A</span></span>
+                    </div>
+
+                    <h3 class="mb-3 text-primary fw-bold" th:text="'৳' + ${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">Price</h3>
+
+                    <p class="mb-3">Availability:
+                        <span th:if="${product.inStock}" class="stock-status-in"><i class="fas fa-check-circle me-1"></i>In Stock</span>
+                        <span th:unless="${product.inStock}" class="stock-status-out"><i class="fas fa-times-circle me-1"></i>Out of Stock</span>
+                        <span class="small text-muted" th:if="${product.inStock and product.stockQuantity != null and product.stockQuantity <= 10}" th:text="' (Only ' + ${product.stockQuantity} + ' left!)'"></span>
+                    </p>
+
+
+                    <div class="border-top border-bottom py-3 my-4">
+                        <div class="row">
+                            <div class="col-md-7 product-highlights">
+                                <div class="highlight-item"><i class="fas fa-truck"></i> Delivery within 2-4 days (Dhaka)</div>
+                                <div class="highlight-item"><i class="fas fa-shield-alt"></i> Genuine Product Guarantee</div>
+                                <div class="highlight-item" th:if="${product.warrantyId != null and product.warrantyDurationMonths != null and product.warrantyDurationMonths > 0}">
+                                    <i class="fas fa-award"></i> <span th:text="${product.warrantyDurationMonths}">12</span> Months Warranty
+                                </div>
+                                <div class="highlight-item" th:if="${product.warrantyId != null and product.warrantyDurationMonths != null and product.warrantyDurationMonths == 0}">
+                                    <i class="fas fa-award"></i> Lifetime Warranty
+                                </div>
+                                <div class="highlight-item"><i class="fas fa-undo"></i> Easy Return Policy</div>
+                            </div>
+                            <div class="col-md-5 social-share text-md-end mt-3 mt-md-0">
+                                <strong class="small d-block d-md-inline mb-1 mb-md-0 me-md-2">Share:</strong>
+                                <a href="#" th:attr="onclick=|window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href), '_blank', 'width=600,height=400')|" title="Share on Facebook"><i class="fab fa-facebook-square"></i></a>
+                                <a href="#" th:attr="onclick=|window.open('https://twitter.com/intent/tweet?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent('${product.name}'), '_blank', 'width=600,height=400')|" title="Share on Twitter"><i class="fab fa-twitter-square"></i></a>
+                                <a href="#" th:attr="onclick=|window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('${product.name} - Check this out: ' + window.location.href), '_blank')|" title="Share on WhatsApp"><i class="fab fa-whatsapp-square"></i></a>
+                                <a href="#" th:href="'mailto:?subject=' + |Check out this product: ${product.name}| + '&body=' + |I found this product and thought you might like it: |" title="Share via Email"><i class="fas fa-envelope-square"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/cart/add/{id}(id=${product.productId})}" method="post" class="d-flex align-items-center mb-4" th:if="${product.inStock}">
+                        <div class="me-3">
+                            <label for="quantity" class="form-label visually-hidden">Quantity</label>
+                            <input type="number" name="quantity" class="form-control form-control-sm" style="width: 70px;" value="1" min="1" th:max="${product.stockQuantity}" id="quantity" required>
+                        </div>
+                        <button class="btn btn-primary flex-grow-1" type="submit">
+                            <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                        </button>
+                    </form>
+                    <div class="alert alert-secondary text-center" role="alert" th:unless="${product.inStock}">Currently unavailable.</div>
+
+
+
+                    <div class="mt-4">
+                        <ul class="nav nav-tabs" id="productTab" role="tablist">
+                            <li class="nav-item" role="presentation"><button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description-panel" type="button" role="tab" aria-controls="description-panel" aria-selected="true">Description</button></li>
+                            <li class="nav-item" role="presentation" th:if="${product.specifications != null and !#strings.isEmpty(product.specifications)}"><button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs-panel" type="button" role="tab" aria-controls="specs-panel" aria-selected="false">Specifications</button></li>
+                            <li class="nav-item" role="presentation" th:if="${product.warrantyId != null}"><button class="nav-link" id="warranty-tab" data-bs-toggle="tab" data-bs-target="#warranty-panel" type="button" role="tab" aria-controls="warranty-panel" aria-selected="false">Warranty</button></li>
+                        </ul>
+                        <div class="tab-content pt-3 border border-top-0 p-3 rounded-bottom bg-white" id="productTabContent">
+                            <div class="tab-pane fade show active" id="description-panel" role="tabpanel" aria-labelledby="description-tab" tabindex="0">
+                                <div th:utext="${product.description}">Full product description...</div>
+                            </div>
+                            <div class="tab-pane fade product-specifications" id="specs-panel" role="tabpanel" aria-labelledby="specs-tab" tabindex="0" th:if="${product.specifications != null and !#strings.isEmpty(product.specifications)}">
+                                <pre th:text="${product.specifications}">Specifications text...</pre>
+                            </div>
+                            <div class="tab-pane fade" id="warranty-panel" role="tabpanel" aria-labelledby="warranty-tab" tabindex="0" th:if="${product.warrantyId != null}">
+                                <h6 class="mb-2" th:text="${product.warrantyType ?: 'Standard Warranty'}">Warranty Type</h6>
+                                <p class="mb-2" th:if="${product.warrantyDurationMonths != null and product.warrantyDurationMonths > 0}">
+                                    <strong>Duration:</strong> <span th:text="${product.warrantyDurationMonths}"></span> months
+                                </p>
+                                <p class="mb-2" th:if="${product.warrantyDurationMonths == 0}">
+                                    <strong>Duration:</strong> Lifetime / Not Applicable
+                                </p>
+                                <div class="warranty-terms mt-3" th:if="${product.warrantyTerms != null and !#strings.isEmpty(product.warrantyTerms)}">
+                                    <h6>Terms & Conditions:</h6>
+                                    <textarea rows="5" style="width: 100%; max-width: 100%; height: 150px; max-height: 300px; resize: vertical; overflow-y: auto;" th:text="${product.warrantyTerms}" readonly></textarea>
+                                </div>
+                                <p th:unless="${product.warrantyTerms != null and !#strings.isEmpty(product.warrantyTerms)}" class="text-muted small mt-3">
+                                    Please contact customer support for detailed warranty terms and conditions.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div> </div> </div> </div> <section class="more-from-brand-products pt-4 pb-5 border-top" th:if="${moreFromBrand != null and !moreFromBrand.isEmpty()}">
+    <h3 class="text-center section-title-related mb-4">More From <span th:text="${product.brandName ?: 'This Brand'}"></span></h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="col" th:each="prod : ${moreFromBrand}">
+            <div class="card h-100 shadow-sm product-card">
+                <a th:href="@{/products/{id}(id=${prod.productId})}"><img th:src="@{/product-images/{imageName}(imageName=${prod.imagePath ?: 'default-placeholder.png'})}" class="card-img-top" th:alt="${prod.name}" onerror="this.onerror=null; this.src='/images/default-placeholder.png';"></a>
+                <div class="card-body">
+                    <h5 class="card-title fs-6"><a th:href="@{/products/{id}(id=${prod.productId})}" class="text-decoration-none text-dark stretched-link" th:text="${prod.name}"></a></h5>
+                    <p class="card-text fw-bold text-primary mb-3" th:text="'৳' + ${#numbers.formatDecimal(prod.price, 1, 'COMMA', 2, 'POINT')}"></p>
+                    <form th:action="@{/cart/add/{id}(id=${prod.productId})}" method="post" class="mt-auto d-grid"><input type="hidden" name="quantity" value="1"><button class="btn btn-outline-primary btn-sm" type="submit"><i class="fas fa-cart-plus me-1"></i> Add to Cart</button></form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    <section class="new-products pt-4 pb-5 border-top" th:if="${newProducts != null and !newProducts.isEmpty()}">
+        <h3 class="text-center section-title-related mb-4">New Arrivals</h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="col" th:each="prod : ${newProducts}">
+                <div class="card h-100 shadow-sm product-card">
+                    <a th:href="@{/products/{id}(id=${prod.productId})}"><img th:src="@{/product-images/{imageName}(imageName=${prod.imagePath ?: 'default-placeholder.png'})}" class="card-img-top" th:alt="${prod.name}" onerror="this.onerror=null; this.src='/images/default-placeholder.png';"></a>
+                    <div class="card-body">
+                        <h5 class="card-title fs-6"><a th:href="@{/products/{id}(id=${prod.productId})}" class="text-decoration-none text-dark stretched-link" th:text="${prod.name}"></a></h5>
+                        <p class="card-text fw-bold text-primary mb-3" th:text="'৳' + ${#numbers.formatDecimal(prod.price, 1, 'COMMA', 2, 'POINT')}"></p>
+                        <form th:action="@{/cart/add/{id}(id=${prod.productId})}" method="post" class="mt-auto d-grid"><input type="hidden" name="quantity" value="1"><button class="btn btn-outline-primary btn-sm" type="submit"><i class="fas fa-cart-plus me-1"></i> Add to Cart</button></form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="featured-products pt-4 pb-5 border-top" th:if="${featuredProducts != null and !featuredProducts.isEmpty()}">
+        <h3 class="text-center section-title-related mb-4">Popular Products</h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="col" th:each="prod : ${featuredProducts}">
+                <div class="card h-100 shadow-sm product-card">
+                    <a th:href="@{/products/{id}(id=${prod.productId})}"><img th:src="@{/product-images/{imageName}(imageName=${prod.imagePath ?: 'default-placeholder.png'})}" class="card-img-top" th:alt="${prod.name}" onerror="this.onerror=null; this.src='/images/default-placeholder.png';"></a>
+                    <div class="card-body">
+                        <h5 class="card-title fs-6"><a th:href="@{/products/{id}(id=${prod.productId})}" class="text-decoration-none text-dark stretched-link" th:text="${prod.name}"></a></h5>
+                        <p class="card-text fw-bold text-primary mb-3" th:text="'৳' + ${#numbers.formatDecimal(prod.price, 1, 'COMMA', 2, 'POINT')}"></p>
+                        <form th:action="@{/cart/add/{id}(id=${prod.productId})}" method="post" class="mt-auto d-grid"><input type="hidden" name="quantity" value="1"><button class="btn btn-outline-primary btn-sm" type="submit"><i class="fas fa-cart-plus me-1"></i> Add to Cart</button></form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="alert alert-danger text-center mt-5" th:unless="${product != null}">
+        <h2>Product Not Found</h2>
+        <p>Sorry, the product you are looking for does not exist or is unavailable.</p>
+        <a th:href="@{/products}" class="btn btn-primary">Back to Products</a>
+    </div>
+
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+</body>
+</html>

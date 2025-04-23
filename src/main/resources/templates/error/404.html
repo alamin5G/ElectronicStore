@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head}">
+    <link th:href="@{/css/404.css}" rel="stylesheet">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <div class="error-message mb-4">Oops! Page Not Found.</div>
+        <p class="text-muted" th:if="${error}" th:text="${error}">Specific error message if provided.</p>
+        <p class="text-muted">
+            Sorry, the page or resource you requested could not be found.
+            It might have been moved or deleted.
+        </p>
+        <div class="mt-4">
+            <a th:href="@{/}" class="btn btn-primary me-2">
+                <i class="fas fa-home me-1"></i> Go to Homepage
+            </a>
+            <a th:href="@{/products}" class="btn btn-outline-secondary">
+                <i class="fas fa-list me-1"></i> View Products
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+</body>
+</html>

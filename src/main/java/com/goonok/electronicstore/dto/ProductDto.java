@@ -38,9 +38,9 @@ public class ProductDto {
     private String brandName; // <-- ADDED
 
     private Long warrantyId;
-    // Optionally add warranty details like type/duration if needed in list view
-    // private String warrantyType;
-    // private Integer warrantyDurationMonths;
+    private String warrantyType;
+    private Integer warrantyDurationMonths;
+    private String warrantyTerms;
 
     private String specifications;
 

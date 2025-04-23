@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +57,7 @@ public class ProductDetailsController {
             @RequestParam(required = false) String priceRange, // Keep for potential UI elements
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Boolean newArrival, // <-- ADDED RequestParam
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(defaultValue = "name,asc") String sort, // Example: name,asc or price,desc
@@ -64,7 +66,7 @@ public class ProductDetailsController {
         log.info("Request received for product listing with filters - Category: {}, Brand: {}, PriceRange: {}, MinPrice: {}, MaxPrice: {}, Page: {}, Size: {}, Sort: {}",
                 categoryId, brandId, priceRange, minPrice, maxPrice, page, size, sort);
 
-        // --- Create Pageable ---
+        // --- Create Pageable (Keep as is) ---
         String[] sortParams = sort.split(",");
         String sortField = sortParams[0];
         Sort.Direction sortDirection = (sortParams.length > 1 && sortParams[1].equalsIgnoreCase("desc")) ?
@@ -72,10 +74,11 @@ public class ProductDetailsController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortField));
         // -----------------------
 
+
         // --- Fetch Filtered Products ---
         // Pass minPrice/maxPrice directly, let service handle priceRange parsing if needed
         Page<ProductDto> productPage = productService.getFilteredProducts(
-                categoryId, brandId, priceRange, minPrice, maxPrice, pageable
+                categoryId, brandId, priceRange, minPrice, maxPrice, newArrival, pageable
         );
         // ---------------------------
 
@@ -90,6 +93,7 @@ public class ProductDetailsController {
         model.addAttribute("selectedPriceRange", priceRange); // Keep if UI uses it
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("newArrival", newArrival);
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
         model.addAttribute("sort", sort);
@@ -112,10 +116,31 @@ public class ProductDetailsController {
         try {
             ProductDto productDto = productService.getProductDtoById(id);
             model.addAttribute("product", productDto);
+            model.addAttribute("pageTitle", productDto.getName() + " - Details");
 
-            // Optionally add related products, reviews etc. here if needed for the details page
+            // --- Fetch additional product lists ---
+            int relatedLimit = 4; // Number of products to show in each section
+            Pageable relatedPageable = PageRequest.of(0, relatedLimit, Sort.by("createdAt").descending());
 
-            return "product/product-details"; // e.g., templates/product/product-details.html
+            List<ProductDto> moreFromBrand = Collections.emptyList();
+            if (productDto.getBrandId() != null) {
+                // Assuming a method like findMoreByBrand exists in ProductService
+                // You might need to create this method similar to findRelatedProducts
+                //moreFromBrand = productService.findMoreByBrand(id, productDto.getBrandId(), relatedLimit);
+            }
+
+            Page<ProductDto> newProductsPage = productService.getNewProducts(relatedPageable);
+            Page<ProductDto> featuredProductsPage = productService.getFeaturedProducts(relatedPageable); // Using featured as popular
+
+            model.addAttribute("moreFromBrand", moreFromBrand); // Add the list
+            model.addAttribute("newProducts", newProductsPage.getContent());
+            model.addAttribute("featuredProducts", featuredProductsPage.getContent()); // Add the list
+            // --- End fetching additional lists ---
+
+            // TODO: Fetch and add reviews if needed
+
+            return "product/product-details";
+
         } catch (ResourceNotFoundException e) {
             log.error("Product not found for ID: {}", id, e);
             // Redirect to an error page or product listing with an error message

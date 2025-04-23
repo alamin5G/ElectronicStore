@@ -91,8 +91,23 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     // Brand AND Price Greater Than Equal
     Page<Product> findByBrand_BrandIdAndPriceGreaterThanEqual(Long brandId, BigDecimal minPrice, Pageable pageable);
 
+    // Four Filters
+    /**
+     * Finds products matching category, brand, price range, and new arrival status, with pagination.
+     * @param categoryId ID of the category.
+     * @param brandId ID of the brand.
+     * @param minPrice Minimum price.
+     * @param maxPrice Maximum price.
+     * @param pageable Pagination information.
+     * @return A page of matching products.
+     */
+    Page<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetweenAndIsNewArrivalTrue(Long categoryId, Long brandId, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable); // <-- DEFINED THIS METHOD
+
+
     // Category AND Brand AND Price Between
     Page<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetween(Long categoryId, Long brandId, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable);
+
+
 
     // Category AND Brand AND Price Greater Than Equal
     Page<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceGreaterThanEqual(Long categoryId, Long brandId, BigDecimal minPrice, Pageable pageable);
@@ -115,6 +130,56 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     List<Product> findByPriceGreaterThan(BigDecimal minPrice);
     List<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceGreaterThan(Long categoryId, Long brandId, BigDecimal minPrice);
 
+
+
+
+    // Two Filters
+    Page<Product> findByCategory_CategoryIdAndIsNewArrivalTrue(Long categoryId, Pageable pageable); // Added for newArrival filter
+    Page<Product> findByBrand_BrandIdAndIsNewArrivalTrue(Long brandId, Pageable pageable); // Added for newArrival filter
+    Page<Product> findByPriceBetweenAndIsNewArrivalTrue(BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable); // Added for newArrival filter
+    Page<Product> findByPriceGreaterThanEqualAndIsNewArrivalTrue(BigDecimal minPrice, Pageable pageable); // Added for newArrival filter
+
+
+    // Three Filters
+    Page<Product> findByCategory_CategoryIdAndPriceBetweenAndIsNewArrivalTrue(Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable); // Added for newArrival filter
+    Page<Product> findByBrand_BrandIdAndPriceBetweenAndIsNewArrivalTrue(Long brandId, BigDecimal minPrice, BigDecimal maxPrice, Pageable pageable); // Added for newArrival filter
+    Page<Product> findByCategory_CategoryIdAndPriceGreaterThanEqualAndIsNewArrivalTrue(Long categoryId, BigDecimal minPrice, Pageable pageable); // Added for newArrival filter
+    Page<Product> findByBrand_BrandIdAndPriceGreaterThanEqualAndIsNewArrivalTrue(Long brandId, BigDecimal minPrice, Pageable pageable); // Added for newArrival filter
+    Page<Product> findByCategory_CategoryIdAndBrand_BrandIdAndIsNewArrivalTrue(Long categoryId, Long brandId, Pageable pageable); // Added for newArrival filter
+
+
+
+    /**
+     * Finds products matching category, brand, minimum price, and new arrival status, with pagination.
+     * @param categoryId ID of the category.
+     * @param brandId ID of the brand.
+     * @param minPrice Minimum price.
+     * @param pageable Pagination information.
+     * @return A page of matching products.
+     */
+    Page<Product> findByCategory_CategoryIdAndBrand_BrandIdAndPriceGreaterThanEqualAndIsNewArrivalTrue(Long categoryId, Long brandId, BigDecimal minPrice, Pageable pageable); // <-- DEFINED THIS METHOD
+
+
+    // *** ADDED for Related Products ***
+    /**
+     * Finds products by category ID, excluding a specific product ID, with pagination.
+     * @param categoryId The category ID to search within.
+     * @param productIdToExclude The product ID to exclude from the results.
+     * @param pageable Pagination information.
+     * @return A page of related products.
+     */
+    Page<Product> findByCategory_CategoryIdAndProductIdNot(Long categoryId, Long productIdToExclude, Pageable pageable);
+    // ********************************
+
+
+    /**
+     * Finds products by brand ID, excluding a specific product ID, with pagination.
+     * @param brandId The brand ID to search within.
+     * @param productIdToExclude The product ID to exclude from the results.
+     * @param pageable Pagination information.
+     * @return A page of related products from the same brand.
+     */
+    Page<Product> findByBrand_BrandIdAndProductIdNot(Long brandId, Long productIdToExclude, Pageable pageable); // <-- ADDED METHOD
 
 
 

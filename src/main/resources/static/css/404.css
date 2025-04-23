@@ -1,0 +1,17 @@
+.error-container {
+    min-height: 60vh; /* Ensure content takes up significant height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.error-code {
+    font-size: 6rem;
+    font-weight: bold;
+    color: var(--bs-danger);
+}
+.error-message {
+    font-size: 1.5rem;
+    color: #6c757d; /* Secondary text color */
+}

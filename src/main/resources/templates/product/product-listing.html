@@ -1,48 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:replace="~{layout/header :: head}">
-    <title th:text="${pageTitle ?: 'Products - Electronic Store'}">Products - Electronic Store</title>
-    <style>
-        /* Simple hover effect for product cards */
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .product-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 100%; /* Ensure cards in a row have same height */
-            display: flex;
-            flex-direction: column;
-        }
-        .product-card .card-body {
-            flex-grow: 1; /* Allows body to expand */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; /* Pushes button to bottom */
-        }
-        .product-card .card-img-top {
-            width: 100%;
-            height: 200px; /* Fixed height for images */
-            object-fit: contain; /* Scale image nicely without distortion */
-            padding: 1rem; /* Add some padding around the image */
-        }
-        .filter-sidebar .list-group-item.active {
-            background-color: #0d6efd; /* Bootstrap primary blue */
-            border-color: #0d6efd;
-        }
-        .pagination .page-link {
-            color: #0d6efd;
-        }
-        .pagination .page-item.active .page-link {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
-            color: white;
-        }
-        .pagination .page-item.disabled .page-link {
-            color: #6c757d;
-        }
-    </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light"> <header th:replace="~{layout/navbar :: header}"></header>
@@ -134,10 +92,10 @@
                 <div class="col" th:each="product : ${productPage.content}">
                     <div class="card h-100 shadow-sm product-card">
                         <a th:href="@{/products/{id}(id=${product.productId})}">
-                            <img th:src="@{/product-images/{imageName}(imageName=${product.imagePath ?: 'default-placeholder.png'})}"
+                            <img th:src="@{/product-images/{imageName}(imageName=${product.imagePath ?: 'default_product_image.jpg'})}"
                                  class="card-img-top"
                                  th:alt="${product.name}"
-                                 onerror="this.onerror=null; this.src='/images/default-placeholder.png';"> </a>
+                                 onerror="this.onerror=null; this.src='/default_product_image.jpg';"> </a>
                         <div class="card-body">
                             <h5 class="card-title fs-6">
                                 <a th:href="@{/products/{id}(id=${product.productId})}" class="text-decoration-none text-dark" th:text="${product.name}">Product Name</a>

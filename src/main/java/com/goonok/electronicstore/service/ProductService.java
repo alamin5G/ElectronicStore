@@ -14,9 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value; // Needed for image path property
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile; // Import for image handling
@@ -26,6 +24,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files; // For file handling
 import java.nio.file.Path;  // For file handling
 import java.nio.file.Paths; // For file handling
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;      // For unique file names
 import java.util.stream.Collectors;
@@ -325,6 +324,149 @@ public class ProductService {
         log.info("New arrival status for product ID {} updated to: {}", productId, product.isNewArrival());
     }
 
+
+    /**
+     * Finds more products from the same brand, excluding the current product.
+     * @param currentProductId The ID of the product being viewed.
+     * @param brandId The ID of the brand to find products in.
+     * @param limit The maximum number of products to return.
+     * @return A List of related ProductDto objects from the same brand.
+     */
+    @Transactional(readOnly = true)
+    public List<ProductDto> findMoreByBrand(Long currentProductId, Long brandId, int limit) {
+        log.info("Finding more products for product ID {} in brand ID {}", currentProductId, brandId);
+        if (brandId == null) {
+            return Collections.emptyList(); // Cannot find by brand if brandId is null
+        }
+        // Create page request to limit results
+        Pageable pageable = PageRequest.of(0, limit, Sort.by("createdAt").descending());
+
+        // Find products in the same brand, excluding the current one
+        // Requires findByBrand_BrandIdAndProductIdNot method in repository
+        Page<Product> moreProductsPage = productRepository.findByBrand_BrandIdAndProductIdNot(brandId, currentProductId, pageable);
+
+        return moreProductsPage.getContent().stream()
+                .map(this::mapToDto) // Use helper
+                .collect(Collectors.toList());
+    }
+
+    // Inside ProductService.java
+
+    @Transactional(readOnly = true)
+    public Page<ProductDto> getFilteredProducts(
+            Long categoryId, Long brandId, String priceRange,
+            Double minPrice, Double maxPrice,
+            Boolean newArrival, // <-- ADDED newArrival parameter
+            Pageable pageable) {
+
+        log.info("Filtering products - Category: {}, Brand: {}, PriceRange: {}, MinPrice: {}, MaxPrice: {}, NewArrival: {}, Page: {}",
+                categoryId, brandId, priceRange, minPrice, maxPrice, newArrival, pageable);
+
+        Page<Product> productPage;
+        BigDecimal min = (minPrice != null) ? BigDecimal.valueOf(minPrice) : null;
+        BigDecimal max = (maxPrice != null) ? BigDecimal.valueOf(maxPrice) : null;
+        boolean filterByNew = (newArrival != null && newArrival); // Check if filtering by new is needed
+
+        // --- Price Range Parsing (Keep as is) ---
+        if (min == null && max == null && priceRange != null && !priceRange.trim().isEmpty()) {
+            // ... (price range parsing logic remains the same) ...
+        }
+        // --- End Price Range Parsing ---
+
+
+        // --- Querying ---
+        // !!! IMPORTANT: USING SPECIFICATIONS IS HIGHLY RECOMMENDED HERE !!!
+        // The following requires MANY specific methods in ProductRepository.
+
+        // Example: Adding the newArrival check (only showing one branch for brevity)
+        if (categoryId != null && brandId != null && min != null && max != null) {
+            if (filterByNew) {
+                productPage = productRepository.findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetweenAndIsNewArrivalTrue(categoryId, brandId, min, max, pageable); // <-- New Repo Method Needed
+            } else {
+                productPage = productRepository.findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetween(categoryId, brandId, min, max, pageable);
+            }
+        }
+        // ... Add 'filterByNew' condition to ALL OTHER if/else if branches ...
+        // Example for the final 'else' block:
+        else {
+            if (filterByNew) {
+                productPage = productRepository.findByIsNewArrivalTrue(pageable); // <-- You already have this potentially
+            } else {
+                productPage = productRepository.findAll(pageable); // No specific filters
+            }
+        }
+        // --- End Querying ---
+
+        log.info("Found {} products after filtering", productPage.getTotalElements());
+        return productPage.map(product -> modelMapper.map(product, ProductDto.class));
+    }
+
+
+    /**
+     * Finds related products, e.g., by category, excluding the current product.
+     * @param currentProductId The ID of the product being viewed.
+     * @param categoryId The ID of the category to find related products in.
+     * @param limit The maximum number of related products to return.
+     * @return A List of related ProductDto objects.
+     */
+    @Transactional(readOnly = true)
+    public List<ProductDto> findRelatedProducts(Long currentProductId, Long categoryId, int limit) {
+        log.info("Finding related products for product ID {} in category ID {}", currentProductId, categoryId);
+        if (categoryId == null) {
+            return Collections.emptyList(); // Cannot find related by category if categoryId is null
+        }
+        // Create page request to limit results and maybe sort (e.g., by creation date)
+        Pageable pageable = PageRequest.of(0, limit, Sort.by("createdAt").descending());
+
+        // Find products in the same category, excluding the current one
+        Page<Product> relatedProductsPage = productRepository.findByCategory_CategoryIdAndProductIdNot(categoryId, currentProductId, pageable);
+
+        return relatedProductsPage.getContent().stream()
+                .map(this::mapToDto) // Use helper
+                .collect(Collectors.toList());
+    }
+
+    // --- Helper Methods ---
+
+    // Helper method for mapping Entity to DTO
+    private ProductDto mapToDto(Product product) {
+        ProductDto dto = modelMapper.map(product, ProductDto.class);
+        // Manually map related entity names and details
+        if (product.getCategory() != null) {
+            dto.setCategoryName(product.getCategory().getName());
+            // categoryId is mapped automatically by ModelMapper if names match
+        }
+        if (product.getBrand() != null) {
+            dto.setBrandName(product.getBrand().getName());
+            // brandId is mapped automatically
+        }
+        if (product.getWarranty() != null) {
+            dto.setWarrantyId(product.getWarranty().getWarrantyId()); // Ensure ID is set
+            dto.setWarrantyType(product.getWarranty().getType());
+            dto.setWarrantyDurationMonths(product.getWarranty().getDurationMonths());
+            dto.setWarrantyTerms(product.getWarranty().getTerms());
+        }
+        // Derived/read-only fields
+        dto.setInStock(product.isInStock()); // Ensure Product entity has isInStock() getter or Lombok generates it
+        // Timestamps are mapped automatically if names match
+        return dto;
+    }
+
+    // Helper method for mapping DTO to Entity (basic fields only)
+    private Product mapToEntity(ProductDto productDto) {
+        // Note: This doesn't set Category/Brand/Warranty - those are fetched by ID
+        Product product = modelMapper.map(productDto, Product.class);
+        // Ensure ID is not carried over when mapping for creation
+        if (productDto.getProductId() == null) {
+            product.setProductId(null);
+        }
+        return product;
+    }
+
+
+
+
+
     // --- Helper Methods for Image Handling (Example using local filesystem) ---
 
     private String saveImage(MultipartFile imageFile) {
@@ -361,5 +503,8 @@ public class ProductService {
             // Handle error - log or potentially throw exception if deletion failure is critical
         }
     }
+
+
+
 
 }
