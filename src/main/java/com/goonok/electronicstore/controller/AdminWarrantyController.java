@@ -48,6 +48,8 @@ public class AdminWarrantyController {
         model.addAttribute("pageSize", size);
         model.addAttribute("sort", sort);
 
+        model.addAttribute("warrantyDto", new WarrantyDto());
+        model.addAttribute("pageTitle", "Warranty List");
         return "warranty/admin/warranty-list"; // e.g., templates/warranty/admin/warranty-list.html
     }
 
