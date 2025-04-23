@@ -47,17 +47,37 @@ public class SecurityConfig {
         return new CustomLogoutSuccessHandler();
     }
 
-    String[] publicUrl = { "/", "/login", "/register", "/verify/**", "/specialAccessForAdmin", "/images/**", "/product/**", "/css/**",
-            "/uploads/**",
-            "/about", "/services", "/contact", "/latest-news" , "/layout/**", "/products/**", "/category/**", "/brand/**", "/search/**", "/cart/**",
-            "/checkout/**", "/order/**", "/payment" };
+    String[] publicUrl = {
+            "/", "/login", "/register", "/verify/**",
+            "/specialAccessForAdmin", // Review if this should be public
+            "/images/**", // Keep if you have other static images here
+            "/css/**",
+            "/js/**", // Add if you have custom JS files
+            "/uploads/**", // Keep if used for other uploads
+
+            // --- ADD THESE LINES ---
+            "/product-images/**", // Allow access to product images
+            "/brand-logos/**",    // Allow access to brand logos
+            // ---------------------
+
+            "/about", "/services", "/contact", "/latest-news",
+            "/layout/**", // Be careful with layout, might expose too much? Usually CSS/JS is enough.
+            "/products/**", // Public product browsing URLs
+            // "/category/**", // Usually accessed via /products?categoryId=...
+            // "/brand/**", // Usually accessed via /products?brandId=...
+            "/search/**",
+            // Public parts of cart/checkout/order/payment if applicable (e.g., viewing cart)
+            "/cart/**", // Might need more specific rules later
+            "/payment"  // Might need more specific rules later
+            // Review other paths like /checkout/**, /order/** - should they be fully public?
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(publicUrl).permitAll() // Publicly accessible URLs
-                        .requestMatchers("/admin/**", "/customers/**", "/jewellers/**", "/items/**").hasRole("ADMIN") // Admin access only
+                        .requestMatchers("/admin/**", "/admin/products/**", "/admin/warranties/**").hasRole("ADMIN") // Admin access only
                         .requestMatchers("/user/**", "/verify-warranty", "/cart/**").hasRole("USER") // User access only
                         .anyRequest().authenticated() // All other URLs require authentication
                 )

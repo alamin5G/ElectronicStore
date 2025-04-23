@@ -33,6 +33,9 @@ public class Product {
     @Column(nullable = false, length = 10000)
     private String description;
 
+    @Column(columnDefinition = "TEXT") // Use TEXT for potentially long specifications
+    private String specifications;
+
     @NotNull(message = "Price is required") // Added validation
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0") // Added validation
     @Column(nullable = false, precision = 10, scale = 2) // Added precision/scale
