@@ -14,11 +14,16 @@
             <a th:href="@{/user/edit-profile}" class="list-group-item list-group-item-action">
                 <i class="fas fa-edit"></i> Edit Profile
             </a>
+            <a th:href="@{/cart}" class="list-group-item list-group-item-action">
+                <i class="fas fa-shopping-cart"></i> View Cart
+            </a>
+
+            <a th:href="@{/order/history}" class="list-group-item list-group-item-action">
+                <i class="fas fa-box"></i> View Order History
+            </a>
+
             <a th:href="@{/user/addresses}" class="list-group-item list-group-item-action">
                 <i class="fas fa-map-marker-alt"></i> Manage Addresses
-            </a>
-            <a th:href="@{/orders}" class="list-group-item list-group-item-action">
-                <i class="fas fa-box"></i> View Order History
             </a>
             <a th:href="@{/user/change-password}" class="list-group-item list-group-item-action">
                 <i class="fas fa-key"></i> Change Password

@@ -1,0 +1,8 @@
+
+.profile-card .card-header { background-color: #e9ecef; }
+.profile-details dt { font-weight: 600; color: #495057; }
+.profile-details dd { margin-bottom: 0.75rem; }
+.profile-actions .list-group-item { border-left: 0; border-right: 0; }
+.profile-actions .list-group-item:first-child { border-top: 0; }
+.profile-actions .list-group-item:last-child { border-bottom: 0; }
+.profile-actions .list-group-item i { width: 20px; text-align: center; margin-right: 0.5rem; }

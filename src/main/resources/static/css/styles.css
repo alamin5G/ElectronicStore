@@ -1,146 +1,511 @@
-/* General Body Styling */
+/* Global Styles for E-commerce Website */
+
+/* Root Variables */
+:root {
+    --primary-gradient: linear-gradient(45deg, #2937f0, #9f1ae2);
+    --secondary-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.15);
+    --transition: all 0.3s ease;
+    --border-radius: 15px;
+    --primary-color: #2937f0;
+    --secondary-color: #9f1ae2;
+}
+
+/* Global Styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Example modern font stack */
-    color: #333;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--secondary-gradient);
 }
 
-/* Navbar Adjustments (Optional) */
+/* Enhanced Navbar Styles */
 .navbar {
-    /* Add any custom navbar overrides here if needed */
+    padding: 1rem 0;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
 }
 
-/* Section Title Styling */
-.section-title {
-    margin-bottom: 2.5rem;
-    font-weight: bold;
-    color: #333;
-    text-transform: uppercase; /* Example styling */
-    letter-spacing: 1px;   /* Example styling */
+.navbar-brand {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 0.5rem 0;
 }
-.section-title::after { /* Simple underline effect */
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    padding: 0.7rem 1.2rem;
+    color: #2d3436;
+    position: relative;
+}
+
+.navbar-nav .nav-link::after {
     content: '';
-    display: block;
-    width: 60px;
-    height: 3px;
-    background-color: var(--bs-primary); /* Use Bootstrap primary color */
-    margin: 0.5rem auto 0;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--primary-gradient);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
 }
 
-/* Product Card Styling */
-.product-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #eee; /* Subtle border */
-    border-radius: 0.375rem; /* Bootstrap's default card radius */
-    overflow: hidden;
-    background-color: #fff;
+.navbar-nav .nav-link:hover::after {
+    width: 70%;
 }
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+/* Search Form in Navbar */
+.navbar .form-control {
+    border-radius: 20px;
+    padding: 0.5rem 1.2rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    width: 200px;
+    transition: all 0.3s ease;
 }
-.product-card .card-img-container {
-    background-color: #fff; /* White background for image area */
-    padding: 0.5rem; /* Reduced padding */
-    height: 200px; /* Slightly smaller fixed height */
+
+.navbar .form-control:focus {
+    width: 250px;
+    box-shadow: 0 0 15px rgba(41, 55, 240, 0.1);
+}
+
+.navbar .btn-outline-secondary {
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-bottom: 1px solid #eee; /* Separator line */
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
-.product-card .product-card-img { /* Target image specifically */
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+
+/* Cart Icon Styling */
+.navbar .fa-shopping-cart {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
 }
-.product-card .card-body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem; /* Consistent padding */
+
+.navbar .nav-link:hover .fa-shopping-cart {
+    transform: scale(1.1);
 }
-.product-card .product-card-title {
-    font-size: 0.95rem; /* Slightly smaller title */
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    /* Allow title to take available space, prevent button pushing it */
-    min-height: 3em; /* Adjust based on typical title length */
+
+.navbar .badge {
+    border: 2px solid #fff;
+    font-size: 0.7rem;
+    padding: 0.25em 0.6em;
 }
-.product-card .product-card-title a {
-    color: #212529;
-    text-decoration: none;
-    transition: color 0.2s ease;
+
+/* Dropdown Styling */
+.dropdown-menu {
+    border: none;
+    box-shadow: var(--shadow-sm);
+    border-radius: 10px;
 }
-.product-card .product-card-title a:hover {
-    color: var(--bs-primary);
+
+.dropdown-item {
+    transition: var(--transition);
+    padding: 0.7rem 1.2rem;
 }
-/* Make link cover the card title area */
-.product-card .product-card-title a.stretched-link::after {
+
+.dropdown-item:hover {
+    background: var(--secondary-gradient);
+    transform: translateX(5px);
+}
+
+/* Enhanced Footer Styles */
+footer {
+    background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%) !important;
+    padding: 4rem 0 2rem !important;
+    position: relative;
+    overflow: hidden;
+}
+
+footer::before {
+    content: '';
     position: absolute;
     top: 0;
+    left: 0;
     right: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+}
+
+footer h6 {
+    color: #ffd700 !important;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+footer h6::after {
+    content: '';
+    position: absolute;
     bottom: 0;
     left: 0;
-    z-index: 1;
-    content: "";
+    width: 50px;
+    height: 2px;
+    background: var(--primary-gradient);
 }
 
-.product-card .product-card-price {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: var(--bs-primary);
+footer p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.8;
     margin-bottom: 1rem;
 }
-.product-card .btn-cart {
-    margin-top: auto; /* Pushes button to bottom */
-    font-size: 0.85rem; /* Smaller button text */
+
+footer a {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+    display: inline-block;
+    padding: 0.3rem 0;
 }
 
-/* Category Links Section Styling */
-.category-links-section {
-    background-color: #f8f9fa; /* Light background */
-}
-.category-links-section .category-link-btn {
-    margin: 0.25rem; /* Spacing between buttons */
-    border-radius: 50rem; /* Pill shape */
+footer a:hover {
+    color: #fff !important;
+    transform: translateX(8px);
 }
 
-/* Trust Badge Section Styling */
-.trust-badge-section i {
-    font-size: 2rem;
-    /* color: var(--bs-primary); */ /* Color set inline now */
-    margin-bottom: 0.5rem;
+footer .fas {
+    width: 24px;
+    color: #ffd700;
 }
-.trust-badge-section h6 {
+
+/* Social Icons in Footer */
+footer .social-icons {
+    margin-top: 1rem;
+}
+
+footer .social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 0.5rem;
+    transition: all 0.3s ease;
+}
+
+footer .social-icons a:hover {
+    background: var(--primary-gradient);
+    transform: translateY(-3px);
+}
+
+footer .social-icons i {
+    font-size: 1rem;
+    color: white;
+}
+
+/* Footer Bottom Section */
+footer hr {
+    background: rgba(255, 255, 255, 0.1);
+    margin: 2rem 0;
+}
+
+footer .copyright {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Button Styling */
+.btn {
+    border-radius: 25px;
+    transition: var(--transition);
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(41, 55, 240, 0.3);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--primary-gradient);
+    border-color: transparent;
+}
+
+/* Form Controls */
+.form-control, .form-select {
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0.6rem 1rem;
+    transition: var(--transition);
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 3px rgba(41, 55, 240, 0.1);
+    border-color: var(--primary-color);
+}
+
+/* Alert Styling */
+.alert {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Pagination */
+.pagination .page-link {
+    border-radius: 50%;
+    margin: 0 3px;
+    border: none;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--primary-gradient);
+}
+
+/* Section Titles */
+h2, h3, h4, h5, h6 {
+    color: #2d3436;
     font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-.trust-badge-section p {
-    line-height: 1.4;
 }
 
-/* Footer Styling */
-footer.bg-dark {
-    /* Add custom footer styles if needed */
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
 }
 
-/* Ensure vertical alignment in tables (useful for admin lists) */
-.table th, .table td {
-    vertical-align: middle;
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
 }
 
-/* Style for icon only buttons (used in admin lists) */
-.btn-icon-only {
-    padding: 0.25rem 0.5rem;
-    line-height: 1;
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
 }
 
-/* Style for smaller image thumbnails in tables */
-.img-thumbnail-small {
-    max-width: 50px;
-    max-height: 50px;
-    object-fit: contain;
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 0;
+    }
+    
+    .navbar-brand {
+        font-size: 1.3rem;
+    }
+    
+    .navbar .form-control {
+        width: 150px;
+    }
+    
+    .navbar .form-control:focus {
+        width: 180px;
+    }
+    
+    footer {
+        padding: 2rem 0 1rem !important;
+    }
+    
+    footer .social-icons a {
+        width: 32px;
+        height: 32px;
+        margin: 0 0.3rem;
+    }
+}
+
+/* Additional Dropdown Enhancements */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    padding: 1rem 0;
+}
+
+.dropdown-header {
+    color: #2937f0;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+}
+
+.dropdown-item {
+    padding: 0.7rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item i {
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background: var(--secondary-gradient);
+    transform: translateX(5px);
+}
+
+.dropdown-item:hover i {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.dropdown-divider {
+    margin: 0.5rem 0;
+    border-color: rgba(0, 0, 0, 0.05);
+}
+/* Enhanced Add to Cart Button */
+.btn-outline-primary.btn-sm {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(to right, transparent 50%, var(--primary-gradient) 50%);
+    background-size: 200% 100%;
+    background-position: 0 0;
+    border: 2px solid var(--primary-color);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 0.5rem 1rem;
+    transition: all 0.4s ease;
+}
+
+.btn-outline-primary.btn-sm:hover {
+    background-position: -100% 0;
+    color: #8051f3;
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(41, 55, 240, 0.2);
+}
+
+.btn-outline-primary.btn-sm .fa-cart-plus {
+    transition: transform 0.4s ease;
+}
+
+.btn-outline-primary.btn-sm:hover .fa-cart-plus {
+    transform: scale(1.2) rotate(-5deg);
+}
+
+/* Product Card Add to Cart Button Container */
+.card .mt-auto.d-grid {
+    position: relative;
+}
+
+.card .mt-auto.d-grid::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(41, 55, 240, 0.2), transparent);
+}
+
+/* Enhanced Login Button */
+.btn-outline-primary.btn-sm[href*="login"] {
+    background: linear-gradient(45deg, #FF416C, #FF4B2B);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1.8rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-outline-primary.btn-sm[href*="login"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #FF4B2B, #FF416C);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.3s ease;
+}
+
+.btn-outline-primary.btn-sm[href*="login"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 65, 108, 0.3);
+}
+
+.btn-outline-primary.btn-sm[href*="login"]:hover::before {
+    opacity: 1;
+}
+
+/* Out of Stock Button Style */
+.btn-outline-primary.btn-sm:disabled {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* Hover Effects for Product Cards */
+.card:hover .btn-outline-primary.btn-sm {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(41, 55, 240, 0.15);
+}
+
+/* Loading State for Add to Cart Button */
+.btn-outline-primary.btn-sm.loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-outline-primary.btn-sm.loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin: -8px 0 0 -8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: button-loading-spinner 0.6s linear infinite;
+}
+
+@keyframes button-loading-spinner {
+    from {
+        transform: rotate(0turn);
+    }
+    to {
+        transform: rotate(1turn);
+    }
+}

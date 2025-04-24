@@ -1,125 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
 
-    <div class="container d-flex justify-content-between align-items-center" th:fragment="header">
-        <nav class="navbar navbar-expand-lg active bg-warning">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top" th:fragment="header">
+    <div class="container"> <a class="navbar-brand fw-bold" th:href="@{/}">
+        Electronics Store
+    </a>
 
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-            <div class="container-fluid">
-                <a class="navbar-brand" th:href="@{/}">Electronics Store</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/products}">Products</a>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="categoryMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Categories
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="categoryMenuDropdown">
+                        <li th:each="category : ${menuCategories ?: {}}">
+                            <a class="dropdown-item" th:href="@{/products/category/{id}(id=${category.categoryId})}" th:text="${category.name}">Category Name</a>
+                        </li>
+                        <li><hr class="dropdown-divider" th:if="${menuCategories != null and !menuCategories.isEmpty()}"></li>
+                        <li><a class="dropdown-item" th:href="@{/products}">All Products</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="brandMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Brands
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="brandMenuDropdown">
+                        <li th:each="brand : ${menuBrands ?: {}}">
+                            <a class="dropdown-item" th:href="@{/products/brand/{id}(id=${brand.brandId})}" th:text="${brand.name}">Brand Name</a>
+                        </li>
+                        <li><hr class="dropdown-divider" th:if="${menuBrands != null and !menuBrands.isEmpty()}"></li>
+                        <li><a class="dropdown-item" th:href="@{/products}">All Products</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                    <a class="nav-link dropdown-toggle text-danger" href="#" id="adminMenuDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Admin Panel
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="adminMenuDropdown">
+                        <li><h6 class="dropdown-header">Management</h6></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt fa-fw me-2"></i>Dashboard</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/users}"><i class="fas fa-users fa-fw me-2"></i>Users</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/products}"><i class="fas fa-box-open fa-fw me-2"></i>Products</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/categories}"><i class="fas fa-sitemap fa-fw me-2"></i>Categories</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/brands}"><i class="fas fa-tags fa-fw me-2"></i>Brands</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/warranties}"><i class="fas fa-shield-alt fa-fw me-2"></i>Warranties</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/orders}"><i class="fas fa-receipt fa-fw me-2"></i>Orders</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><h6 class="dropdown-header">Add New</h6></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/products/add}"><i class="fas fa-plus fa-fw me-2"></i>Product</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/categories/add}"><i class="fas fa-plus fa-fw me-2"></i>Category</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/brands/add}"><i class="fas fa-plus fa-fw me-2"></i>Brand</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/warranties/add}"><i class="fas fa-plus fa-fw me-2"></i>Warranty</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center"> <li class="nav-item me-2"> <form th:action="@{/search}" method="get" class="d-flex">
+                <input type="text" class="form-control form-control-sm" name="q" placeholder="Search..." required aria-label="Search">
+                <button type="submit" class="btn btn-outline-secondary btn-sm ms-1" aria-label="Search">
+                    <i class="fas fa-search"></i>
                 </button>
+            </form>
+            </li>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav nav-tabs">
+                <li class="nav-item me-2"> <a th:href="@{/cart}" class="nav-link position-relative" title="Shopping Cart">
+                    <i class="fas fa-shopping-cart fs-5"></i> <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                                                    th:text="${cartItemCount ?: '0'}">0</span>
+                </a>
+                </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link" th:href="@{/}">Home</a>
-                        </li>
-
-                        <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
-                            <div class="dropdown me-1">
-                                <a class="nav-link dropdown-toggle" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">
-                                    Admin </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" th:href="@{/admin/dashboard}">Dashboard</a></li>
-                                    <li><a class="dropdown-item" th:href="@{/admin/users}">View Users</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" th:href="@{/admin/products}">Manage Products</a></li>
-                                    <li><a class="dropdown-item" th:href="@{/admin/categories}">Manage Categories</a></li>
-                                    <li><a class="dropdown-item" th:href="@{/admin/brands}">Manage Brands</a></li>
-                                    <li><a class="dropdown-item" th:href="@{/admin/warranties}">Manage Warranties</a></li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
-                            <div class="dropdown me-1">
-                                <a class="nav-link dropdown-toggle" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">
-                                    Add
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" th:href="@{/admin/products/add}">Product</a></li>
-                                    <li><a class="dropdown-item" th:href="@{/admin/brands/add}">Brand</a></li>
-                                    <li><a class="dropdown-item" th:href="@{/admin/categories/add}">Category</a></li>
-                                    <li><a class="dropdown-item" th:href="@{/admin/warranties/add}">Warranty</a></li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li class="nav-item" th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
-                            <a class="nav-link" th:href="@{/user/profile}">Profile</a>
-                        </li>
-
-                        <li class="nav-item" >
-                            <a class="nav-link" th:href="@{/products}">Product</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
-                               href="#">Category</a>
-                            <div>
-                                <ul class="dropdown-menu">
-                                    <li th:each="category : ${menuCategories ?: {}}"> <a class="dropdown-item"
-                                                                                         th:href="@{/products/category/{id}(id=${category.categoryId})}"
-                                                                                         th:text="${category.name}"></a>
-                                    </li>
-                                    <li><hr class="dropdown-divider" th:if="${menuCategories != null and !menuCategories.isEmpty()}"></li>
-                                    <li><a class="dropdown-item" th:href="@{/products}">All Products</a></li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
-                               href="#">Brand</a>
-                            <div>
-                                <ul class="dropdown-menu">
-                                    <li th:each="brand : ${menuBrands ?: {}}"> <a class="dropdown-item" th:href="@{/products/brand/{id}(id=${brand.brandId})}"
-                                                                                  th:text="${brand.name}"></a>
-                                    </li>
-                                    <li><hr class="dropdown-divider" th:if="${menuBrands != null and !menuBrands.isEmpty()}"></li>
-                                    <li><a class="dropdown-item" th:href="@{/products}">All Products</a></li>
-                                </ul>
-                            </div>
-                        </li>
-
-                        <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
-                            <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                Account
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="accountDropdown">
-                                <li><a class="dropdown-item" th:href="@{/user/profile}">Profile</a></li>
-                                <li><a class="dropdown-item" th:href="@{/orders}">Orders</a></li>
-                                <li><a class="dropdown-item" th:href="@{/user/verify-warranty}">Verify Warranty</a></li>
-                                <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item"
-                            th:if="${#authorization.expression('!isAuthenticated()')}">
-                            <a class="nav-link" th:href="@{/register}">Register</a>
-                        </li>
-                        <li class="nav-item" th:if="${#authorization.expression('!isAuthenticated()')}">
-                            <a class="nav-link" th:href="@{/login}">Login</a>
+                <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user me-1"></i>
+                        <span th:text="${#authentication.name}">Username</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                        <li><a class="dropdown-item" th:href="@{/user/profile}"><i class="fas fa-user-circle fa-fw me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" th:href="@{/order/history}"><i class="fas fa-box fa-fw me-2"></i>Order History</a></li>
+                        <li><a class="dropdown-item" th:href="@{/user/addresses}"><i class="fas fa-map-marker-alt fa-fw me-2"></i>Addresses</a></li>
+                        <li><a class="dropdown-item" th:href="@{/user/verify-warranty}"><i class="fas fa-shield-alt fa-fw me-2"></i>Verify Warranty</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout</button>
+                            </form>
                         </li>
                     </ul>
-                </div>
-            </div>
-        </nav>
+                </li>
 
-        <div>
-            <a th:href="@{/cart}" class="position-relative btn btn-warning">
-                <img src="/images/cart-icons.png" alt="Cart" width="32" height="32">
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                      th:text="${cartItemCount ?: '0'}">0</span> </a>
-        </div>
+                <li class="nav-item" th:if="${#authorization.expression('!isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/register}">Register</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('!isAuthenticated()')}">
+                    <a class="btn btn-outline-primary btn-sm" th:href="@{/login}">Login</a>
+                </li>
 
-        <div class="d-flex align-items-center">
-            <form th:action="@{/search}" method="get" class="d-flex">
-                <input type="text" class="form-control me-2" name="q" placeholder="Search for products..." required>
-                <button type="submit" class="btn btn-danger">Search</button>
-            </form>
-        </div>
+            </ul></div></div></nav>
 
-    </div>
+</body>
+</html>

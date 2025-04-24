@@ -1,0 +1,297 @@
+/* Enhanced Carousel/Slider Styling */
+.carousel {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-item {
+    height: 400px;
+}
+
+.carousel-item img {
+    object-fit: cover;
+    height: 100%;
+    filter: brightness(1.1); /* Slightly increase image brightness */
+}
+
+.carousel-caption {
+    background: rgba(255, 255, 255, 0.55) !important; /* Light background */
+    border-radius: 15px;
+    padding: 25px !important;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    max-width: 600px;
+    margin: 0 auto;
+    bottom: 2rem;
+}
+
+.carousel-caption h5 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #2937f0; /* Primary brand color */
+    text-shadow: none;
+}
+
+.carousel-caption p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    color: #333; /* Dark text for contrast */
+    text-shadow: none;
+}
+
+.carousel-caption .btn {
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-indicators {
+    bottom: 1rem;
+}
+
+.carousel-indicators button {
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 50% !important;
+    margin: 0 5px !important;
+    background-color: rgba(41, 55, 240, 0.5) !important; /* Using brand color */
+    border: 2px solid rgba(41, 55, 240, 0.8) !important;
+    transition: all 0.3s ease;
+}
+
+.carousel-indicators button.active {
+    background-color: #2937f0 !important;
+    transform: scale(1.2);
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 10%;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.carousel:hover .carousel-control-prev,
+.carousel:hover .carousel-control-next {
+    opacity: 0.8;
+}
+
+/* Custom control icons for better visibility */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(41, 55, 240, 0.7);
+    border-radius: 50%;
+    padding: 1.5rem;
+}
+
+/* Product Cards Specific Styling */
+.card-img-top {
+    height: 200px;
+    object-fit: contain; /* Changed from 'cover' to 'contain' to prevent cropping */
+    padding: 10px; /* Added padding to prevent image from touching the edges */
+    transition: transform 0.5s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+/* Section Titles Specific to Index */
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(45deg, #2937f0, #9f1ae2);
+    border-radius: 3px;
+}
+
+/* Trust Badge Section */
+.trust-badge-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 15px;
+    margin: 2rem 0;
+    padding: 3rem 0 !important;
+}
+
+.trust-badge-section i {
+    background: linear-gradient(45deg, #2937f0, #9f1ae2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+/* Category Links */
+.category-links-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
+    border-radius: 15px;
+    padding: 2rem 0 !important;
+}
+
+.category-link-btn {
+    border-radius: 25px;
+    padding: 8px 20px;
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+
+.category-link-btn:hover {
+    background: linear-gradient(45deg, #2937f0, #9f1ae2);
+    color: white;
+    border-color: transparent;
+}
+
+/* Animation for loading */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Responsive adjustments for slider */
+@media (max-width: 768px) {
+    .carousel-item {
+        height: 300px;
+    }
+
+    .carousel-caption {
+        padding: 15px !important;
+        bottom: 1rem;
+    }
+
+    .carousel-caption h5 {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .carousel-caption p {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+/* Enhanced Add to Cart Button for Index Page */
+.featured-products .btn-outline-primary.btn-sm,
+.new-products .btn-outline-primary.btn-sm {
+    background: white;
+    border: none;
+    color: #2937f0;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    box-shadow: 0 2px 10px rgba(41, 55, 240, 0.1);
+}
+
+/* Gradient border effect */
+.featured-products .btn-outline-primary.btn-sm::before,
+.new-products .btn-outline-primary.btn-sm::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: linear-gradient(45deg, #2937f0, #9f1ae2);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    border-radius: 25px;
+}
+
+/* Hover effect */
+.featured-products .btn-outline-primary.btn-sm:hover,
+.new-products .btn-outline-primary.btn-sm:hover {
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(41, 55, 240, 0.2);
+}
+
+/* Background gradient on hover */
+.featured-products .btn-outline-primary.btn-sm::after,
+.new-products .btn-outline-primary.btn-sm::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #2937f0, #9f1ae2);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+    border-radius: 25px;
+}
+
+.featured-products .btn-outline-primary.btn-sm:hover::after,
+.new-products .btn-outline-primary.btn-sm:hover::after {
+    opacity: 1;
+}
+
+/* Cart icon styling */
+.featured-products .btn-outline-primary.btn-sm .fa-cart-plus,
+.new-products .btn-outline-primary.btn-sm .fa-cart-plus {
+    margin-right: 8px;
+    transition: transform 0.4s ease;
+}
+
+/* Cart icon animation on hover */
+.featured-products .btn-outline-primary.btn-sm:hover .fa-cart-plus,
+.new-products .btn-outline-primary.btn-sm:hover .fa-cart-plus {
+    transform: scale(1.2) rotate(-10deg);
+}
+
+/* Active state */
+.featured-products .btn-outline-primary.btn-sm:active,
+.new-products .btn-outline-primary.btn-sm:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(41, 55, 240, 0.15);
+}
+
+/* Loading state animation */
+@keyframes buttonShine {
+    0% {
+        transform: translateX(-100%);
+    }
+    50%, 100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Shine effect */
+.featured-products .btn-outline-primary.btn-sm::before,
+.new-products .btn-outline-primary.btn-sm::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: buttonShine 2s linear infinite;
+}

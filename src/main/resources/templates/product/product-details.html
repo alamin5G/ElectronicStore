@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{layout/header :: head}">
+<head th:replace="~{layout/header :: head(~{::link})}">
     <link rel="stylesheet" th:href="@{/css/product-details.css}">
 </head>
 
@@ -115,7 +115,10 @@
                 <div class="card-body">
                     <h5 class="card-title fs-6"><a th:href="@{/products/{id}(id=${prod.productId})}" class="text-decoration-none text-dark stretched-link" th:text="${prod.name}"></a></h5>
                     <p class="card-text fw-bold text-primary mb-3" th:text="'৳' + ${#numbers.formatDecimal(prod.price, 1, 'COMMA', 2, 'POINT')}"></p>
-                    <form th:action="@{/cart/add/{id}(id=${prod.productId})}" method="post" class="mt-auto d-grid"><input type="hidden" name="quantity" value="1"><button class="btn btn-outline-primary btn-sm" type="submit"><i class="fas fa-cart-plus me-1"></i> Add to Cart</button></form>
+                    <form th:action="@{/cart/add/{id}(id=${prod.productId})}" method="post" class="mt-auto d-grid">
+                        <input type="hidden" name="quantity" value="1">
+                        <button class="btn btn-outline-primary btn-sm" type="submit"><i class="fas fa-cart-plus me-1"></i> Add to Cart</button>
+                    </form>
                 </div>
             </div>
         </div>

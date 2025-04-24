@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="head">
+<head th:fragment="head(additionalCss)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Your one-stop shop for the latest gadgets and electronics in Bangladesh.">
@@ -16,6 +16,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous" defer></script>
 
     <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <!-- Page specific CSS can be included here -->
+
+
+    <!-- Additional CSS -->
+    <th:block th:replace="${additionalCss}">
+    </th:block>
+
+
     <!-- Prevent right-click on images -->
     <script>
         document.addEventListener('contextmenu', function(event) {

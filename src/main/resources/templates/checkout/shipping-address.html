@@ -44,7 +44,7 @@
                                        th:value="${address.addressId}" required
                                        th:checked="${selectedAddressId == address.addressId}">
                                 <p class="mb-1 fw-bold" th:text="${address.street}"></p>
-                                <p class="mb-1 small" th:text="${address.city + ', ' + address.postalCode}"></p>
+                                <p class="mb-1 small" th:text="${address.city + ', ' + address.postalCode +', ' + address.state}"></p>
                                 <div class="mt-2">
                                     <span th:if="${address.defaultShipping}" class="badge bg-success me-1">Default Shipping</span>
                                     <span th:if="${address.defaultBilling}" class="badge bg-info text-dark">Default Billing</span>

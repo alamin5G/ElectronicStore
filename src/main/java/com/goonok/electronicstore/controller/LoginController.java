@@ -1,13 +1,10 @@
 package com.goonok.electronicstore.controller;
 
-import com.goonok.electronicstore.model.Product;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
 import com.goonok.electronicstore.service.GreetingService;
 import com.goonok.electronicstore.service.ProductService;
 import com.goonok.electronicstore.service.SecurityService;
-import com.goonok.electronicstore.service.ShoppingCartService;
-import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +32,6 @@ public class LoginController {
 
     @Autowired
     private ProductService productService;
-    @Autowired
-    private ShoppingCartService shoppingCartService;
 
     @GetMapping("/login")
     public String showLoginForm(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -64,11 +59,11 @@ public class LoginController {
             log.info("role not null: " + role);
             if (role.equals("[ROLE_ADMIN]")) {
                 //set the greetings
-                redirectAttributes.addFlashAttribute("successMessage", greetingService.greet(LocalTime.now()) + ", " + loginUserName + "!" );
+                redirectAttributes.addFlashAttribute("successMessage", greetingService.greet(LocalTime.now()) + ", " + user.get().getName() + "!" );
                 log.info("role admin redirected to admin/dashboard");
                 return "redirect:/admin/dashboard";
             } else if (role.equals("[ROLE_USER]")) {
-                redirectAttributes.addFlashAttribute("successMessage", greetingService.greet(LocalTime.now()) + ", " + loginUserName + "!" );
+                redirectAttributes.addFlashAttribute("successMessage", greetingService.greet(LocalTime.now()) + ", " + user.get().getName() + "!" );
                 log.info("role admin redirected to user/profile");
                 return "redirect:/user/profile";
             }
