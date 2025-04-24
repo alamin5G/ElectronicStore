@@ -3,7 +3,7 @@ package com.goonok.electronicstore.service;
 import com.goonok.electronicstore.model.Product;
 import com.goonok.electronicstore.model.ShoppingCartItem;
 import com.goonok.electronicstore.model.User;
-import com.goonok.electronicstore.repository.ShoppingCartRepository;
+import com.goonok.electronicstore.repository.ShoppingCartItemRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,17 +16,17 @@ import java.util.Optional;
 public class ShoppingCartService {
 
     @Autowired
-    private ShoppingCartRepository shoppingCartRepository;
+    private ShoppingCartItemRepository shoppingCartItemRepository;
 
     public List<ShoppingCartItem> getCartItemsByUser(User user) {
-        return shoppingCartRepository.findByUser(user);
+        return shoppingCartItemRepository.findByUser(user);
     }
 
 
 
     public void addOrUpdateCartItem(User user, Product product, int quantity) {
         // Check if the specific product already exists in the user's cart
-        Optional<ShoppingCartItem> cartItemOptional = shoppingCartRepository.findByUser_UserIdAndProduct_ProductId(user.getUserId(), product.getProductId());
+        Optional<ShoppingCartItem> cartItemOptional = shoppingCartItemRepository.findByUser_UserIdAndProduct_ProductId(user.getUserId(), product.getProductId());
         log.info("cartItemOptional this should be empty: " + cartItemOptional.isEmpty());
         if (cartItemOptional.isPresent()) {
             // Update the quantity if the item exists
@@ -39,7 +39,7 @@ public class ShoppingCartService {
             }
 
             existingItem.setQuantity(newQuantity);
-            shoppingCartRepository.save(existingItem);
+            shoppingCartItemRepository.save(existingItem);
         } else {
 
                 ShoppingCartItem newCartItem = new ShoppingCartItem();
@@ -51,7 +51,7 @@ public class ShoppingCartService {
                 }
 
                 newCartItem.setQuantity(quantity);
-                shoppingCartRepository.save(newCartItem);
+                shoppingCartItemRepository.save(newCartItem);
 
 
 
@@ -60,14 +60,14 @@ public class ShoppingCartService {
 
 
     public void clearCartForUser(User user) {
-        shoppingCartRepository.deleteByUser_UserId(user.getUserId());
+        shoppingCartItemRepository.deleteByUser_UserId(user.getUserId());
     }
 
     public int getCartItemCountByUser(User user) {
-        return shoppingCartRepository.countByUser(user);
+        return shoppingCartItemRepository.countByUser(user);
     }
 
     public void removeCartItemById(Long cartId) {
-        shoppingCartRepository.deleteById(cartId);
+        shoppingCartItemRepository.deleteById(cartId);
     }
 }

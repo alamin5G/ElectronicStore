@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull; // Added
 import lombok.Data;
 import lombok.EqualsAndHashCode; // Added
 import lombok.ToString;         // Added
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal; // Added
 
@@ -38,5 +40,12 @@ public class ShoppingCartItem { // Renamed class
     @Column(nullable = false, precision = 10, scale = 2) // Added field and constraints
     private BigDecimal pricePerItem; // Added: Price at time of adding
 
-    // Removed cartExpiryTimestamp, createdAt, updatedAt, @PrePersist, @PreUpdate for simplicity
+    // Inside ShoppingCartItem class
+
+    @Column(nullable = false, updatable = false) // Ensure created date isn't updated
+    @CreationTimestamp
+    private java.time.LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private java.time.LocalDateTime updatedAt;
 }
