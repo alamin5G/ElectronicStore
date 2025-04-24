@@ -1,0 +1,22 @@
+.address-card-selectable {
+    cursor: pointer;
+    border: 2px solid transparent; /* Start transparent */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.address-card-selectable:hover {
+    border-color: #cfe2ff; /* Light blue border on hover */
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Subtle glow */
+}
+.address-card-selectable.selected {
+    border-color: var(--bs-primary); /* Primary blue border when selected */
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.5); /* Stronger glow */
+    background-color: #e7f1ff; /* Light blue background */
+}
+.address-card-selectable input[type="radio"] {
+    display: none; /* Hide the actual radio button */
+}
+/* Style for sidebar */
+.profile-actions .list-group-item { border-left: 0; border-right: 0; }
+.profile-actions .list-group-item:first-child { border-top-left-radius: 0; border-top-right-radius: 0; border-top: 0;}
+.profile-actions .list-group-item:last-child { border-bottom-left-radius: var(--bs-card-inner-border-radius); border-bottom-right-radius: var(--bs-card-inner-border-radius); border-bottom: 0;}
+.profile-actions .list-group-item i { width: 20px; text-align: center; margin-right: 0.5rem; }

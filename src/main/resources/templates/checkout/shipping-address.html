@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/shipping-address.css}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <h2 class="mb-4">Checkout</h2>
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">Shipping Address</li>
+            <li class="breadcrumb-item">Payment Method</li>
+            <li class="breadcrumb-item">Review Order</li>
+        </ol>
+    </nav>
+
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <form th:action="@{/checkout/shipping/select}" method="post">
+        <div class="row">
+            <div class="col-lg-8">
+                <h4 class="mb-3">Select Shipping Address</h4>
+
+                <div th:if="${addresses == null or addresses.isEmpty()}">
+                    <div class="alert alert-warning" role="alert">
+                        You have no saved addresses. Please <a th:href="@{/user/addresses/add(redirect='checkout')}" class="alert-link">add an address</a> to continue.
+                    </div>
+                </div>
+
+                <div class="row" th:unless="${addresses == null or addresses.isEmpty()}">
+                    <div class="col-md-6 mb-3" th:each="address : ${addresses}">
+                        <label th:for="'address_' + ${address.addressId}" class="card shadow-sm address-card-selectable h-100"
+                               th:classappend="${selectedAddressId == address.addressId} ? 'selected'">
+                            <div class="card-body">
+                                <input type="radio" name="selectedAddressId" th:id="'address_' + ${address.addressId}"
+                                       th:value="${address.addressId}" required
+                                       th:checked="${selectedAddressId == address.addressId}">
+                                <p class="mb-1 fw-bold" th:text="${address.street}"></p>
+                                <p class="mb-1 small" th:text="${address.city + ', ' + address.postalCode}"></p>
+                                <div class="mt-2">
+                                    <span th:if="${address.defaultShipping}" class="badge bg-success me-1">Default Shipping</span>
+                                    <span th:if="${address.defaultBilling}" class="badge bg-info text-dark">Default Billing</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <a th:href="@{/user/addresses/add(redirect='checkout/shipping')}" class="btn btn-outline-secondary btn-sm mt-2"
+                   th:unless="${addresses == null or addresses.isEmpty()}">
+                    <i class="fas fa-plus me-1"></i> Add New Address
+                </a>
+            </div><div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;"> <div class="card-header bg-light">
+                <h5 class="mb-0">Order Summary</h5>
+            </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-2">
+                            <span>Subtotal</span>
+                            <span th:text="'৳' + ${#numbers.formatDecimal(cartTotal ?: 0, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-2">
+                            <span>Shipping</span>
+                            <span class="text-muted small">Calculated next step</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center border-top fw-bold px-0 pt-3">
+                            <span>Estimated Total</span>
+                            <span th:text="'৳' + ${#numbers.formatDecimal(cartTotal ?: 0, 1, 'COMMA', 2, 'POINT')}">0.00</span>
+                        </li>
+                    </ul>
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary" th:disabled="${addresses == null or addresses.isEmpty()}">
+                            Continue to Payment <i class="fas fa-arrow-right ms-1"></i>
+                        </button>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a th:href="@{/checkout/cancel}" class="btn btn-link text-muted btn-sm">Cancel Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </div></div></form>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+<script>
+    // Optional JS to visually enhance radio button selection within cards
+    document.querySelectorAll('.address-card-selectable input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.address-card-selectable').forEach(card => card.classList.remove('selected'));
+            if (this.checked) {
+                this.closest('.address-card-selectable').classList.add('selected');
+            }
+        });
+    });
+</script>
+</body>
+</html>
