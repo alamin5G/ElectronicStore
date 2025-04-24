@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/user-sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/order-details.css}" media="screen">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <h2 class="mb-4">My Account</h2> <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+    <span th:text="${errorMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+    <div class="alert alert-warning text-center" th:if="${order == null and errorMessage == null}">
+        Could not load order details.
+    </div>
+
+
+    <div class="row" th:if="${order != null}">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0" th:text="'Order Details #' + ${order.orderNumber}">Order Details</h4>
+                <a th:href="@{/order/history}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Order History
+                </a>
+            </div>
+
+            <div class="card shadow-sm order-details-card">
+                <div class="card-header">
+                    Order Information
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Order Date:</dt>
+                        <dd class="col-sm-8" th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm')}">Date</dd>
+
+                        <dt class="col-sm-4">Order Status:</dt>
+                        <dd class="col-sm-8">
+                                 <span class="badge"
+                                       th:classappend="${order.status == T(com.goonok.electronicstore.enums.OrderStatus).DELIVERED ? 'bg-success' : (order.status == T(com.goonok.electronicstore.enums.OrderStatus).SHIPPED ? 'bg-info text-dark' : (order.status == T(com.goonok.electronicstore.enums.OrderStatus).CANCELLED ? 'bg-danger' : 'bg-warning text-dark'))}"
+                                       th:text="${order.status}">Status</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Payment Method:</dt>
+                        <dd class="col-sm-8" th:text="${order.paymentMethod}">COD</dd>
+
+                        <dt class="col-sm-4">Payment Status:</dt>
+                        <dd class="col-sm-8" th:text="${order.paymentStatus ?: 'N/A'}">Status</dd>
+
+                        <dt class="col-sm-4" th:if="${order.trackingNumber != null}">Tracking Number:</dt>
+                        <dd class="col-sm-8" th:if="${order.trackingNumber != null}" th:text="${order.trackingNumber}">TRK123</dd>
+
+                        <dt class="col-sm-4">Shipping Address:</dt>
+                        <dd class="col-sm-8">
+                            <span th:text="${order.shippingStreet}"></span><br>
+                            <span th:text="${order.shippingCity + ', ' + order.shippingPostalCode}"></span>
+                        </dd>
+
+                        <dt class="col-sm-4">Shipping Cost:</dt>
+                        <dd class="col-sm-8" th:text="'৳' + ${#numbers.formatDecimal(order.shippingCost ?: 0, 1, 'COMMA', 2, 'POINT')}">Cost</dd>
+
+                        <dt class="col-sm-4">Tax:</dt>
+                        <dd class="col-sm-8" th:text="'৳' + ${#numbers.formatDecimal(order.taxAmount ?: 0, 1, 'COMMA', 2, 'POINT')}">Tax</dd>
+
+                        <dt class="col-sm-4">Order Total:</dt>
+                        <dd class="col-sm-8 fw-bold h5" th:text="'৳' + ${#numbers.formatDecimal(order.totalAmount, 1, 'COMMA', 2, 'POINT')}">Total</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card shadow-sm order-details-card">
+                <div class="card-header">
+                    Items in this Order
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center" th:each="item : ${order.orderItems}">
+                            <div class="d-flex align-items-center">
+                                <img th:src="@{/product-images/{imageName}(imageName=${item.productImagePath ?: 'default-placeholder.png'})}"
+                                     th:alt="${item.productName}" class="img-thumbnail order-item-img-details me-3"
+                                     onerror="this.onerror=null; this.src='/images/default-placeholder.png';">
+                                <div>
+                                    <a th:href="@{/products/{id}(id=${item.productId})}" class="text-dark text-decoration-none fw-bold" th:text="${item.productName}">Product Name</a>
+                                    <small class="d-block text-muted" th:text="'Qty: ' + ${item.quantity} + ' @ ৳' + ${#numbers.formatDecimal(item.pricePerItem, 1, 'COMMA', 2, 'POINT')}"></small>
+                                </div>
+                            </div>
+                            <span class="fw-bold" th:text="'৳' + ${#numbers.formatDecimal(item.itemTotalPrice, 1, 'COMMA', 2, 'POINT')}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div><div th:replace="~{layout/user-sidebar :: sidebar}"></div>
+
+    </div></main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+
+</body>
+</html>

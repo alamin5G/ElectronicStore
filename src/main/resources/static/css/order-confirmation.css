@@ -1,0 +1,36 @@
+.order-summary-box {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.confirmation-icon {
+    color: #28a745;
+    font-size: 4rem;
+}
+
+.address-block {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.address-block div {
+    margin-bottom: 0.25rem;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #dee2e6 !important;
+    margin-bottom: 1rem;
+}
+
+dl.row dt {
+    color: #6c757d;
+}
+
+@media (max-width: 768px) {
+    .order-summary-box {
+        padding: 1rem !important;
+    }
+}
+.order-summary-box dt { font-weight: 600; }
+.order-summary-box dd { margin-bottom: 0.5rem; }

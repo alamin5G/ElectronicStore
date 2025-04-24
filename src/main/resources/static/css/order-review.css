@@ -1,0 +1,12 @@
+.review-section { margin-bottom: 1.5rem; }
+.review-section h5 { margin-bottom: 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+.review-summary dd { font-weight: 500; }
+/* Updated style for smaller image in review */
+.cart-item-img-review {
+    max-width: 50px; /* Smaller max width */
+    max-height: 50px; /* Smaller max height */
+    object-fit: contain;
+    margin-right: 0.75rem; /* Keep margin */
+    border: 1px solid #eee; /* Add subtle border */
+    padding: 2px; /* Small padding */
+}

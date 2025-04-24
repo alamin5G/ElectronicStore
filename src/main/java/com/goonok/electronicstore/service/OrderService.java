@@ -1,100 +1,53 @@
 package com.goonok.electronicstore.service;
 
+import com.goonok.electronicstore.dto.CheckoutDto;
+import com.goonok.electronicstore.dto.OrderDto;
 import com.goonok.electronicstore.enums.OrderStatus;
-import com.goonok.electronicstore.model.*;
-import com.goonok.electronicstore.repository.OrderRepository;
-import com.goonok.electronicstore.repository.OrderItemRepository;
-import com.goonok.electronicstore.repository.ProductRepository;
-import com.goonok.electronicstore.service.ShoppingCartService;
-import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.goonok.electronicstore.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+public interface OrderService {
 
-@Slf4j
-@Service
-public class OrderService {
+    /**
+     * Places a new order based on the user's cart and checkout details.
+     * This involves creating Order/OrderItems, reducing stock, clearing cart.
+     *
+     * @param userEmail   The email of the logged-in user.
+     * @param checkoutDto DTO containing selected shipping address and payment method.
+     * @return The created OrderDto.
+     */
+    OrderDto placeOrder(String userEmail, CheckoutDto checkoutDto);
 
-    @Autowired
-    private OrderRepository orderRepository;
+    /**
+     * Retrieves a specific order by its ID, ensuring it belongs to the user.
+     *
+     * @param userEmail The email of the logged-in user.
+     * @param orderId   The ID of the order to retrieve.
+     * @return The OrderDto.
+     * @throws ResourceNotFoundException if order not found or doesn't belong to user.
+     */
+    OrderDto getOrderByIdForUser(String userEmail, Long orderId);
 
-    @Autowired
-    private OrderItemRepository orderItemRepository;
+    /**
+     * Retrieves all orders for a specific user with pagination.
+     *
+     * @param userEmail The email of the logged-in user.
+     * @param pageable  Pagination information.
+     * @return A Page of OrderDto objects.
+     */
+    Page<OrderDto> getOrdersForUser(String userEmail, Pageable pageable);
 
-    @Autowired
-    private ShoppingCartService shoppingCartService;
-    @Autowired
-    private ProductRepository productRepository;
+    @Transactional(readOnly = true)
+    Page<OrderDto> getAllOrders(Pageable pageable);
+
+    @Transactional(readOnly = true)
+    OrderDto getOrderById(Long orderId);
 
     @Transactional
-    public void placeOrder(User user, List<ShoppingCartItem> cartItems, String shippingAddress) {
+    OrderDto updateOrderStatus(Long orderId, OrderStatus newStatus);
 
-        if (cartItems == null || cartItems.isEmpty()) {
-            throw new RuntimeException("Cart is empty. Cannot place order.");
-        }
-
-        if (shippingAddress == null || shippingAddress.isEmpty()) {
-            throw new RuntimeException("Shipping address is required.");
-        }
-
-        BigDecimal totalPrice = cartItems.stream()
-                .map(item -> item.getProduct().getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        // Create a new order
-        Order order = new Order();
-        order.setUser(user);
-        //  order.setShippingAddress(shippingAddress);
-        // order.setTotalPrice(totalPrice);
-        order.setStatus(OrderStatus.PENDING);
-        order.setPaymentStatus("UNPAID");
-        // order.setPaymentType("COD"); // Default to Cash on Delivery
-        order.setOrderDate(LocalDateTime.now());
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (ShoppingCartItem cartItem : cartItems) {
-            Product product = cartItem.getProduct();
-
-            // Validate stock quantity
-            if (product.getStockQuantity() < cartItem.getQuantity()) {
-                log.info("Not enough stock available for product: " + product.getName());
-                throw new RuntimeException("Not enough stock available for product: " + product.getName());
-            }
-
-            // Create an order item
-            OrderItem orderItem = new OrderItem();
-            orderItem.setProduct(product);
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPricePerItem(product.getPrice());
-            orderItem.setOrder(order);
-
-            orderItems.add(orderItem);
-
-            // Deduct stock quantity
-            product.setStockQuantity(product.getStockQuantity() - cartItem.getQuantity());
-            productRepository.save(product);
-        }
-
-        // Save the order and its items
-        order.setOrderItems(orderItems);
-        orderRepository.save(order);
-
-        // Clear the shopping cart
-        shoppingCartService.clearCartForUser(user);
-    }
-
-    public List<Order> getOrdersByUser(User user) {
-        return orderRepository.findByUser_UserId(user.getUserId());
-    }
-
-    public Order getOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-    }
+    // Add methods for admin order management later (e.g., updateStatus, getAllOrders)
 
 }

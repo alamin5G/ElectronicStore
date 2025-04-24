@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/order-review.css}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <h2 class="mb-4">Checkout - Review Your Order</h2>
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/checkout/shipping}">Shipping Address</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/checkout/payment}">Payment Method</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Review Order</li>
+        </ol>
+    </nav>
+
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${checkout == null or checkout.selectedShippingAddress == null or checkout.selectedPaymentMethod == null or checkout.checkoutCart == null or checkout.checkoutCart.items.isEmpty()}">
+        <div class="alert alert-warning text-center">
+            Checkout information is incomplete. Please <a th:href="@{/checkout/shipping}" class="alert-link">start the checkout process again</a>.
+        </div>
+    </div>
+
+    <div class="row" th:unless="${checkout == null or checkout.selectedShippingAddress == null or checkout.selectedPaymentMethod == null or checkout.checkoutCart == null or checkout.checkoutCart.items.isEmpty()}">
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm review-section">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">Shipping To</h5>
+                        <a th:href="@{/checkout/shipping}" class="btn btn-sm btn-outline-secondary">Change</a>
+                    </div>
+                    <div th:object="${checkout.selectedShippingAddress}" class="address-details">
+                        <p class="mb-1 fw-bold" th:text="*{recipientName ?: 'N/A'}"></p> <p class="mb-1" th:text="*{street}"></p>
+                        <p class="mb-1" th:text="*{city + ', ' + state + ' - ' + postalCode}"></p> <p class="mb-1" th:text="*{country}"></p> <p class="mb-0" th:if="*{recipientPhone != null}" th:text="'Phone: ' + *{recipientPhone}"></p> </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm review-section">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">Payment Method</h5>
+                        <a th:href="@{/checkout/payment}" class="btn btn-sm btn-outline-secondary">Change</a>
+                    </div>
+                    <p class="mb-0" th:text="${checkout.selectedPaymentMethod == 'COD' ? 'Cash on Delivery' : checkout.selectedPaymentMethod}">Payment Method</p>
+                    <small class="text-muted" th:if="${checkout.selectedPaymentMethod != 'COD'}">You may need to provide transaction details after placing the order.</small>
+                </div>
+            </div>
+
+            <div class="card shadow-sm review-section">
+                <div class="card-body">
+                    <h5 class="mb-3">Items in Order</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0" th:each="item : ${checkout.checkoutCart.items}"> <div class="d-flex align-items-center">
+                            <img th:src="@{/product-images/{imageName}(imageName=${item.productImagePath ?: 'default-placeholder.png'})}"
+                                 th:alt="${item.productName}" class="img-thumbnail cart-item-img-review me-3"
+                                 onerror="this.onerror=null; this.src='/images/default-placeholder.png';">
+                            <div>
+                                <span class="d-block" th:text="${item.productName}"></span>
+                                <small class="text-muted">
+                                    Qty: <strong th:text="${item.quantity}">1</strong> @ ৳<strong th:text="${#numbers.formatDecimal(item.pricePerItem, 1, 'COMMA', 2, 'POINT')}">0.00</strong>
+                                </small>
+                            </div>
+                        </div>
+                            <span class="fw-bold" th:text="'৳' + ${#numbers.formatDecimal(item.itemTotalPrice, 1, 'COMMA', 2, 'POINT')}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div><div class="col-lg-4">
+        <div class="card shadow-sm cart-summary sticky-top" style="top: 20px;">
+            <div class="card-header bg-white"><h5 class="mb-0">Order Summary</h5></div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush review-summary">
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-2">
+                        <span>Subtotal</span>
+                        <dd class="mb-0" th:text="'৳' + ${#numbers.formatDecimal(checkout.checkoutCart.cartTotalPrice, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-2">
+                        <span>Shipping</span>
+                        <dd class="mb-0" th:text="'৳' + ${#numbers.formatDecimal(shippingCostDisplay, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-2">
+                        <span>Tax (Est.)</span>
+                        <dd class="mb-0" th:text="'৳' + ${#numbers.formatDecimal(taxAmountDisplay, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-top fw-bold px-0 pt-3">
+                        <span>Total</span>
+                        <dd class="mb-0 h5 text-primary" th:text="'৳' + ${#numbers.formatDecimal(finalTotalAmount, 1, 'COMMA', 2, 'POINT')}">0.00</dd>
+                    </li>
+                </ul>
+
+                <form th:action="@{/checkout/place-order}" method="post" class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Place Your Order
+                    </button>
+                </form>
+                <div class="text-center mt-3">
+                    <a th:href="@{/checkout/cancel}" class="btn btn-link text-muted btn-sm">Cancel Order</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+<link rel="stylesheet" type="text/css" th:href="@{/css/order-review.css}"/>
+</body>
+</html>

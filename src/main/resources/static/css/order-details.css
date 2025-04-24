@@ -1,0 +1,11 @@
+.order-details-card { margin-bottom: 1.5rem; }
+.order-details-card .card-header { background-color: #f8f9fa; }
+.order-details-card dt { font-weight: 600; }
+.order-details-card dd { margin-bottom: 0.5rem; }
+.order-item-img-details { max-width: 60px; max-height: 60px; object-fit: contain; }
+.order-timeline { position: relative; padding-left: 1.5rem; }
+.order-timeline::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background-color: #dee2e6; }
+.order-timeline .timeline-item { position: relative; margin-bottom: 1rem; }
+.order-timeline .timeline-item::before { content: ''; position: absolute; left: -23px; /* Adjust based on icon size */ top: 5px; width: 10px; height: 10px; background-color: #adb5bd; border-radius: 50%; }
+.order-timeline .timeline-item.completed::before { background-color: var(--bs-success); }
+.order-timeline .timeline-item.cancelled::before { background-color: var(--bs-danger); }

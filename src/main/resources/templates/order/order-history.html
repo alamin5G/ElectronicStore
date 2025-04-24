@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/user-sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/order-history.css}" media="screen">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <h2 class="mb-4">My Account</h2>
+    
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar -->
+        <div th:replace="~{layout/user-sidebar :: sidebar}"></div>
+
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Order History</h4>
+                </div>
+
+                <div class="card-body p-0">
+                    <!-- No Orders Message -->
+                    <div th:if="${orderPage == null or orderPage.empty}" class="text-center p-5">
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                            <h5>No Orders Yet</h5>
+                            <p class="text-muted">You haven't placed any orders yet.</p>
+                            <a th:href="@{/products}" class="btn btn-primary">Start Shopping</a>
+                        </div>
+                    </div>
+
+                    <!-- Orders List -->
+                    <div th:unless="${orderPage == null or orderPage.empty}" class="order-list">
+                        <div th:each="order : ${orderPage.content}" class="order-item border-bottom">
+                            <!-- Order Header -->
+                            <div class="order-header px-3 pt-3 pb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="order-number fw-bold" th:text="'Order #' + ${order.orderNumber}"></span>
+                                    <span class="badge rounded-pill"
+                                          th:classappend="${
+                                            order.status == T(com.goonok.electronicstore.enums.OrderStatus).DELIVERED ? 'bg-success' :
+                                            order.status == T(com.goonok.electronicstore.enums.OrderStatus).SHIPPED ? 'bg-info' :
+                                            order.status == T(com.goonok.electronicstore.enums.OrderStatus).CANCELLED ? 'bg-danger' :
+                                            'bg-warning text-dark'}"
+                                          th:text="${order.status}">
+                                    </span>
+                                </div>
+                                <div class="text-muted small" th:text="'Ordered on: ' + ${#temporals.format(order.orderDate, 'dd MMM yyyy')}"></div>
+                            </div>
+
+                            <!-- Order Items -->
+                            <div class="px-3 pb-3">
+                                <div th:each="item, iterStat : ${order.orderItems}" 
+                                     th:if="${iterStat.index < 2}"
+                                     class="d-flex align-items-center mb-2">
+                                    <!-- Product Image -->
+                                    <div class="product-image">
+                                        <img th:src="@{/product-images/{imageName}(imageName=${item.productImagePath ?: 'default-placeholder.png'})}"
+                                             class="product-thumbnail"
+                                             th:alt="${item.productName}">
+                                    </div>
+                                    <!-- Product Details -->
+                                    <div class="product-details ms-3 flex-grow-1">
+                                        <div class="product-name" th:text="${item.productName}"></div>
+                                        <div class="text-muted small">Quantity: <span th:text="${item.quantity}"></span></div>
+                                        <div class="text-muted small" th:text="'৳' + ${#numbers.formatDecimal(item.itemTotalPrice, 1, 'COMMA', 2, 'POINT')}"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <a th:href="@{/order/{orderId}(orderId=${order.orderId})}"
+                                           class="btn btn-outline-primary btn-sm">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- More Items Indicator -->
+                                <div th:if="${order.orderItems.size() > 2}" class="text-muted small ms-2">
+                                    <span th:text="'+ ' + (${order.orderItems.size() - 2}) + ' more items'"></span>
+                                </div>
+                                
+                                <!-- Order Footer -->
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination -->
+                    <nav th:if="${orderPage != null and orderPage.totalPages > 1}" 
+                         class="pagination-container p-3">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            <li class="page-item" th:classappend="${orderPage.first} ? 'disabled'">
+                                <a class="page-link" th:href="@{/order/history(page=${orderPage.number - 1})}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, orderPage.totalPages - 1)}"
+                                th:classappend="${pageNum == orderPage.number} ? 'active'">
+                                <a class="page-link" th:href="@{/order/history(page=${pageNum})}"
+                                   th:text="${pageNum + 1}">
+                                </a>
+                            </li>
+                            <li class="page-item" th:classappend="${orderPage.last} ? 'disabled'">
+                                <a class="page-link" th:href="@{/order/history(page=${orderPage.number + 1})}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+</body>
+</html>

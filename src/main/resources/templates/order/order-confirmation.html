@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/order-confirmation.css}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <div class="alert alert-success text-center" role="alert" th:if="${successMessage}">
+        <h4 class="alert-heading">Thank You!</h4>
+        <p class="mb-0" th:text="${successMessage}">Order placed successfully!</p>
+    </div>
+    <div class="alert alert-danger text-center" role="alert" th:if="${errorMessage}">
+        <p class="mb-0" th:text="${errorMessage}">Could not load order details.</p>
+    </div>
+
+    <div class="text-center mt-4 mb-5" th:if="${order != null}">
+        <i class="fas fa-check-circle confirmation-icon mb-3"></i>
+        <h3>Your Order Has Been Placed!</h3>
+        <p class="lead">We've received your order and will start processing it shortly.</p>
+        <p>Your Order Number is: <strong th:text="${order.orderNumber}">ORD-12345</strong></p>
+        <p th:if="${order.paymentMethod != 'COD'}">
+            If you selected BKash or Nagad, please follow the payment instructions sent to your email or contact support with your Order Number and Transaction ID.
+        </p>
+        <p th:if="${order.paymentMethod == 'COD'}">
+            Please keep the exact amount ready for payment upon delivery.
+        </p>
+    </div>
+
+    <div class="row justify-content-center" th:if="${order != null}">
+        <div class="col-lg-8">
+            <div class="order-summary-box p-4 mb-4">
+                <h5 class="mb-4">Order Summary</h5>
+                
+                <div class="row">
+                    <!-- Order Details -->
+                    <div class="col-12 mb-4">
+                        <h6 class="border-bottom pb-2">Order Details</h6>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Order Number:</dt>
+                            <dd class="col-sm-8" th:text="${order.orderNumber}">ORD-12345</dd>
+
+                            <dt class="col-sm-4">Order Date:</dt>
+                            <dd class="col-sm-8" th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm')}">Date</dd>
+
+                            <dt class="col-sm-4">Payment Method:</dt>
+                            <dd class="col-sm-8" th:text="${order.paymentMethod}">COD</dd>
+                        </dl>
+                    </div>
+
+                    <!-- Shipping Information -->
+                    <div class="col-md-6 mb-4">
+                        <h6 class="border-bottom pb-2">Shipping To</h6>
+                        <div class="address-block">
+                            <div class="fw-bold" th:text="${order.shippingName}">Receiver Name</div>
+                            <div th:text="${order.shippingStreet}">Street Address</div>
+                            <div th:text="${order.shippingCity + ', ' + (order.shippingState ?: '')}">City, State</div>
+                            <div th:text="${order.shippingPostalCode}">Postal Code</div>
+                            <div th:text="${order.shippingCountry ?: 'Bangladesh'}">Country</div>
+                            <div th:if="${order.shippingPhone != null and order.shippingPhone != 'N/A'}" 
+                                 th:text="'Phone: ' + ${order.shippingPhone}">Phone</div>
+                        </div>
+                    </div>
+
+                    <!-- Billing Information -->
+                    <div class="col-md-6 mb-4">
+                        <h6 class="border-bottom pb-2">Billing To</h6>
+                        <div class="address-block">
+                            <div th:if="${billingAddress != null}">
+                                <div class="fw-bold" th:text="${billingAddress.recipientName}">Billing Name</div>
+                                <div th:text="${billingAddress.street}">Billing Street</div>
+                                <div th:text="${billingAddress.city + ', ' + billingAddress.state}">Billing City, State</div>
+                                <div th:text="${billingAddress.postalCode}">Billing Postal Code</div>
+                                <div th:text="${billingAddress.country}">Billing Country</div>
+                                <div th:text="'Phone: ' + ${billingAddress.recipientPhone}">Billing Phone</div>
+                            </div>
+                            <!-- Fallback to shipping address if no billing address is found -->
+                            <div th:if="${billingAddress == null}">
+                                <div class="fw-bold" th:text="${order.shippingName}">Shipping Name</div>
+                                <div th:text="${order.shippingStreet}">Shipping Street</div>
+                                <div th:text="${order.shippingCity + ', ' + order.shippingState}">Shipping City, State</div>
+                                <div th:text="${order.shippingPostalCode}">Shipping Postal Code</div>
+                                <div th:text="${order.shippingCountry ?: 'Bangladesh'}">Shipping Country</div>
+                                <div th:if="${order.shippingPhone != null and order.shippingPhone != 'N/A'}" 
+                                     th:text="'Phone: ' + ${order.shippingPhone}">Shipping Phone</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2">Amount Details</h6>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Subtotal:</dt>
+                            <dd class="col-sm-8" th:text="'৳' + ${#numbers.formatDecimal(order.totalAmount - order.shippingCost - (order.taxAmount ?: 0), 1, 'COMMA', 2, 'POINT')}">Subtotal</dd>
+
+                            <dt class="col-sm-4">Shipping Cost:</dt>
+                            <dd class="col-sm-8" th:text="'৳' + ${#numbers.formatDecimal(order.shippingCost, 1, 'COMMA', 2, 'POINT')}">Shipping</dd>
+
+                            <dt class="col-sm-4" th:if="${order.taxAmount}">Tax:</dt>
+                            <dd class="col-sm-8" th:if="${order.taxAmount}" th:text="'৳' + ${#numbers.formatDecimal(order.taxAmount, 1, 'COMMA', 2, 'POINT')}">Tax</dd>
+
+                            <dt class="col-sm-4">Total Amount:</dt>
+                            <dd class="col-sm-8 fw-bold" th:text="'৳' + ${#numbers.formatDecimal(order.totalAmount, 1, 'COMMA', 2, 'POINT')}">Total</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a th:href="@{/order/history}" class="btn btn-outline-secondary me-2">View Order History</a>
+                <a th:href="@{/products}" class="btn btn-primary">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+</body>
+</html>
