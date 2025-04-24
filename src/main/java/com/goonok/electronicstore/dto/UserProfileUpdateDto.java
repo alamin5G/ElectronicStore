@@ -6,24 +6,23 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-
 @Data
 public class UserProfileUpdateDto {
 
-    private long id;
+    private Long id; // Changed from long to Long, added based on user's example
 
     @NotEmpty(message = "Name is required")
-    @Size(min = 3, message = "at least 3 characters to be a name")
-    private String fullName;
+    // Updated Size constraint based on user's example
+    @Size(min = 3, max = 50, message = "Full Name must be between 3 and 50 characters")
+    private String name;
 
-    @NotEmpty(message = "email is required")
-    @Email(message = "Please provide a valid email address")
-    private String email;
 
+    // Renamed field to 'phone' and updated constraints based on user's example
     @NotEmpty(message = "phone is required")
-    @Size(min = 11, max = 11, message = "Phone number can't be less or more than 11 digits")
-    @Pattern(regexp = "^\\+?[0-9. ()-]{11}$", message = "Phone number is invalid")
-    private String phone;
+    @Size(min = 11, max = 11, message = "Phone number can not be less or more than 11 digits")
+    @Pattern(regexp = "^(01[3-9]\\d{8})$", message = "Phone number must be a valid 11-digit Bangladeshi number starting with 01") // Using BD specific pattern
+    private String phone; // Renamed from phoneNumber
 
-    // No password field, as we are not updating the password here
+    // Password updates should be handled via a separate DTO and endpoint
+    // for security (requiring old password confirmation).
 }

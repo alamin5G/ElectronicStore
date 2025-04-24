@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="sidebar" class="col-lg-4 mb-4 mb-lg-0">
+    <div class="card shadow-sm profile-actions">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Account Actions</h5>
+        </div>
+        <div class="list-group list-group-flush">
+            <a th:href="@{/user/profile}" class="list-group-item list-group-item-action">
+                <i class="fas fa-user-circle"></i> View Profile
+            </a>
+            <a th:href="@{/user/edit-profile}" class="list-group-item list-group-item-action">
+                <i class="fas fa-edit"></i> Edit Profile
+            </a>
+            <a th:href="@{/user/addresses}" class="list-group-item list-group-item-action">
+                <i class="fas fa-map-marker-alt"></i> Manage Addresses
+            </a>
+            <a th:href="@{/orders}" class="list-group-item list-group-item-action">
+                <i class="fas fa-box"></i> View Order History
+            </a>
+            <a th:href="@{/user/change-password}" class="list-group-item list-group-item-action">
+                <i class="fas fa-key"></i> Change Password
+            </a>
+            <a th:href="@{/user/verify-warranty}" class="list-group-item list-group-item-action">
+                <i class="fas fa-shield-alt"></i> Verify Warranty
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,48 +1,81 @@
-<!-- layout/main.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/header :: head}"></head>
-<body class="d-flex flex-column min-vh-100" > <!-- Flexbox for full height -->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head}">
+    <title th:text="${pageTitle ?: 'My Profile'}">My Profile</title>
+    <style>
+        .profile-card .card-header { background-color: #e9ecef; }
+        .profile-details dt { font-weight: 600; color: #495057; }
+        .profile-details dd { margin-bottom: 0.75rem; }
+        .profile-actions .list-group-item { border-left: 0; border-right: 0; }
+        .profile-actions .list-group-item:first-child { border-top: 0; }
+        .profile-actions .list-group-item:last-child { border-bottom: 0; }
+        .profile-actions .list-group-item i { width: 20px; text-align: center; margin-right: 0.5rem; }
+    </style>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
 <header th:replace="~{layout/navbar :: header}"></header>
-<main class="container mt-4 flex-grow-1">
-    <!--all content will be placed here-->
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <h2 class="mb-4">My Account</h2>
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
     <div class="row">
-        <div class="card col-8">
-            <div class="card-header text-center">
-                <h1 class="mb-2">User Profile</h1>
-                <div th:if="${successMessage}" class="text-warning alert alert-warning text-center">
-                    <h5 th:text="${successMessage}"></h5>
+        <div class="col-lg-8">
+            <div class="card shadow-sm profile-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Profile Information</h5>
+                    <a th:href="@{/user/edit-profile}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit me-1"></i> Edit Profile
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" th:if="${userProfile == null}">
+                        Could not load profile information. Please try again later.
+                    </div>
+
+                    <dl class="row profile-details" th:if="${userProfile != null}">
+                        <dt class="col-sm-4">Full Name:</dt>
+                        <dd class="col-sm-8" th:text="${userProfile.name}">John Doe</dd>
+
+                        <dt class="col-sm-4">Email Address:</dt>
+                        <dd class="col-sm-8">
+                            <span th:text="${userProfile.email}">john.doe@example.com</span>
+                            <span th:if="${userProfile.verified}" class="badge bg-success ms-2">Verified</span>
+                            <span th:unless="${userProfile.verified}" class="badge bg-warning text-dark ms-2">Not Verified</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Phone Number:</dt>
+                        <dd class="col-sm-8" th:text="${userProfile.phoneNumber ?: 'Not Provided'}">01234567890</dd>
+
+                        <dt class="col-sm-4">Member Since:</dt>
+                        <dd class="col-sm-8" th:text="${#temporals.format(userProfile.createdAt, 'dd-MMM-yyyy')}">01-Jan-2024</dd>
+
+                        <dt class="col-sm-4">Last Updated:</dt>
+                        <dd class="col-sm-8" th:text="${#temporals.format(userProfile.updatedAt, 'dd-MMM-yyyy HH:mm')}">01-Jan-2024 10:30</dd>
+                    </dl>
                 </div>
             </div>
-            <div class="card-body" th:if="${user != null}">
-                <h4>Name: <span th:text="${user.name}"></span></h4>
-                <h4>Email: <span th:text="${user.email}"></span></h4>
-                <h4>Phone: <span th:text="${user.phoneNumber}"></span></h4>
-                <h4>Address: <span th:text="${user.address}"></span></h4>
-                <h4>City: <span th:text="${user.city}"></span></h4>
-                <h4>State: <span th:text="${user.state}"></span></h4>
-                <h4>Country: <span th:text="${user.country}"></span></h4>
-                <h4>Zip Code: <span th:text="${user.zipCode}"></span></h4>
-                <!-- You can add more user details here -->
-
-
-                <!-- Edit Profile and Change Password Button -->
-                <a href="/user/edit-profile" class="btn btn-primary">Edit Profile</a>
-                <a href="/user/change-password" class="btn btn-warning">Change Password</a>
-                <!-- Logout Button -->
-                <form action="/logout" method="post">
-                    <button type="submit" class="btn btn-danger">Logout</button>
-                </form>
-            </div>
-            <div th:if="${user == null}">
-                <p>User not found.</p>
-            </div>
         </div>
+
+            <div th:replace="~{layout/user-sidebar :: sidebar}">
+            </div>
     </div>
 
 </main>
-<footer th:replace="~{layout/footer :: footer}"></footer>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
-

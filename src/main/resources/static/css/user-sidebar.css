@@ -1,0 +1,5 @@
+.profile-actions .list-group-item { border-left: 0; border-right: 0; }
+.profile-actions .list-group-item:first-child { border-top-left-radius: 0; border-top-right-radius: 0; border-top: 0;}
+.profile-actions .list-group-item:last-child { border-bottom-left-radius: var(--bs-card-inner-border-radius); border-bottom-right-radius: var(--bs-card-inner-border-radius); border-bottom: 0;}
+.profile-actions .list-group-item i { width: 20px; text-align: center; margin-right: 0.5rem; }
+.profile-actions .list-group-item.active { z-index: 2; color: var(--bs-list-group-active-color); background-color: var(--bs-list-group-active-bg); border-color: var(--bs-list-group-active-border-color); }
