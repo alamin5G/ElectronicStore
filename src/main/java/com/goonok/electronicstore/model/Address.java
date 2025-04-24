@@ -2,6 +2,7 @@ package com.goonok.electronicstore.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty; // Added
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;   // Added
 import lombok.Data;
 import lombok.EqualsAndHashCode; // Added
@@ -22,6 +23,23 @@ public class Address {
     @EqualsAndHashCode.Exclude // Added
     private User user;
 
+
+    // *** ADDED Recipient Name ***
+    @NotEmpty(message = "Recipient name is required")
+    @Size(min = 3, max = 100, message = "Recipient name must be between 3 and 100 characters")
+    @Column(nullable = false, length = 100)
+    private String recipientName;
+    // **************************
+
+    // *** ADDED Recipient Phone ***
+    @NotEmpty(message = "Recipient phone number is required")
+    @Size(min = 11, max = 11, message = "Phone number must be 11 digits")
+    @Pattern(regexp = "^(01[3-9]\\d{8})$", message = "Phone number must be a valid 11-digit Bangladeshi number starting with 01")
+    @Column(nullable = false, length = 15) // Increased length slightly for potential formatting
+    private String recipientPhone;
+    // ***************************
+
+
     @NotEmpty(message = "Street address is required") // Added
     @Column(nullable = false)                        // Added
     private String street; // Renamed from addressLine1
@@ -33,6 +51,11 @@ public class Address {
     private String city;
 
     // Removed state and country for simplicity, add back if needed
+    @NotEmpty(message = "State is required")    // Added
+    @Column(nullable = false, length = 15)      // Added
+    private String state;
+
+    private String country = "Bangladesh"; // Added;
 
     @NotEmpty(message = "Postal code is required") // Added
     @Column(nullable = false, length = 10)       // Added

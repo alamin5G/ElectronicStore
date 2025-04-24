@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:replace="~{layout/header :: head}">
-   <link rel="stylesheet" th:href="@{/css/user-sidebar.css}">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/user-sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/address-form.css}" media="screen">
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
@@ -9,8 +10,15 @@
 <header th:replace="~{layout/navbar :: header}"></header>
 
 <main class="container mt-4 flex-grow-1 mb-5">
-    <h2 class="mb-4">My Account</h2> <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}"><span th:text="${successMessage}"></span><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}"><span th:text="${errorMessage}"></span><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+    <h2 class="mb-4">My Account</h2>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+    <span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
     <div class="row">
         <div class="col-lg-8">
@@ -20,70 +28,86 @@
                 </div>
                 <div class="card-body">
 
-
-
                     <form th:object="${addressDto}"
                           th:action="${formAction == 'add'} ? @{/user/addresses/add} : @{/user/addresses/edit/{id}(id=${addressDto.addressId})}"
-                          method="post"
-                          class="needs-validation" novalidate>
+                          method="post" class="needs-validation" novalidate>
 
                         <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
                             <p class="mb-2 fw-bold">Please correct the following errors:</p>
-                            <ul>
-                                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
-                            </ul>
+                            <ul><li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li></ul>
                         </div>
-
                         <input type="hidden" th:if="${formAction == 'edit'}" th:field="*{addressId}" />
 
+                        <div class="mb-3">
+                            <label for="recipientName" class="form-label">Recipient Name <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{recipientName}" class="form-control" id="recipientName" placeholder="Full name of the person receiving the order" required>
+                            <div class="invalid-feedback">Recipient name is required.</div>
+                            <div th:if="${#fields.hasErrors('recipientName')}" th:errors="*{recipientName}" class="text-danger small"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="recipientPhone" class="form-label">Recipient Phone <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{recipientPhone}" class="form-control" id="recipientPhone" placeholder="e.g., 01xxxxxxxxx" required>
+                            <div class="invalid-feedback">Valid 11-digit phone number is required.</div>
+                            <div th:if="${#fields.hasErrors('recipientPhone')}" th:errors="*{recipientPhone}" class="text-danger small"></div>
+                        </div>
                         <div class="mb-3">
                             <label for="street" class="form-label">Street Address <span class="text-danger">*</span></label>
                             <input type="text" th:field="*{street}" class="form-control" id="street" placeholder="House No, Road Name, Area" required>
                             <div class="invalid-feedback">Street address is required.</div>
                             <div th:if="${#fields.hasErrors('street')}" th:errors="*{street}" class="text-danger small"></div>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="city" class="form-label">City <span class="text-danger">*</span></label>
-                            <input type="text" th:field="*{city}" class="form-control" id="city" placeholder="e.g., Dhaka" required>
-                            <div class="invalid-feedback">City is required.</div>
-                            <div th:if="${#fields.hasErrors('city')}" th:errors="*{city}" class="text-danger small"></div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-5">
+                                <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{city}" class="form-control" id="city" placeholder="e.g., Dhaka" required>
+                                <div class="invalid-feedback">City is required.</div>
+                                <div th:if="${#fields.hasErrors('city')}" th:errors="*{city}" class="text-danger small"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="state" class="form-label">State/Division <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{state}" class="form-control" id="state" placeholder="e.g., Dhaka" required>
+                                <div class="invalid-feedback">State/Division is required.</div>
+                                <div th:if="${#fields.hasErrors('state')}" th:errors="*{state}" class="text-danger small"></div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="postalCode" class="form-label">Postal Code <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{postalCode}" class="form-control" id="postalCode" placeholder="e.g., 1230" required>
+                                <div class="invalid-feedback">Postal code is required.</div>
+                                <div th:if="${#fields.hasErrors('postalCode')}" th:errors="*{postalCode}" class="text-danger small"></div>
+                            </div>
                         </div>
-
                         <div class="mb-3">
-                            <label for="postalCode" class="form-label">Postal Code <span class="text-danger">*</span></label>
-                            <input type="text" th:field="*{postalCode}" class="form-control" id="postalCode" placeholder="e.g., 1230" required>
-                            <div class="invalid-feedback">Postal code is required.</div>
-                            <div th:if="${#fields.hasErrors('postalCode')}" th:errors="*{postalCode}" class="text-danger small"></div>
+                            <label for="country" class="form-label">Country <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{country}" class="form-control" id="country" placeholder="e.g., Bangladesh" value="Bangladesh" required>
+                            <div class="invalid-feedback">Country is required.</div>
+                            <div th:if="${#fields.hasErrors('country')}" th:errors="*{country}" class="text-danger small"></div>
                         </div>
-
                         <div class="mb-4">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" th:field="*{defaultShipping}" id="isDefaultShipping">
-                                <label class="form-check-label" for="isDefaultShipping">
-                                    Set as default shipping address
-                                </label>
+                                <label class="form-check-label" for="isDefaultShipping">Set as default shipping address</label>
                                 <div th:if="${#fields.hasErrors('defaultShipping')}" th:errors="*{defaultShipping}" class="text-danger small"></div>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" th:field="*{defaultBilling}" id="isDefaultBilling">
-                                <label class="form-check-label" for="isDefaultBilling">
-                                    Set as default billing address
-                                </label>
+                                <label class="form-check-label" for="isDefaultBilling">Set as default billing address</label>
                                 <div th:if="${#fields.hasErrors('defaultBilling')}" th:errors="*{defaultBilling}" class="text-danger small"></div>
                             </div>
                         </div>
-
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
                             <a th:href="@{/user/addresses}" class="btn btn-secondary me-md-2">Cancel</a>
                             <button type="submit" class="btn btn-primary" th:text="${formAction == 'add'} ? 'Add Address' : 'Update Address'">Save</button>
                         </div>
-
                     </form>
-                </div> </div> </div><div th:replace="~{layout/user-sidebar :: sidebar}">
+
+                </div>
+            </div>
+        </div>
+        <div th:replace="~{layout/user-sidebar :: sidebar}">
     </div>
 
-    </div></main>
+    </div>
+</main>
 
 <footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
 
