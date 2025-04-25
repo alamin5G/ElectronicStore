@@ -1,6 +1,4 @@
-package com.goonok.electronicstore.util;
-
-import lombok.Getter;
+package com.goonok.electronicstore.enums;
 
 // Create a new file: DiscountType.java
 

@@ -1,6 +1,6 @@
 package com.goonok.electronicstore.model;
 
-import com.goonok.electronicstore.util.DiscountType;
+import com.goonok.electronicstore.enums.DiscountType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*; // Added
 import lombok.Data;

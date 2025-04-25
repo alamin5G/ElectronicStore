@@ -2,6 +2,7 @@ package com.goonok.electronicstore.config;
 
 
 import com.goonok.electronicstore.security.CustomLogoutSuccessHandler;
+import com.goonok.electronicstore.security.CustomAuthenticationSuccessHandler;
 import com.goonok.electronicstore.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -36,6 +37,9 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Autowired
+    private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -86,7 +90,8 @@ public class SecurityConfig {
                         .loginProcessingUrl("/login") // URL for form submission
                         .usernameParameter("email") // Username parameter in the form
                         .failureUrl("/login?error=true") // Redirect to this URL on login failure
-                        .defaultSuccessUrl("/login/success", true) // Redirect after successful login
+                        .successHandler(authenticationSuccessHandler) // Use the custom success handler
+                        //.defaultSuccessUrl("/login/success", true) // Redirect after successful login
                         .permitAll() // Allow everyone to access the login page
                 )
                 .logout(logout -> logout
@@ -97,11 +102,12 @@ public class SecurityConfig {
                 .userDetailsService(customUserDetailsService);
 
         // Custom filter to redirect authenticated users from /login, /register, /specialAccessForAdmin
-        http.addFilterBefore(new RedirectAuthenticatedUserFilter(), UsernamePasswordAuthenticationFilter.class);
+        // http.addFilterBefore(new RedirectAuthenticatedUserFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    /*
     // Custom filter to redirect authenticated users
     public static class RedirectAuthenticatedUserFilter extends OncePerRequestFilter {
 
@@ -128,4 +134,5 @@ public class SecurityConfig {
             filterChain.doFilter(request, response);
         }
     }
+     */
 }

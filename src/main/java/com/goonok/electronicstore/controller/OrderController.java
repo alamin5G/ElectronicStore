@@ -2,23 +2,27 @@ package com.goonok.electronicstore.controller;
 
 import com.goonok.electronicstore.dto.AddressDto;
 import com.goonok.electronicstore.dto.OrderDto;
+import com.goonok.electronicstore.dto.CheckoutDto;
+import com.goonok.electronicstore.enums.OrderStatus;
+import com.goonok.electronicstore.exception.AccessDeniedException;
+import com.goonok.electronicstore.dto.PaymentDetailsSubmissionDto;
+import com.goonok.electronicstore.dto.PaymentSubmissionResponse;
+import com.goonok.electronicstore.exception.AccessDeniedException;
 import com.goonok.electronicstore.exception.ResourceNotFoundException;
-import com.goonok.electronicstore.service.OrderService;
-import com.goonok.electronicstore.service.UserService;
+import com.goonok.electronicstore.service.interfaces.OrderService;
+import com.goonok.electronicstore.service.interfaces.UserService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page; // Import Page
 import org.springframework.data.domain.PageRequest; // Import PageRequest
 import org.springframework.data.domain.Pageable; // Import Pageable
 import org.springframework.data.domain.Sort; // Import Sort
-import org.springframework.security.access.AccessDeniedException; // Import for security check
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam; // Import RequestParam
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -148,6 +152,40 @@ public class OrderController {
         }
 
         return "order/order-details"; // e.g., templates/order/order-details.html
+    }
+
+    @PostMapping("/submit-payment/{orderId}")
+    public String submitPaymentDetails(
+            @PathVariable Long orderId,
+            @Valid @ModelAttribute PaymentDetailsSubmissionDto paymentDetails,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes) {
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+        String username = authentication.getName();
+        log.info("User {} submitting payment details for order {}", username, orderId);
+
+        try {
+            // Verify order belongs to current user and submit payment
+            PaymentSubmissionResponse response = orderService.submitPaymentDetails(orderId, paymentDetails);
+
+            if (response.isSuccess()) {
+                redirectAttributes.addFlashAttribute("successMessage", response.getMessage());
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", response.getMessage());
+            }
+
+        } catch (AccessDeniedException e) {
+            log.error("Unauthorized payment submission attempt for order {} by user {}", orderId, username);
+            redirectAttributes.addFlashAttribute("errorMessage", "Not authorized to submit payment for this order");
+        } catch (Exception e) {
+            log.error("Error processing payment submission for order {} by user {}: {}", orderId, username, e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while processing your payment submission");
+        }
+
+        return "redirect:/order/" + orderId;
     }
 
 }

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+  <title th:text="${pageTitle ?: 'Manage Users'}">Manage Users</title>
+  <link rel="stylesheet" th:href="@{/css/admin-user-list.css}">
+</head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container mt-4 flex-grow-1 mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0" th:text="${pageTitle ?: 'Manage Users'}">Manage Users</h2>
+  </div>
+
+  <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}"><span th:text="${successMessage}"></span><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}"><span th:text="${errorMessage}"></span><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="table-responsive">
+<table class="table table-hover align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>ID</th>
+      <th>Full Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Customer Tier</th>
+      <th>Total Orders</th>
+      <th>Total Spent</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:if="${userPage == null or userPage.empty}">
+      <td colspan="9" class="text-center text-muted py-4">No users found.</td>
+    </tr>
+    <tr th:each="user : ${userPage.content}">
+      <td th:text="${user.userId}">1</td>
+      <td>
+        <div th:text="${user.name}">Name</div>
+        <small class="text-muted" th:if="${user.lastLoginDate != null}">
+          Last login: <span th:text="${#temporals.format(user.lastLoginDate, 'dd MMM yyyy')}"></span>
+        </small>
+      </td>
+      <td th:text="${user.email}">Email</td>
+      <td th:text="${user.phoneNumber ?: 'N/A'}">Phone</td>
+      <td>
+        <span class="badge" 
+              th:classappend="${user.customerTier == 'GOLD' ? 'bg-warning' : 
+                              user.customerTier == 'SILVER' ? 'bg-secondary' : 'bg-bronze'}"
+              th:text="${user.customerTier}">TIER</span>
+      </td>
+      <td>
+        <div th:text="${user.totalOrders ?: '0'}">0</div>
+        <small class="text-muted" th:if="${user.lastOrderDate != null}">
+          Last: <span th:text="${#temporals.format(user.lastOrderDate, 'dd MMM yyyy')}"></span>
+        </small>
+      </td>
+      <td>
+        <span th:if="${user.totalSpent != null}" 
+              th:text="${#numbers.formatDecimal(user.totalSpent, 1, 2, 'POINT')}">0.00</span>
+        <span th:unless="${user.totalSpent != null}">0.00</span>
+      </td>
+      <td>
+        <div class="d-flex flex-column gap-1">
+          <span th:if="${user.enabled}" class="badge bg-success status-badge">Active</span>
+          <span th:unless="${user.enabled}" class="badge bg-danger status-badge">Disabled</span>
+          <span th:if="${user.verified}" class="badge bg-info status-badge">Verified</span>
+          <span th:unless="${user.verified}" class="badge bg-warning text-dark status-badge">Unverified</span>
+        </div>
+      </td>
+      <td>
+        <a th:href="@{/admin/users/view/{id}(id=${user.userId})}" 
+           class="btn btn-sm btn-outline-primary" title="View Details">
+          <i class="fas fa-eye"></i> Details
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+      </div></div> <div class="card-footer bg-white" th:if="${userPage != null and userPage.totalPages > 1}">
+    <nav aria-label="User navigation">
+      <ul class="pagination justify-content-center mb-0">
+        <li class="page-item" th:classappend="${userPage.first} ? 'disabled'">
+          <a class="page-link" th:href="@{/admin/users(page=${userPage.number - 1}, size=${pageSize}, sort=${sort})}">Prev</a>
+        </li>
+        <th:block th:with="startPage=${T(java.lang.Math).max(0, userPage.number - 2)}, endPage=${T(java.lang.Math).min(userPage.totalPages - 1, userPage.number + 2)}">
+          <li class="page-item" th:if="${startPage > 0}"><a class="page-link" th:href="@{/admin/users(page=0, size=${pageSize}, sort=${sort})}">1</a></li>
+          <li class="page-item disabled" th:if="${startPage > 1}"><span class="page-link">...</span></li>
+          <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}" th:classappend="${i == userPage.number} ? 'active'">
+            <a class="page-link" th:href="@{/admin/users(page=${i}, size=${pageSize}, sort=${sort})}" th:text="${i + 1}"></a>
+          </li>
+          <li class="page-item disabled" th:if="${endPage < userPage.totalPages - 2}"><span class="page-link">...</span></li>
+          <li class="page-item" th:if="${endPage < userPage.totalPages - 1}"><a class="page-link" th:href="@{/admin/users(page=${userPage.totalPages - 1}, size=${pageSize}, sort=${sort})}" th:text="${userPage.totalPages}"></a></li>
+        </th:block>
+        <li class="page-item" th:classappend="${userPage.last} ? 'disabled'">
+          <a class="page-link" th:href="@{/admin/users(page=${userPage.number + 1}, size=${pageSize}, sort=${sort})}">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div></div> </main>
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+</body>
+</html>

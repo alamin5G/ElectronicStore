@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+
+    <link rel="stylesheet" th:href="@{/css/admin-order-list.css}">
+
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0" th:text="${pageTitle ?: 'Manage Orders'}">Manage Orders</h2>
+        <form th:action="@{/admin/orders}" method="get" class="d-flex align-items-center filter-form">
+            <label for="statusFilter" class="form-label mb-0">Filter by Status:</label>
+            <select class="form-select form-select-sm me-2" id="statusFilter" name="status" onchange="this.form.submit()">
+                <option value="">-- All Statuses --</option>
+                <option th:each="statusOpt : ${orderStatuses}"
+                        th:value="${statusOpt}"
+                        th:text="${statusOpt}"
+                        th:selected="${statusOpt == selectedStatus}">
+                    Status Name
+                </option>
+            </select>
+            <input type="hidden" name="sort" th:value="${sort}">
+        </form>
+    </div>
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}"><span th:text="${successMessage}"></span><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}"><span th:text="${errorMessage}"></span><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Customer</th> <th>Total</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${orderPage == null or orderPage.empty}">
+                        <td colspan="7" class="text-center text-muted py-4">No orders found matching criteria.</td>
+                    </tr>
+                    <tr th:each="order : ${orderPage.content}">
+                        <td th:text="${order.orderNumber}">ORD-123</td>
+                        <td th:text="${#temporals.format(order.orderDate, 'dd-MMM-yy HH:mm')}">Date</td>
+                        <td>
+                            <span th:text="${order.userFullName ?: 'N/A'}">Customer Name</span><br>
+                            <small class="text-muted" th:text="${order.userEmail}"></small>
+                        </td>
+                        <td th:text="'৳' + ${#numbers.formatDecimal(order.totalAmount, 1, 'COMMA', 2, 'POINT')}">Total</td>
+                        <td th:text="${order.paymentMethod}">Payment</td>
+                        <td>
+    <span class="badge status-badge"
+          th:classappend="${
+            order.status == T(com.goonok.electronicstore.enums.OrderStatus).DELIVERED ? 'bg-success' : 
+            (order.status == T(com.goonok.electronicstore.enums.OrderStatus).SHIPPED ? 'bg-info text-dark' : 
+            (order.status == T(com.goonok.electronicstore.enums.OrderStatus).CANCELLED ? 'bg-danger' : 
+            'bg-warning text-dark'))}"
+          th:text="${order.status}">Status</span>
+</td>
+                        <td>
+                            <a th:href="@{/admin/orders/{orderId}(orderId=${order.orderId})}" class="btn btn-sm btn-outline-primary" title="View Details">
+                                <i class="fas fa-eye"></i> Details
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div></div> <div class="card-footer bg-white" th:if="${orderPage != null and orderPage.totalPages > 1}">
+        <nav aria-label="Order navigation">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item" th:classappend="${orderPage.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/orders(page=${orderPage.number - 1}, size=${pageSize}, sort=${sort}, status=${selectedStatus})}">Prev</a>
+                </li>
+                <th:block th:with="startPage=${T(java.lang.Math).max(0, orderPage.number - 2)}, endPage=${T(java.lang.Math).min(orderPage.totalPages - 1, orderPage.number + 2)}">
+                    <li class="page-item" th:if="${startPage > 0}"><a class="page-link" th:href="@{/admin/orders(page=0, size=${pageSize}, sort=${sort}, status=${selectedStatus})}">1</a></li>
+                    <li class="page-item disabled" th:if="${startPage > 1}"><span class="page-link">...</span></li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(startPage, endPage)}" th:classappend="${i == orderPage.number} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/orders(page=${i}, size=${pageSize}, sort=${sort}, status=${selectedStatus})}" th:text="${i + 1}"></a>
+                    </li>
+                    <li class="page-item disabled" th:if="${endPage < orderPage.totalPages - 2}"><span class="page-link">...</span></li>
+                    <li class="page-item" th:if="${endPage < orderPage.totalPages - 1}"><a class="page-link" th:href="@{/admin/orders(page=${orderPage.totalPages - 1}, size=${pageSize}, sort=${sort}, status=${selectedStatus})}" th:text="${orderPage.totalPages}"></a></li>
+                </th:block>
+                <li class="page-item" th:classappend="${orderPage.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/orders(page=${orderPage.number + 1}, size=${pageSize}, sort=${sort}, status=${selectedStatus})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div></div> </main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+</body>
+</html>

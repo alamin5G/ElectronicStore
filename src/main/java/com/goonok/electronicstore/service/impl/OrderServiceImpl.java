@@ -1,21 +1,24 @@
-package com.goonok.electronicstore.impl; // Example implementation package
+package com.goonok.electronicstore.service.impl; // Example implementation package
 
 import com.goonok.electronicstore.dto.*;
 import com.goonok.electronicstore.enums.OrderStatus; // Assuming enum exists
+import com.goonok.electronicstore.enums.PaymentStatus;
 import com.goonok.electronicstore.exception.ResourceNotFoundException;
 import com.goonok.electronicstore.model.*;
 import com.goonok.electronicstore.repository.*;
 import com.goonok.electronicstore.service.CartService;
-import com.goonok.electronicstore.service.OrderService;
-// import com.goonok.electronicstore.service.ProductService; // Not directly needed if using ProductRepository
+import com.goonok.electronicstore.service.interfaces.OrderService;
 import com.goonok.electronicstore.verification.EmailService;
 import lombok.extern.slf4j.Slf4j;
+import com.goonok.electronicstore.enums.PaymentMethod;
+import java.time.LocalDateTime;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,10 +33,6 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private OrderItemRepository orderItemRepository;
-    @Autowired
     private UserRepository userRepository;
     @Autowired
     private ProductRepository productRepository;
@@ -43,6 +42,8 @@ public class OrderServiceImpl implements OrderService {
     private ModelMapper modelMapper;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Override
     @Transactional
@@ -91,11 +92,34 @@ public class OrderServiceImpl implements OrderService {
                            checkoutDto.getSelectedShippingMethod() : "Standard");
 
         // Set Payment Details
-        order.setPaymentMethod(checkoutDto.getSelectedPaymentMethod());
-        if ("COD".equalsIgnoreCase(checkoutDto.getSelectedPaymentMethod())) {
-            order.setPaymentStatus("PENDING");
+        try {
+            order.setPaymentMethod(PaymentMethod.valueOf(checkoutDto.getSelectedPaymentMethod().toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid payment method: " + checkoutDto.getSelectedPaymentMethod());
+        }
+
+
+        // Set payment details if mobile payment
+        // For mobile payments, validate transaction ID
+        if (PaymentMethod.valueOf(checkoutDto.getSelectedPaymentMethod()) == PaymentMethod.BKASH ||
+                PaymentMethod.valueOf(checkoutDto.getSelectedPaymentMethod()) == PaymentMethod.NAGAD) {
+
+            String txnId = checkoutDto.getTransactionId();
+            // Check if transaction ID already exists
+            if (orderRepository.existsByTransactionId(txnId)) {
+                throw new IllegalStateException("Transaction ID already used in another order");
+            }
+
+            order.setTransactionId(checkoutDto.getTransactionId());
+            order.setPaymentNotes(checkoutDto.getPaymentNotes());
+            order.setPaymentSubmissionDate(LocalDateTime.now());
+            order.setStatus(OrderStatus.PENDING);
+            order.setPaymentStatus(PaymentStatus.AWAITING_VERIFICATION);
+        } else if (PaymentMethod.COD.equals(order.getPaymentMethod())) {
+            order.setPaymentStatus(PaymentStatus.PENDING);
         } else {
-            order.setPaymentStatus("AWAITING_VERIFICATION");
+            order.setStatus(OrderStatus.PENDING);
+            order.setPaymentStatus(PaymentStatus.AWAITING_VERIFICATION);
         }
 
         // Calculate totals
@@ -196,8 +220,27 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderDto> getAllOrders(Pageable pageable) {
         log.info("Admin fetching all orders with pageable: {}", pageable);
-        Page<Order> orderPage = orderRepository.findAll(pageable); // Use built-in findAll
-        return orderPage.map(this::mapOrderToDto); // Reuse mapping helper
+        // Use the sorted version if available in repository, otherwise fallback
+        // Page<Order> orderPage = orderRepository.findAllByOrderByOrderDateDesc(pageable);
+        Page<Order> orderPage = orderRepository.findAll(pageable); // Using standard findAll
+        return orderPage.map(this::mapOrderToDto);
+    }
+
+    // *** IMPLEMENTED getAllOrders with status filter ***
+    @Transactional(readOnly = true)
+    @Override
+    public Page<OrderDto> getAllOrders(OrderStatus status, Pageable pageable) {
+        log.info("Admin fetching orders with status {} and pageable: {}", status, pageable);
+        Page<Order> orderPage;
+        if (status != null) {
+            // Assumes findByStatusOrderByOrderDateDesc exists in OrderRepository
+            orderPage = orderRepository.findByStatusOrderByOrderDateDesc(status, pageable);
+        } else {
+            // Fallback to getting all orders if status is null (should ideally not happen if controller logic is correct)
+            // orderPage = orderRepository.findAllByOrderByOrderDateDesc(pageable);
+            orderPage = orderRepository.findAll(pageable);
+        }
+        return orderPage.map(this::mapOrderToDto);
     }
 
     @Transactional(readOnly = true)
@@ -209,33 +252,97 @@ public class OrderServiceImpl implements OrderService {
         return mapOrderToDto(order);
     }
 
-    @Transactional
     @Override
+    @jakarta.transaction.Transactional
     public OrderDto updateOrderStatus(Long orderId, OrderStatus newStatus) {
         log.warn("Admin attempting to update status for order ID {} to {}", orderId, newStatus);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "ID", orderId));
 
-        // Optional: Add logic to validate status transitions (e.g., cannot go from DELIVERED back to PENDING)
         OrderStatus currentStatus = order.getStatus();
         if (currentStatus == OrderStatus.DELIVERED || currentStatus == OrderStatus.CANCELLED) {
             log.error("Attempted to update status of already completed/cancelled order ID: {}", orderId);
             throw new IllegalArgumentException("Order status cannot be updated once it is DELIVERED or CANCELLED.");
         }
-        // Add more specific transition rules if needed
+        // Add more transition validation if needed
 
         order.setStatus(newStatus);
-        // TODO: Add logic for side effects of status change
-        // e.g., if status is SHIPPED, maybe generate tracking number?
-        // e.g., if status is DELIVERED, update payment status for COD?
-        // e.g., if status is CANCELLED, potentially restock items? (Complex!)
+        // TODO: Side effects (tracking, payment update for COD, email)
 
         Order updatedOrder = orderRepository.save(order);
         log.info("Order status updated successfully for order ID {} to {}", orderId, newStatus);
-
-        // TODO: Send status update notification email to user?
-
         return mapOrderToDto(updatedOrder);
+    }
+
+
+
+    // *** IMPLEMENTED cancelOrder ***
+    /**
+     * Cancels an order by setting its status to CANCELLED.
+     * @param orderId The ID of the order to cancel.
+     * @return The updated OrderDto.
+     */
+    @Transactional
+    @Override
+    public OrderDto cancelOrder(Long orderId) {
+        log.warn("Admin attempting to CANCEL order ID {}", orderId);
+        // Use the existing update method, ensuring CANCELLED is a valid transition
+        // The updateOrderStatus method already contains checks for DELIVERED/CANCELLED states.
+        // TODO: Add logic for restocking items here if cancellation is allowed after processing/shipping?
+        return updateOrderStatus(orderId, OrderStatus.CANCELLED);
+    }
+
+    @Override
+    @Transactional
+    public OrderDto updatePaymentDetails(Long orderId, String paymentStatus, String transactionId) {
+        log.info("Admin attempting to update payment details for order ID {} to Status: {}, TxnID: {}", orderId, paymentStatus, transactionId);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "ID", orderId));
+
+        try {
+            PaymentStatus newStatus = PaymentStatus.valueOf(paymentStatus.toUpperCase());
+            order.setPaymentStatus(newStatus);
+            order.setTransactionId(StringUtils.hasText(transactionId) ? transactionId.trim() : null);
+
+            Order updatedOrder = orderRepository.save(order);
+            log.info("Payment details updated successfully for order ID {}", orderId);
+
+            return mapOrderToDto(updatedOrder);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid payment status: " + paymentStatus);
+        } catch (Exception e){
+            throw new IllegalArgumentException("Error on updating payment details");
+        }
+
+        // TODO: Trigger any side effects? (e.g., notify user, update related systems)
+
+    }
+
+
+    @Override
+    public PaymentSubmissionResponse submitPaymentDetails(Long orderId, PaymentDetailsSubmissionDto paymentDetails) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        // Validate order state
+        if (!order.getStatus().equals(OrderStatus.PENDING_PAYMENT)) {
+            throw new InvalidOperationException("Payment details can only be submitted for orders awaiting payment");
+        }
+
+        // Update order with payment details
+        order.setTransactionId(paymentDetails.getTransactionId());
+        order.setPaymentMethod(PaymentMethod.valueOf(paymentDetails.getPaymentMethod()));
+        order.setPaymentNotes(paymentDetails.getNotes());
+        order.setStatus(OrderStatus.PENDING_PAYMENT);  // Use existing enum value
+        order.setPaymentSubmissionDate(LocalDateTime.now());
+
+        orderRepository.save(order);
+
+        return new PaymentSubmissionResponse(
+                true,
+                "Payment details submitted successfully. Our team will verify the payment shortly.",
+                order.getStatus().toString()
+        );
     }
 
 
@@ -270,7 +377,9 @@ public class OrderServiceImpl implements OrderService {
     // Updated mapping helpers to handle potential nulls
     private OrderDto mapOrderToDto(Order order) {
         if (order == null) return null;
+
         OrderDto orderDto = modelMapper.map(order, OrderDto.class);
+
         if (order.getOrderItems() != null) {
             orderDto.setOrderItems(order.getOrderItems().stream()
                     .map(this::mapOrderItemToDto)
@@ -290,6 +399,11 @@ public class OrderServiceImpl implements OrderService {
         // Map state/country if they exist
         orderDto.setShippingState(order.getShippingState());
         orderDto.setShippingCountry(order.getShippingCountry());
+        orderDto.setShippingMethod(order.getShippingMethod());
+        // Map payment fields
+        orderDto.setPaymentStatus(order.getPaymentStatus());
+        orderDto.setTransactionId(order.getTransactionId());
+        orderDto.setPaymentMethod(String.valueOf(order.getPaymentMethod()));
 
         return orderDto;
     }
@@ -311,4 +425,7 @@ public class OrderServiceImpl implements OrderService {
         }
         return itemDto;
     }
+
+
+
 }

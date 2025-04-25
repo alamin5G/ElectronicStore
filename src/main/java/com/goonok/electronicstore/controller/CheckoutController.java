@@ -6,8 +6,8 @@ import com.goonok.electronicstore.dto.CheckoutDto;
 import com.goonok.electronicstore.dto.OrderDto; // Import OrderDto
 import com.goonok.electronicstore.exception.ResourceNotFoundException; // Import
 import com.goonok.electronicstore.service.CartService;
-import com.goonok.electronicstore.service.OrderService; // Import OrderService
-import com.goonok.electronicstore.service.UserService;
+import com.goonok.electronicstore.service.interfaces.OrderService; // Import OrderService
+import com.goonok.electronicstore.service.interfaces.UserService;
 import jakarta.servlet.http.HttpSession; // Import HttpSession
 import jakarta.validation.constraints.NotEmpty; // Import for validation
 import lombok.extern.slf4j.Slf4j;

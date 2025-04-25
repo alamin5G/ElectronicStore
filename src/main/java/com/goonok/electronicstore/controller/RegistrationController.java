@@ -1,7 +1,7 @@
 package com.goonok.electronicstore.controller;
 
 import com.goonok.electronicstore.model.User;
-import com.goonok.electronicstore.service.UserService;
+import com.goonok.electronicstore.service.interfaces.UserService;
 import com.goonok.electronicstore.verification.VerificationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

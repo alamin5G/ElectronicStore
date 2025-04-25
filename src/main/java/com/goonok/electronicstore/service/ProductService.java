@@ -352,12 +352,11 @@ public class ProductService {
 
     // Inside ProductService.java
 
+    // --- UPDATED getFilteredProducts ---
     @Transactional(readOnly = true)
     public Page<ProductDto> getFilteredProducts(
             Long categoryId, Long brandId, String priceRange,
-            Double minPrice, Double maxPrice,
-            Boolean newArrival, // <-- ADDED newArrival parameter
-            Pageable pageable) {
+            Double minPrice, Double maxPrice, Boolean newArrival, Pageable pageable) {
 
         log.info("Filtering products - Category: {}, Brand: {}, PriceRange: {}, MinPrice: {}, MaxPrice: {}, NewArrival: {}, Page: {}",
                 categoryId, brandId, priceRange, minPrice, maxPrice, newArrival, pageable);
@@ -365,42 +364,99 @@ public class ProductService {
         Page<Product> productPage;
         BigDecimal min = (minPrice != null) ? BigDecimal.valueOf(minPrice) : null;
         BigDecimal max = (maxPrice != null) ? BigDecimal.valueOf(maxPrice) : null;
-        boolean filterByNew = (newArrival != null && newArrival); // Check if filtering by new is needed
 
-        // --- Price Range Parsing (Keep as is) ---
+        // --- Price Range Parsing (Only if min/max not provided directly) ---
         if (min == null && max == null && priceRange != null && !priceRange.trim().isEmpty()) {
-            // ... (price range parsing logic remains the same) ...
+            try {
+                if (priceRange.endsWith("+")) {
+                    min = BigDecimal.valueOf(Double.parseDouble(priceRange.substring(0, priceRange.length() - 1)));
+                    max = null; // Explicitly null for greater than
+                } else if (priceRange.contains("-")) {
+                    String[] parts = priceRange.split("-");
+                    if (parts.length == 2) {
+                        min = BigDecimal.valueOf(Double.parseDouble(parts[0]));
+                        max = BigDecimal.valueOf(Double.parseDouble(parts[1]));
+                    }
+                }
+            } catch (NumberFormatException e) {
+                log.error("Invalid price range format: {}", priceRange, e);
+                min = null; max = null; // Ignore invalid range
+            }
         }
         // --- End Price Range Parsing ---
 
+        // --- Determine active filters ---
+        boolean hasCategory = (categoryId != null && categoryId > 0);
+        boolean hasBrand = (brandId != null && brandId > 0);
+        boolean hasMinPrice = (min != null);
+        boolean hasMaxPrice = (max != null);
+        boolean filterByNew = (newArrival != null && newArrival);
+        // --- End Determine active filters ---
 
-        // --- Querying ---
-        // !!! IMPORTANT: USING SPECIFICATIONS IS HIGHLY RECOMMENDED HERE !!!
-        // The following requires MANY specific methods in ProductRepository.
 
-        // Example: Adding the newArrival check (only showing one branch for brevity)
-        if (categoryId != null && brandId != null && min != null && max != null) {
-            if (filterByNew) {
-                productPage = productRepository.findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetweenAndIsNewArrivalTrue(categoryId, brandId, min, max, pageable); // <-- New Repo Method Needed
-            } else {
-                productPage = productRepository.findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetween(categoryId, brandId, min, max, pageable);
-            }
-        }
-        // ... Add 'filterByNew' condition to ALL OTHER if/else if branches ...
-        // Example for the final 'else' block:
-        else {
-            if (filterByNew) {
-                productPage = productRepository.findByIsNewArrivalTrue(pageable); // <-- You already have this potentially
-            } else {
-                productPage = productRepository.findAll(pageable); // No specific filters
-            }
+        // --- Querying Logic (Refined Order) ---
+        // !!! IMPORTANT: Requires corresponding repository methods accepting Pageable !!!
+        // !!! Using JPA Specifications is strongly recommended for maintainability !!!
+
+        log.debug("Filtering with: hasCategory={}, hasBrand={}, hasMinPrice={}, hasMaxPrice={}, filterByNew={}",
+                hasCategory, hasBrand, hasMinPrice, hasMaxPrice, filterByNew);
+
+        if (hasCategory && hasBrand && hasMinPrice && hasMaxPrice) {
+            productPage = filterByNew ?
+                    productRepository.findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetweenAndIsNewArrivalTrue(categoryId, brandId, min, max, pageable) :
+                    productRepository.findByCategory_CategoryIdAndBrand_BrandIdAndPriceBetween(categoryId, brandId, min, max, pageable);
+        } else if (hasCategory && hasBrand && hasMinPrice) { // Min price only (>=)
+            productPage = filterByNew ?
+                    productRepository.findByCategory_CategoryIdAndBrand_BrandIdAndPriceGreaterThanEqualAndIsNewArrivalTrue(categoryId, brandId, min, pageable) :
+                    productRepository.findByCategory_CategoryIdAndBrand_BrandIdAndPriceGreaterThanEqual(categoryId, brandId, min, pageable);
+        } else if (hasCategory && hasMinPrice && hasMaxPrice) {
+            productPage = filterByNew ?
+                    productRepository.findByCategory_CategoryIdAndPriceBetweenAndIsNewArrivalTrue(categoryId, min, max, pageable) :
+                    productRepository.findByCategory_CategoryIdAndPriceBetween(categoryId, min, max, pageable);
+        } else if (hasBrand && hasMinPrice && hasMaxPrice) {
+            productPage = filterByNew ?
+                    productRepository.findByBrand_BrandIdAndPriceBetweenAndIsNewArrivalTrue(brandId, min, max, pageable) :
+                    productRepository.findByBrand_BrandIdAndPriceBetween(brandId, min, max, pageable);
+        } else if (hasCategory && hasBrand) {
+            productPage = filterByNew ?
+                    productRepository.findByCategory_CategoryIdAndBrand_BrandIdAndIsNewArrivalTrue(categoryId, brandId, pageable) :
+                    productRepository.findByCategory_CategoryIdAndBrand_BrandId(categoryId, brandId, pageable);
+        } else if (hasCategory && hasMinPrice) { // Min price only (>=)
+            productPage = filterByNew ?
+                    productRepository.findByCategory_CategoryIdAndPriceGreaterThanEqualAndIsNewArrivalTrue(categoryId, min, pageable) :
+                    productRepository.findByCategory_CategoryIdAndPriceGreaterThanEqual(categoryId, min, pageable);
+        } else if (hasBrand && hasMinPrice) { // Min price only (>=)
+            productPage = filterByNew ?
+                    productRepository.findByBrand_BrandIdAndPriceGreaterThanEqualAndIsNewArrivalTrue(brandId, min, pageable) :
+                    productRepository.findByBrand_BrandIdAndPriceGreaterThanEqual(brandId, min, pageable);
+        } else if (hasMinPrice && hasMaxPrice) { // *** Price Range Only ***
+            log.debug("Executing findByPriceBetween branch"); // Add specific log
+            productPage = filterByNew ?
+                    productRepository.findByPriceBetweenAndIsNewArrivalTrue(min, max, pageable) :
+                    productRepository.findByPriceBetween(min, max, pageable); // <-- Should hit this branch
+        } else if (hasMinPrice) { // Min price only (>=)
+            productPage = filterByNew ?
+                    productRepository.findByPriceGreaterThanEqualAndIsNewArrivalTrue(min, pageable) :
+                    productRepository.findByPriceGreaterThanEqual(min, pageable);
+        } else if (hasCategory) {
+            productPage = filterByNew ?
+                    productRepository.findByCategory_CategoryIdAndIsNewArrivalTrue(categoryId, pageable) :
+                    productRepository.findByCategory_CategoryId(categoryId, pageable);
+        } else if (hasBrand) {
+            productPage = filterByNew ?
+                    productRepository.findByBrand_BrandIdAndIsNewArrivalTrue(brandId, pageable) :
+                    productRepository.findByBrand_BrandId(brandId, pageable);
+        } else if (filterByNew) {
+            productPage = productRepository.findByIsNewArrivalTrue(pageable);
+        } else {
+            log.debug("Executing findAll branch");
+            productPage = productRepository.findAll(pageable); // No specific filters
         }
         // --- End Querying ---
 
         log.info("Found {} products after filtering", productPage.getTotalElements());
-        return productPage.map(product -> modelMapper.map(product, ProductDto.class));
+        return productPage.map(this::mapToDto); // Use helper
     }
-
 
     /**
      * Finds related products, e.g., by category, excluding the current product.

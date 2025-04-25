@@ -7,19 +7,23 @@
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
-
 <header th:replace="~{layout/navbar :: header}"></header>
 
 <main class="container mt-4 flex-grow-1 mb-5">
-    <h2 class="mb-4">My Account</h2> <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
-    <span th:text="${errorMessage}"></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+    <h2 class="mb-4">My Account</h2>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
     <div class="alert alert-warning text-center" th:if="${order == null and errorMessage == null}">
         Could not load order details.
     </div>
-
 
     <div class="row" th:if="${order != null}">
         <div class="col-lg-8">
@@ -41,9 +45,9 @@
 
                         <dt class="col-sm-4">Order Status:</dt>
                         <dd class="col-sm-8">
-                                 <span class="badge"
-                                       th:classappend="${order.status == T(com.goonok.electronicstore.enums.OrderStatus).DELIVERED ? 'bg-success' : (order.status == T(com.goonok.electronicstore.enums.OrderStatus).SHIPPED ? 'bg-info text-dark' : (order.status == T(com.goonok.electronicstore.enums.OrderStatus).CANCELLED ? 'bg-danger' : 'bg-warning text-dark'))}"
-                                       th:text="${order.status}">Status</span>
+                                <span class="badge"
+                                      th:classappend="${order.status == T(com.goonok.electronicstore.enums.OrderStatus).DELIVERED ? 'bg-success' : (order.status == T(com.goonok.electronicstore.enums.OrderStatus).SHIPPED ? 'bg-info text-dark' : (order.status == T(com.goonok.electronicstore.enums.OrderStatus).CANCELLED ? 'bg-danger' : 'bg-warning text-dark'))}"
+                                      th:text="${order.status}">Status</span>
                         </dd>
 
                         <dt class="col-sm-4">Payment Method:</dt>
@@ -73,7 +77,35 @@
                 </div>
             </div>
 
-            <div class="card shadow-sm order-details-card">
+            <!-- Payment Submission Form -->
+            <div th:if="${order.status == T(com.goonok.electronicstore.enums.OrderStatus).PENDING_PAYMENT and (order.paymentMethod == 'BKASH' or order.paymentMethod == 'NAGAD')}"
+                 class="card shadow-sm mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Submit Payment Details</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/order/submit-payment/{orderId}(orderId=${order.orderId})}" method="post">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                        <input type="hidden" name="paymentMethod" th:value="${order.paymentMethod}"/>
+                        <div class="mb-3">
+                            <label for="transactionId" class="form-label">Transaction ID</label>
+                            <input type="text" class="form-control" id="transactionId" name="transactionId"
+                                   required minlength="5" maxlength="50" pattern="[A-Za-z0-9]+"
+                                   placeholder="Enter your payment transaction ID">
+                            <div class="form-text">Enter your bKash/Nagad transaction ID</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Additional Notes (Optional)</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2"
+                                      placeholder="Any additional information about your payment"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Payment Details</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card shadow-sm order-details-card mt-4">
                 <div class="card-header">
                     Items in this Order
                 </div>
@@ -94,13 +126,11 @@
                     </ul>
                 </div>
             </div>
-
-        </div><div th:replace="~{layout/user-sidebar :: sidebar}"></div>
-
-    </div></main>
+        </div>
+        <div th:replace="~{layout/user-sidebar :: sidebar}"></div>
+    </div>
+</main>
 
 <footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
-
-
 </body>
 </html>

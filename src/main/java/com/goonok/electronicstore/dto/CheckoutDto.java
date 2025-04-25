@@ -25,4 +25,7 @@ public class CheckoutDto implements Serializable {
 
     // Store cart details at the start of checkout to prevent changes during the process? (Optional)
     private CartDto checkoutCart;
+
+    private String transactionId;
+    private String paymentNotes;
 }

@@ -6,7 +6,7 @@ import com.goonok.electronicstore.dto.UserProfileDto; // Import
 import com.goonok.electronicstore.dto.UserProfileUpdateDto;
 import com.goonok.electronicstore.exception.ResourceNotFoundException; // Import
 import com.goonok.electronicstore.model.User; // Keep for password check
-import com.goonok.electronicstore.service.UserService;
+import com.goonok.electronicstore.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,7 +205,7 @@ public class UserController {
     public String showAddAddressForm(Model model) {
         log.info("Showing add address form");
         model.addAttribute("addressDto", new AddressDto());
-        model.addAttribute("pageTitle", "Add New Address");
+        model.addAttribute("pageTitle", "Add New Delivery Address");
         model.addAttribute("formAction", "add"); // Indicate add mode
         return "user/address-form"; // templates/user/address-form.html
     }
@@ -221,13 +221,14 @@ public class UserController {
 
         if (bindingResult.hasErrors()) {
             log.warn("Validation errors found while adding address for {}: {}", username, bindingResult.getAllErrors());
-            model.addAttribute("pageTitle", "Add New Address");
+            model.addAttribute("pageTitle", "Add New Delivery Address");
             model.addAttribute("formAction", "add");
             return "user/address-form";
         }
 
         try {
             userService.addAddressToUser(username, addressDto);
+            log.info("Address added successfully for user: {}", username);
             redirectAttributes.addFlashAttribute("successMessage", "Address added successfully!");
             return "redirect:/user/addresses";
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package com.goonok.electronicstore.dto;
 
 import com.goonok.electronicstore.enums.OrderStatus; // Assuming you have this enum
+import com.goonok.electronicstore.enums.PaymentStatus;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -33,10 +34,10 @@ public class OrderDto {
     private String shippingPhone;
 
     private String shippingMethod;
-    private String paymentMethod;
-    private String paymentStatus;
+    private PaymentStatus paymentStatus; // Change from String to PaymentStatus
     private String transactionId; // Gateway or manual reference
     private String trackingNumber;
+    private String paymentMethod;
 
     private Long userId; // ID of the user who placed the order
     private String userFullName; // <-- ADDED

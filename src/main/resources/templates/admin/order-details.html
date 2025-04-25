@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/admin-order-details.css}">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0" th:text="${pageTitle ?: 'Order Details'}">Order Details</h2>
+        <a th:href="@{/admin/orders}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Orders List
+        </a>
+    </div>
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}"><span th:text="${successMessage}"></span><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}"><span th:text="${errorMessage}"></span><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
+
+    <div class="alert alert-warning text-center" th:if="${order == null and errorMessage == null}">
+        Could not load order details.
+    </div>
+
+    <div class="row" th:if="${order != null}">
+        <div class="col-lg-8">
+            <div class="card shadow-sm order-details-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                    <span class="fw-bold"><i class="fas fa-info-circle me-2"></i>Order Information</span>
+                    <span class="badge fs-6"
+                          th:classappend="${order.status == T(com.goonok.electronicstore.enums.OrderStatus).DELIVERED ? 'bg-success' : (order.status == T(com.goonok.electronicstore.enums.OrderStatus).SHIPPED ? 'bg-info text-dark' : (order.status == T(com.goonok.electronicstore.enums.OrderStatus).CANCELLED ? 'bg-danger' : (order.status == T(com.goonok.electronicstore.enums.OrderStatus).PROCESSING ? 'bg-primary' : 'bg-warning text-dark')))}"
+                          th:text="${order.status}">Status</span>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Order Number:</dt><dd class="col-sm-8" th:text="${order.orderNumber}"></dd>
+                        <dt class="col-sm-4">Order Date:</dt><dd class="col-sm-8" th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm')}"></dd> <dt class="col-sm-4">Customer:</dt>
+                        <dd class="col-sm-8">
+                            <span th:text="${order.userFullName ?: 'N/A'}"></span><br>
+                            <small class="text-muted" th:text="${order.userEmail}"></small>
+                        </dd>
+                        <dt class="col-sm-4">Payment Method:</dt><dd class="col-sm-8" th:text="${order.paymentMethod}"></dd>
+                        <dt class="col-sm-4">Payment Status:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge"
+                                  th:classappend="${
+                                    order.paymentStatus == T(com.goonok.electronicstore.enums.PaymentStatus).COMPLETED ? 'bg-success' :
+                                    (order.paymentStatus == T(com.goonok.electronicstore.enums.PaymentStatus).PENDING ? 'bg-warning text-dark' :
+                                    (order.paymentStatus == T(com.goonok.electronicstore.enums.PaymentStatus).FAILED ? 'bg-danger' :
+                                    'bg-info text-dark'))}"
+                                  th:text="${order.paymentStatus ?: 'N/A'}">
+                            </span>
+                        </dd>
+                        <dt class="col-sm-4" th:if="${order.transactionId}">Transaction ID:</dt><dd class="col-sm-8" th:if="${order.transactionId}" th:text="${order.transactionId}"></dd>
+                        <dt class="col-sm-4" th:if="${order.trackingNumber}">Tracking Number:</dt><dd class="col-sm-8" th:if="${order.trackingNumber}" th:text="${order.trackingNumber}"></dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card shadow-sm order-details-card mb-4">
+                <div class="card-header bg-light">
+                    <span class="fw-bold"><i class="fas fa-map-marker-alt me-2"></i>Delivery Information</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Shipping Address</h6>
+                            <div class="address-block">
+                                <p class="mb-1" th:text="${order.shippingName ?: 'N/A'}"></p>
+                                <p class="mb-1" th:text="${order.shippingPhone ?: 'N/A'}"></p>
+                                <p class="mb-1" th:text="${order.shippingStreet}"></p>
+                                <p class="mb-1" th:text="${order.shippingCity + ', ' + (order.shippingState ?: '') + ' - ' + order.shippingPostalCode}"></p>
+                                <p class="mb-0" th:text="${order.shippingCountry ?: 'Bangladesh'}"></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Billing Address</h6>
+                            <div class="address-block" th:if="${billingAddress != null}" th:object="${billingAddress}">
+                                <p class="mb-1" th:text="*{recipientName ?: order.shippingName}"></p>
+                                <p class="mb-1" th:text="*{recipientPhone ?: order.shippingPhone}"></p>
+                                <hr class="my-1">
+                                <p class="mb-1" th:text="*{street ?: order.shippingStreet}"></p>
+                                <p class="mb-1" th:text="*{city + ', ' + state + ' - ' + postalCode}"></p>
+                                <p class="mb-0" th:text="*{country}"></p>
+                            </div>
+                            <div class="address-block text-muted" th:unless="${billingAddress != null}">
+                                (Same as shipping address or not available)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm order-details-card mb-4">
+                <div class="card-header bg-light">
+                    <span class="fw-bold"><i class="fas fa-shopping-cart me-2"></i>Items Ordered</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th style="width: 80px">Image</th>
+                                <th>Product</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-end">Price</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${order.orderItems}">
+                                <td>
+                                    <img th:src="@{/product-images/{imageName}(imageName=${item.productImagePath ?: 'default-placeholder.png'})}"
+                                         th:alt="${item.productName}"
+                                         class="img-thumbnail"
+                                         style="width: 50px; height: 50px; object-fit: contain;"
+                                         onerror="this.onerror=null; this.src='/images/default-placeholder.png';">
+                                </td>
+                                <td>
+                                    <a th:href="@{/products/{id}(id=${item.productId})}"
+                                       target="_blank"
+                                       th:text="${item.productName}"
+                                       class="text-decoration-none"></a>
+                                </td>
+                                <td class="text-center" th:text="${item.quantity}"></td>
+                                <td class="text-end" th:text="'৳' + ${#numbers.formatDecimal(item.pricePerItem, 1, 'COMMA', 2, 'POINT')}"></td>
+                                <td class="text-end" th:text="'৳' + ${#numbers.formatDecimal(item.itemTotalPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+                            </tr>
+                            <tr class="border-top border-2">
+                                <td colspan="3"></td>
+                                <td class="text-end fw-bold">Subtotal:</td>
+                                <td class="text-end" th:text="'৳' + ${#numbers.formatDecimal(order.totalAmount - order.shippingCost - (order.taxAmount ?: 0), 1, 'COMMA', 2, 'POINT')}"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"></td>
+                                <td class="text-end">Shipping:</td>
+                                <td class="text-end" th:text="'৳' + ${#numbers.formatDecimal(order.shippingCost ?: 0, 1, 'COMMA', 2, 'POINT')}"></td>
+                            </tr>
+                            <tr th:if="${order.taxAmount != null and order.taxAmount.doubleValue() > 0}">
+                                <td colspan="3"></td>
+                                <td class="text-end">Tax:</td>
+                                <td class="text-end" th:text="'৳' + ${#numbers.formatDecimal(order.taxAmount, 1, 'COMMA', 2, 'POINT')}"></td>
+                            </tr>
+                            <tr class="border-top">
+                                <td colspan="3"></td>
+                                <td class="text-end fw-bold">Total:</td>
+                                <td class="text-end fw-bold" th:text="'৳' + ${#numbers.formatDecimal(order.totalAmount, 1, 'COMMA', 2, 'POINT')}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div> <div class="col-lg-4">
+        <div class="card shadow-sm sticky-top" style="top: 20px;">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Admin Actions</h5>
+            </div>
+            <div class="card-body">
+                <form th:action="@{/admin/orders/update-status/{orderId}(orderId=${order.orderId})}" method="post" class="status-update-form mb-3">
+                    <div class="mb-3">
+                        <label for="orderStatusSelect" class="form-label">Update Order Status:</label>
+                        <select class="form-select form-select-sm" id="orderStatusSelect" name="newStatus" required>
+                            <option value="">-- Select Status --</option>
+                            <option th:each="statusOpt : ${orderStatuses}"
+                                    th:value="${statusOpt}"
+                                    th:text="${statusOpt}"
+                                    th:selected="${statusOpt == order.status}">
+                                Status Name
+                            </option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm w-100"
+                            th:disabled="${order.status == T(com.goonok.electronicstore.enums.OrderStatus).DELIVERED or order.status == T(com.goonok.electronicstore.enums.OrderStatus).CANCELLED}">
+                        Update Order Status
+                    </button>
+                </form>
+                <hr>
+
+                <form th:action="@{/admin/orders/update-payment/{orderId}(orderId=${order.orderId})}" method="post" class="status-update-form mb-3">
+                    <div class="mb-2">
+                        <label for="paymentStatusSelect" class="form-label">Update Payment Status:</label>
+                        <select class="form-select form-select-sm" id="paymentStatusSelect" name="paymentStatus" required>
+                            <option value="">-- Select Status --</option>
+                            <option th:each="payStatus : ${T(com.goonok.electronicstore.enums.PaymentStatus).values()}"
+                                    th:value="${payStatus}"
+                                    th:text="${payStatus}"
+                                    th:selected="${payStatus.name() == order.paymentStatus}">
+                                Payment Status
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="transactionIdInput" class="form-label">Transaction ID (Optional):</label>
+                        <input type="text" class="form-control form-control-sm" id="transactionIdInput" 
+               name="transactionId" th:value="${order.transactionId}" 
+               placeholder="e.g., BKash TrxID">
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-sm w-100">
+                        Update Payment Details
+                    </button>
+                </form>
+                <hr>
+                <form th:action="@{/admin/orders/cancel/{orderId}(orderId=${order.orderId})}" method="post" class="d-grid mb-2"
+                      th:if="${order.status != T(com.goonok.electronicstore.enums.OrderStatus).DELIVERED and order.status != T(com.goonok.electronicstore.enums.OrderStatus).CANCELLED}"
+                      onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                    <button type="submit" class="btn btn-danger btn-sm w-100">
+                        Cancel Order
+                    </button>
+                </form>
+                <div class="alert alert-secondary text-center small mt-2" role="alert"
+                     th:unless="${order.status != T(com.goonok.electronicstore.enums.OrderStatus).DELIVERED and order.status != T(com.goonok.electronicstore.enums.OrderStatus).CANCELLED}">
+                    Order cannot be cancelled.
+                </div>
+
+                <hr>
+                <button class="btn btn-outline-secondary w-100 btn-sm mt-2" disabled>Print Invoice (Not Implemented)</button>
+
+            </div>
+        </div>
+    </div></div></main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+</body>
+</html>

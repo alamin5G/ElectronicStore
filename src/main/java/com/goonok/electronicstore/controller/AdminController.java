@@ -2,7 +2,7 @@ package com.goonok.electronicstore.controller;
 
 
 import com.goonok.electronicstore.repository.UserRepository;
-import com.goonok.electronicstore.service.UserService;
+import com.goonok.electronicstore.service.interfaces.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

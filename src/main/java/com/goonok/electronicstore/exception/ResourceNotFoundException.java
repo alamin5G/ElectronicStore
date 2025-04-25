@@ -24,6 +24,10 @@ public class ResourceNotFoundException extends RuntimeException {
         this.fieldValue = fieldValue;
     }
 
+    public ResourceNotFoundException(String userNotFound) {
+        super(userNotFound);
+    }
+
     // Overriding toString() can be helpful for logging
     @Override
     public String toString() {

@@ -1,7 +1,9 @@
 <!-- layout/main.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/header :: head}"></head>
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/about-us.css}">
+</head>
 <body>
 <header th:replace="~{layout/navbar :: header}"></header>
 <main class="container mt-4">

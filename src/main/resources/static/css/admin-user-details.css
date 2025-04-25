@@ -1,0 +1,22 @@
+.bg-bronze {
+    background-color: #cd7f32;
+    color: white;
+}
+.analytics-card {
+    border-radius: 0.5rem;
+}
+.analytics-card .card-header {
+    border-bottom: 2px solid rgba(0,0,0,0.125);
+}
+.details-card dt {
+    color: #6c757d;
+}
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25em 0.5em;
+}
+
+.details-card { margin-bottom: 1.5rem; }
+.details-card dt { font-weight: 600; }
+.details-card dd { margin-bottom: 0.5rem; }
+.roles-list span { margin-right: 0.5rem; }

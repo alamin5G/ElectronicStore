@@ -1,6 +1,8 @@
 package com.goonok.electronicstore.model;
 
 import com.goonok.electronicstore.enums.OrderStatus;
+import com.goonok.electronicstore.enums.PaymentStatus;
+import com.goonok.electronicstore.enums.PaymentMethod;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty; // Added
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList; // Added
 import java.util.List;
+
 
 @Data
 @Entity
@@ -87,18 +90,28 @@ public class Order {
     private String shippingMethod; // Added
 
     // --- Payment Details ---
-    @Column(nullable = false, length = 50) // Keep default from user code for now
-    private String paymentMethod = "Cash on Delivery"; // Changed from paymentType
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
-    @Column(length = 50) // Added
-    private String paymentStatus; // e.g., PENDING, COMPLETED, FAILED
+    @Column(length = 500)
+    private String paymentNotes;
 
-    @Column(unique = true) // Transaction IDs should ideally be unique if stored
-    private String transactionId; // Added
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50)
+    private PaymentStatus paymentStatus = PaymentStatus.PENDING; // Default value
+
+    @NotEmpty(message = "Transaction ID cannot be empty") // Added
+    @Column(length = 50, unique = true)
+    private String transactionId;
+
+    private LocalDateTime paymentSubmissionDate;
+
 
     // --- Tracking ---
     @Column(length = 100) // Added length
     private String trackingNumber;
+
+    private LocalDateTime createdAt;
 
     // --- Relationships ---
     @ManyToOne(fetch = FetchType.LAZY) // Set fetch type
@@ -119,7 +132,6 @@ public class Order {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Admin admin; // This is the field 'mappedBy="admin"' refers to
-
 
 
     // Relationship to Payment (Owning side of the OneToOne)

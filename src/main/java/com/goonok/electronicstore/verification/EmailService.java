@@ -1,5 +1,6 @@
 package com.goonok.electronicstore.verification;
 
+import com.goonok.electronicstore.model.Order;
 import com.goonok.electronicstore.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,25 @@ public class EmailService {
             throw new RuntimeException(e);
 
         }
+
+    }
+
+    public void sendPasswordResetEmail(User user, String token) {
+        String subject = "Password Reset Request - Electronics Store";
+
+    }
+
+    public void sendOrderConfirmationEmail(User user, String subject, String body){
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom(mailFrom);
+        mailMessage.setReplyTo(reply_to);
+        mailMessage.setTo(user.getEmail());
+        mailMessage.setSubject(subject);
+        mailMessage.setText(body);
+        try{
+            mailSender.send(mailMessage);
+            log.info("Email sent successfully");
+        } catch (MailException e) {}
 
     }
 }

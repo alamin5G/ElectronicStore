@@ -55,6 +55,12 @@ public class User {
     @UpdateTimestamp // Automatically set on update/modification
     private LocalDateTime updatedAt;
 
+
+    private LocalDateTime lastLoginDate;
+    @Column(name = "login_count")
+    private Integer loginCount = 0;
+    private String lastLoginIp;
+
     // --- Relationships ---
 
     // Address relationship - looks good. Lazy fetch is suitable.
