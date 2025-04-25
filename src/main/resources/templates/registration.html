@@ -17,90 +17,62 @@
                 <p th:text="${successMessage}"></p>
             </div>
 
-            <form th:action="@{/register}" th:object="${user}" method="post" class="needs-validation" novalidate>
+<form th:action="@{/register}" th:object="${user}" method="post" class="needs-validation" novalidate>
+    <div class="alert alert-warning mb-3" th:if="${#fields.hasErrors('*')}">
+        <p class="mb-2 text-center fw-bold">Please correct the following errors:</p>
+        <ul>
+            <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+        </ul>
+    </div>
 
-                <div class="alert alert-warning mb-3" th:if="${#fields.hasErrors('*')}">
-                    <p class="mb-2 text-center fw-bold">Please correct the following errors:</p>
-                    <ul>
-                        <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
-                    </ul>
-                </div>
+    <div class="mb-3">
+        <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+        <input type="text" th:field="*{name}" class="form-control" id="name"
+               placeholder="Enter your full name" required>
+        <div class="invalid-feedback">Please enter your full name.</div>
+        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small"></div>
+    </div>
 
-                <div class="mb-3">
-                    <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
-                    <input type="text" th:field="*{name}" class="form-control" id="name"
-                           placeholder="Enter your full name" required>
-                    <div class="invalid-feedback">Please enter your full name.</div>
-                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small"></div>
-                </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+        <input type="email" th:field="*{email}" class="form-control" id="email"
+               placeholder="Enter your email address" required>
+        <div class="invalid-feedback">Please enter a valid email address.</div>
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger small"></div>
+    </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                    <input type="email" th:field="*{email}" class="form-control" id="email"
-                           placeholder="Enter your email address" required>
-                    <div class="invalid-feedback">Please enter a valid email address.</div>
-                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger small"></div>
-                </div>
+    <div class="row g-2 mb-3">
+        <div class="col-md-6">
+            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+            <input type="password" th:field="*{password}" class="form-control" name="password" id="password" 
+                   placeholder="Enter a strong password" required>
+            <div class="invalid-feedback">Please enter a password.</div>
+            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger small"></div>
+        </div>
+    </div>
 
-                <div class="row g-2 mb-3">
-                    <div class="col-md-6">
-                        <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                        <input type="password" th:field="*{password}" class="form-control" name="password" id="password" placeholder="Enter a strong password" required>
-                        <div class="invalid-feedback">Please enter a password.</div>
-                        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger small"></div>
-                    </div>
+    <div class="mb-3">
+        <label for="phoneNumber" class="form-label">Phone Number (Optional)</label>
+        <input type="text" th:field="*{phoneNumber}" class="form-control" id="phoneNumber"
+               placeholder="Enter BD phone number (e.g., 01xxxxxxxxx)">
+        <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger small"></div>
+    </div>
 
-                </div>
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" value="true" id="termsAccepted" name="termsAccepted" required>
+        <label class="form-check-label" for="termsAccepted">
+            I agree to the <a th:href="@{/terms}" target="_blank">Terms and Conditions</a> and 
+            <a th:href="@{/privacy}" target="_blank">Privacy Policy</a>. <span class="text-danger">*</span>
+        </label>
+        <div class="invalid-feedback">You must agree to the terms and conditions.</div>
+    </div>
 
-                <div class="mb-3">
-                    <label for="phoneNumber" class="form-label">Phone Number (Optional)</label>
-                    <input type="text" th:field="*{phoneNumber}" class="form-control" id="phoneNumber"
-                           placeholder="Enter BD phone number (e.g., 01xxxxxxxxx)">
-                    <div th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}" class="text-danger small"></div>
-                </div>
+    <button type="submit" class="btn btn-primary w-100 mt-3">Register</button>
 
-                <fieldset class="border p-3 mb-3 rounded">
-                    <legend class="float-none w-auto px-2 fs-6">Primary Address</legend>
-
-                    <div class="mb-3">
-                        <label for="addressStreet" class="form-label">Street Address <span class="text-danger">*</span></label>
-                        <input type="text" th:field="*{addresses[0].street}" class="form-control" id="addressStreet" placeholder="House No, Road, Area" required>
-                        <div class="invalid-feedback">Please enter the street address.</div>
-                        <div th:if="${#fields.hasErrors('addresses[0].street')}" th:errors="*{addresses[0].street}" class="text-danger small"></div>
-                    </div>
-
-                    <div class="row g-2 mb-3">
-                        <div class="col-md-6">
-                            <label for="addressCity" class="form-label">City <span class="text-danger">*</span></label>
-                            <input type="text" th:field="*{addresses[0].city}" class="form-control" id="addressCity" placeholder="e.g., Dhaka" required>
-                            <div class="invalid-feedback">Please enter the city.</div>
-                            <div th:if="${#fields.hasErrors('addresses[0].city')}" th:errors="*{addresses[0].city}" class="text-danger small"></div>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="addressPostalCode" class="form-label">Postal Code <span class="text-danger">*</span></label>
-                            <input type="text" th:field="*{addresses[0].postalCode}" class="form-control" id="addressPostalCode" placeholder="e.g., 1230" required>
-                            <div class="invalid-feedback">Please enter the postal code.</div>
-                            <div th:if="${#fields.hasErrors('addresses[0].postalCode')}" th:errors="*{addresses[0].postalCode}" class="text-danger small"></div>
-                        </div>
-                    </div>
-
-
-                </fieldset>
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" value="true" id="termsAccepted" name="termsAccepted" required>
-                    <label class="form-check-label" for="termsAccepted">
-                        I agree to the <a th:href="@{/terms}" target="_blank">Terms and Conditions</a> and <a th:href="@{/privacy}" target="_blank">Privacy Policy</a>. <span class="text-danger">*</span>
-                    </label>
-                    <div class="invalid-feedback">You must agree to the terms and conditions.</div>
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100 mt-3">Register</button>
-
-                <div class="text-center mt-3">
-                    <p>Already have an account? <a th:href="@{/login}">Login here</a></p>
-                </div>
-
-            </form>
+    <div class="text-center mt-3">
+        <p>Already have an account? <a th:href="@{/login}">Login here</a></p>
+    </div>
+</form>
         </div>
     </div>
 </main>
