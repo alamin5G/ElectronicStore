@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/admin-profile.css}" media="screen">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0" th:text="${pageTitle ?: 'Edit Admin Profile'}">Edit Admin Profile</h2>
+        <a th:href="@{/admin/profile}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Profile
+        </a>
+    </div>
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">Edit Admin Profile</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('userProfileUpdateDto.*')}">
+                        <p class="mb-2 fw-bold">Please correct the following errors:</p>
+                        <ul>
+                            <li th:each="err : ${#fields.errors('userProfileUpdateDto.*')}" th:text="${err}"></li>
+                        </ul>
+                    </div>
+
+                    <form th:action="@{/admin/update-profile}" th:object="${userProfileUpdateDto}" method="post" class="needs-validation" novalidate>
+                        <input type="hidden" th:if="*{id != null}" th:field="*{id}" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" th:value="${userProfileDisplay?.email}" class="form-control" readonly disabled>
+                            <small class="form-text text-muted">Email address cannot be changed here.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fullName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{name}" class="form-control" id="fullName" placeholder="Enter your full name" required>
+                            <div class="invalid-feedback">Full name is required.</div>
+                            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger small"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="text" th:field="*{phone}" class="form-control" id="phone" placeholder="e.g., 01xxxxxxxxx">
+                            <div th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-danger small"></div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a th:href="@{/admin/profile}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Admin Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a th:href="@{/admin/dashboard}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                        <a th:href="@{/admin/profile}" class="list-group-item list-group-item-action active">
+                            <i class="fas fa-user-shield me-2"></i> Profile
+                        </a>
+                        <a th:href="@{/admin/change-password}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-key me-2"></i> Change Password
+                        </a>
+                        <hr class="my-2">
+                        <a th:href="@{/admin/users}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-users me-2"></i> Manage Users
+                        </a>
+                        <a th:href="@{/admin/products}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-box-open me-2"></i> Manage Products
+                        </a>
+                        <a th:href="@{/admin/warranties}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-box-open me-2"></i> Manage Warranties
+                        </a>
+                        <a th:href="@{/admin/brands}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-trademark me-2"></i> Manage Brands
+                        </a>
+                        <a th:href="@{/admin/categories}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-tags me-2"></i> Manage Categories
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+</body>
+</html>

@@ -5,7 +5,7 @@ import com.goonok.electronicstore.exception.ResourceNotFoundException; // Ensure
 import com.goonok.electronicstore.service.WarrantyService;
 import com.goonok.electronicstore.service.BrandService;
 import com.goonok.electronicstore.service.CategoryService;
-import com.goonok.electronicstore.service.ProductService;
+import com.goonok.electronicstore.service.interfaces.ProductService;
 // Import WarrantyService if needed for dropdowns
 import jakarta.validation.Valid; // For validating DTO
 import lombok.extern.slf4j.Slf4j;

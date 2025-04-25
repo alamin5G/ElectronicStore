@@ -1,7 +1,9 @@
 package com.goonok.electronicstore.service.impl; // Example implementation package
 
 import com.goonok.electronicstore.dto.*;
-import com.goonok.electronicstore.enums.OrderStatus; // Assuming enum exists
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import com.goonok.electronicstore.enums.OrderStatus;
 import com.goonok.electronicstore.enums.PaymentStatus;
 import com.goonok.electronicstore.exception.ResourceNotFoundException;
 import com.goonok.electronicstore.model.*;
@@ -344,6 +346,56 @@ public class OrderServiceImpl implements OrderService {
                 order.getStatus().toString()
         );
     }
+
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countTotalOrders() {
+        return orderRepository.count();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countOrdersByStatus(OrderStatus status) {
+        return orderRepository.countOrdersByStatus(status);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal calculateTotalRevenue() {
+        return orderRepository.calculateTotalRevenue();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderDto> getRecentOrders(int limit) {
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(0, limit, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "orderDate"));
+        return orderRepository.findAll(pageable)
+                .stream()
+                .map(this::mapOrderToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countTodayOrders() {
+        return orderRepository.countTodayOrders();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal calculateTodayRevenue() {
+        return orderRepository.calculateTodayRevenue();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countPendingPayments() {
+        return orderRepository.countPendingPayments();
+    }
+
+
 
 
     // --- Helper Methods ---

@@ -5,7 +5,7 @@ import com.goonok.electronicstore.model.Brand;
 import com.goonok.electronicstore.model.Category;
 import com.goonok.electronicstore.service.BrandService;
 import com.goonok.electronicstore.service.CategoryService;
-import com.goonok.electronicstore.service.ProductService;
+import com.goonok.electronicstore.service.interfaces.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

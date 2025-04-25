@@ -94,4 +94,9 @@ public interface UserService {
     Page<AdminUserViewDto> searchUsers(UserSearchCriteria criteria, Pageable pageable);
 
     User getUserById(long userId);
+
+    // Add to UserService.java
+    long countTotalUsers();
+    int countNewUsersToday();
+    List<AdminUserViewDto> getRecentUsers(int limit);
 }

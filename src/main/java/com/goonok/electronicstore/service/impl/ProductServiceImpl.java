@@ -1,5 +1,4 @@
-package com.goonok.electronicstore.service;
-
+package com.goonok.electronicstore.service.impl;
 import com.goonok.electronicstore.dto.ProductDto;
 import com.goonok.electronicstore.exception.ResourceNotFoundException; // Make sure this is defined
 import com.goonok.electronicstore.model.Brand;
@@ -10,6 +9,7 @@ import com.goonok.electronicstore.repository.BrandRepository;
 import com.goonok.electronicstore.repository.CategoryRepository;
 import com.goonok.electronicstore.repository.ProductRepository;
 import com.goonok.electronicstore.repository.WarrantyRepository;
+import com.goonok.electronicstore.service.interfaces.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +19,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile; // Import for image handling
 
-import java.io.IOException; // For file handling exceptions
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files; // For file handling
-import java.nio.file.Path;  // For file handling
-import java.nio.file.Paths; // For file handling
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;      // For unique file names
+import java.util.UUID;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
-public class ProductService {
+public class ProductServiceImpl implements ProductService {
+
 
     @Autowired
     private ProductRepository productRepository;
@@ -48,8 +50,10 @@ public class ProductService {
     @Value("${product.image.path}")
     private String imageStoragePath;
 
-    // --- Admin CRUD Operations using DTOs ---
 
+
+    // --- Admin CRUD Operations using DTOs ---
+    @Override
     @Transactional
     public ProductDto createProduct(ProductDto productDto, MultipartFile imageFile) {
         log.info("Attempting to create product: {}", productDto.getName());
@@ -87,6 +91,7 @@ public class ProductService {
         return modelMapper.map(savedProduct, ProductDto.class);
     }
 
+    @Override
     @Transactional
     public ProductDto updateProduct(Long productId, ProductDto productDto, MultipartFile imageFile) {
         log.info("Attempting to update product with ID: {}", productId);
@@ -144,6 +149,7 @@ public class ProductService {
         return modelMapper.map(updatedProduct, ProductDto.class);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public ProductDto getProductDtoById(Long productId) {
         log.info("Fetching product DTO with ID: {}", productId);
@@ -152,7 +158,8 @@ public class ProductService {
         return modelMapper.map(product, ProductDto.class);
     }
 
-    // Method to get the Entity if needed internally
+
+    @Override
     @Transactional(readOnly = true)
     public Product getProductEntityById(Long productId) {
         log.info("Fetching product entity with ID: {}", productId);
@@ -161,6 +168,15 @@ public class ProductService {
     }
 
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductDto> getAllProducts(Pageable pageable) {
+        log.info("Fetching all products page: {}", pageable);
+        Page<Product> productPage = productRepository.findAll(pageable);
+        return productPage.map(product -> modelMapper.map(product, ProductDto.class)); // Simpler mapping for Page
+    }
+
+    @Override
     @Transactional
     public void deleteProduct(Long productId) {
         log.warn("Attempting to delete product with ID: {}", productId);
@@ -180,15 +196,7 @@ public class ProductService {
     }
 
 
-    // --- Public Read Operations returning DTOs (with Pagination) ---
-
-    @Transactional(readOnly = true)
-    public Page<ProductDto> getAllProducts(Pageable pageable) {
-        log.info("Fetching all products page: {}", pageable);
-        Page<Product> productPage = productRepository.findAll(pageable);
-        return productPage.map(product -> modelMapper.map(product, ProductDto.class)); // Simpler mapping for Page
-    }
-
+    @Override
     @Transactional(readOnly = true)
     public Page<ProductDto> getFeaturedProducts(Pageable pageable) {
         log.info("Fetching featured products page: {}", pageable);
@@ -197,6 +205,7 @@ public class ProductService {
         return products.map(product -> modelMapper.map(product, ProductDto.class));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Page<ProductDto> getNewProducts(Pageable pageable) {
         log.info("Fetching new arrival products page: {}", pageable);
@@ -205,6 +214,7 @@ public class ProductService {
         return products.map(product -> modelMapper.map(product, ProductDto.class));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Page<ProductDto> getProductsByCategory(Long categoryId, Pageable pageable) {
         log.info("Fetching products for category ID: {}, page: {}", categoryId, pageable);
@@ -215,6 +225,8 @@ public class ProductService {
         return productPage.map(product -> modelMapper.map(product, ProductDto.class));
     }
 
+
+    @Override
     @Transactional(readOnly = true)
     public Page<ProductDto> getProductsByBrand(Long brandId, Pageable pageable) {
         log.info("Fetching products for brand ID: {}, page: {}", brandId, pageable);
@@ -225,6 +237,7 @@ public class ProductService {
         return productPage.map(product -> modelMapper.map(product, ProductDto.class));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public Page<ProductDto> searchProducts(String query, Pageable pageable) {
         log.info("Searching products with query: '{}', page: {}", query, pageable);
@@ -235,7 +248,9 @@ public class ProductService {
 
     // Filtered Products - Keeping your logic structure but returning Page<ProductDto>
     // IMPORTANT: Requires corresponding methods in ProductRepository accepting Pageable!
+
     @Transactional(readOnly = true)
+    @Override
     public Page<ProductDto> getFilteredProducts(Long categoryId, Long brandId, String priceRange, Double minPrice, Double maxPrice, Pageable pageable) {
         log.info("Filtering products - Category: {}, Brand: {}, PriceRange: {}, MinPrice: {}, MaxPrice: {}, Page: {}",
                 categoryId, brandId, priceRange, minPrice, maxPrice, pageable);
@@ -301,9 +316,6 @@ public class ProductService {
         return productPage.map(product -> modelMapper.map(product, ProductDto.class));
     }
 
-
-    // Add these methods inside the ProductService class
-
     @Transactional
     public void toggleFeaturedStatus(Long productId) {
         log.info("Toggling featured status for product ID: {}", productId);
@@ -325,6 +337,7 @@ public class ProductService {
     }
 
 
+
     /**
      * Finds more products from the same brand, excluding the current product.
      * @param currentProductId The ID of the product being viewed.
@@ -332,6 +345,7 @@ public class ProductService {
      * @param limit The maximum number of products to return.
      * @return A List of related ProductDto objects from the same brand.
      */
+    @Override
     @Transactional(readOnly = true)
     public List<ProductDto> findMoreByBrand(Long currentProductId, Long brandId, int limit) {
         log.info("Finding more products for product ID {} in brand ID {}", currentProductId, brandId);
@@ -349,8 +363,6 @@ public class ProductService {
                 .map(this::mapToDto) // Use helper
                 .collect(Collectors.toList());
     }
-
-    // Inside ProductService.java
 
     // --- UPDATED getFilteredProducts ---
     @Transactional(readOnly = true)
@@ -458,6 +470,7 @@ public class ProductService {
         return productPage.map(this::mapToDto); // Use helper
     }
 
+
     /**
      * Finds related products, e.g., by category, excluding the current product.
      * @param currentProductId The ID of the product being viewed.
@@ -479,6 +492,30 @@ public class ProductService {
 
         return relatedProductsPage.getContent().stream()
                 .map(this::mapToDto) // Use helper
+                .collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countTotalProducts() {
+        return productRepository.count();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countLowStockProducts(int threshold) {
+        return productRepository.countByStockQuantityLessThanEqual(threshold);
+    }
+
+    // Add this if you need to get the actual low stock products
+    @Transactional(readOnly = true)
+    public List<ProductDto> getLowStockProductsList(int limit) {
+        Pageable pageable = PageRequest.of(0, limit);
+        return productRepository.findByStockQuantityLessThanEqual(limit, pageable)
+                .stream()
+                .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
@@ -521,8 +558,6 @@ public class ProductService {
 
 
 
-
-
     // --- Helper Methods for Image Handling (Example using local filesystem) ---
 
     private String saveImage(MultipartFile imageFile) {
@@ -559,7 +594,6 @@ public class ProductService {
             // Handle error - log or potentially throw exception if deletion failure is critical
         }
     }
-
 
 
 

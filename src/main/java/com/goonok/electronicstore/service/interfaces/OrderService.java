@@ -2,6 +2,7 @@ package com.goonok.electronicstore.service.interfaces;
 
 import com.goonok.electronicstore.dto.CheckoutDto;
 import com.goonok.electronicstore.dto.OrderDto;
+import com.goonok.electronicstore.dto.ChartDataPoint;
 import com.goonok.electronicstore.dto.PaymentSubmissionResponse;
 import com.goonok.electronicstore.dto.PaymentDetailsSubmissionDto;
 import com.goonok.electronicstore.enums.OrderStatus; // Import OrderStatus
@@ -10,6 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.goonok.electronicstore.service.interfaces.OrderService;
 import org.springframework.transaction.annotation.Transactional; // Import if needed
+import java.math.BigDecimal;
+import java.util.List;
+
 
 public interface OrderService {
 
@@ -107,5 +111,16 @@ public interface OrderService {
 
 
     PaymentSubmissionResponse submitPaymentDetails(Long orderId, PaymentDetailsSubmissionDto paymentDetails);
+
+    long countTotalOrders();
+    long countOrdersByStatus(OrderStatus status);
+    BigDecimal calculateTotalRevenue();
+    List<OrderDto> getRecentOrders(int limit);
+
+    // New methods
+    long countTodayOrders();
+    BigDecimal calculateTodayRevenue();
+    long countPendingPayments();
+
 
 }

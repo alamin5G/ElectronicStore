@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/admin-profile.css}" media="screen">
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0" th:text="${pageTitle ?: 'Admin Profile'}">Admin Profile</h2>
+        <a th:href="@{/admin/dashboard}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${errorMessage}">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm profile-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
+                    <h5 class="mb-0">Admin Information</h5>
+                    <a th:href="@{/admin/edit-profile}" class="btn btn-sm btn-outline-light">
+                        <i class="fas fa-edit me-1"></i> Edit Profile
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" th:if="${adminProfile == null}">
+                        Could not load profile information. Please try again later.
+                    </div>
+
+                    <dl class="row profile-details" th:if="${adminProfile != null}">
+                        <dt class="col-sm-4">Full Name:</dt>
+                        <dd class="col-sm-8" th:text="${adminProfile.name}">Admin Name</dd>
+
+                        <dt class="col-sm-4">Email Address:</dt>
+                        <dd class="col-sm-8">
+                            <span th:text="${adminProfile.email}">admin@example.com</span>
+                            <span th:if="${adminProfile.verified}" class="badge bg-success ms-2">Verified</span>
+                            <span th:unless="${adminProfile.verified}" class="badge bg-warning text-dark ms-2">Not Verified</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Phone Number:</dt>
+                        <dd class="col-sm-8" th:text="${adminProfile.phoneNumber ?: 'Not Provided'}">01234567890</dd>
+
+                        <dt class="col-sm-4">Member Since:</dt>
+                        <dd class="col-sm-8" th:text="${#temporals.format(adminProfile.createdAt, 'dd-MMM-yyyy')}">01-Jan-2024</dd>
+
+                        <dt class="col-sm-4">Last Login:</dt>
+                        <dd class="col-sm-8" th:text="${adminProfile.lastLoginDate != null ? #temporals.format(adminProfile.lastLoginDate, 'dd-MMM-yyyy HH:mm') : 'N/A'}">01-Jan-2024 10:30</dd>
+
+                        <dt class="col-sm-4">Login Count:</dt>
+                        <dd class="col-sm-8" th:text="${adminProfile.loginCount ?: '0'}">5</dd>
+
+                        <dt class="col-sm-4">Roles:</dt>
+                        <dd class="col-sm-8">
+                            <span th:each="role, iterStat : ${adminProfile.roleNames}" class="badge bg-primary me-1" th:text="${role}">ROLE_ADMIN</span>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Account Security</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a th:href="@{/admin/change-password}" class="btn btn-outline-primary">
+                            <i class="fas fa-key me-2"></i> Change Password
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Admin Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <a th:href="@{/admin/dashboard}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                        <a th:href="@{/admin/users}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-users me-2"></i> Manage Users
+                        </a>
+                        <a th:href="@{/admin/products}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-box-open me-2"></i> Manage Products
+                        </a>
+                        <a th:href="@{/admin/warranties}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-box-open me-2"></i> Manage Warranties
+                        </a>
+                        <a th:href="@{/admin/brands}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-trademark me-2"></i> Manage Brands
+                        </a>
+                        <a th:href="@{/admin/categories}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-tags me-2"></i> Manage Categories
+                        </a>
+                        <a th:href="@{/admin/orders}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shopping-cart me-2"></i> Manage Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+</body>
+</html>

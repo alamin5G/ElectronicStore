@@ -38,7 +38,7 @@ public class AdminOrderController {
     @GetMapping
     public String listAllOrders(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "15") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "orderDate,desc") String sort,
             @RequestParam(required = false) OrderStatus status, // Optional status filter
             Model model) {

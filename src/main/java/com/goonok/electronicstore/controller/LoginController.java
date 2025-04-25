@@ -3,7 +3,7 @@ package com.goonok.electronicstore.controller;
 import com.goonok.electronicstore.model.User;
 import com.goonok.electronicstore.repository.UserRepository;
 import com.goonok.electronicstore.service.GreetingService;
-import com.goonok.electronicstore.service.ProductService;
+import com.goonok.electronicstore.service.interfaces.ProductService;
 import com.goonok.electronicstore.service.SecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

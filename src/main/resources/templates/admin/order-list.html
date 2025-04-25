@@ -53,7 +53,7 @@
                         <td th:text="${order.orderNumber}">ORD-123</td>
                         <td th:text="${#temporals.format(order.orderDate, 'dd-MMM-yy HH:mm')}">Date</td>
                         <td>
-                            <span th:text="${order.userFullName ?: 'N/A'}">Customer Name</span><br>
+                            <span th:text="${order.userName ?: 'N/A'}">Customer Name</span><br>
                             <small class="text-muted" th:text="${order.userEmail}"></small>
                         </td>
                         <td th:text="'৳' + ${#numbers.formatDecimal(order.totalAmount, 1, 'COMMA', 2, 'POINT')}">Total</td>
@@ -75,7 +75,7 @@
                     </tr>
                     </tbody>
                 </table>
-            </div></div> <div class="card-footer bg-white" th:if="${orderPage != null and orderPage.totalPages > 1}">
+            </div></div> <div class="card-footer bg-white" th:if="${orderPage != null and orderPage.totalPages >= 1}">
         <nav aria-label="Order navigation">
             <ul class="pagination justify-content-center mb-0">
                 <li class="page-item" th:classappend="${orderPage.first} ? 'disabled'">

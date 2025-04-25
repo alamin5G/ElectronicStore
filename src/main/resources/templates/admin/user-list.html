@@ -48,7 +48,7 @@
       <td>
         <span class="badge" 
               th:classappend="${user.customerTier == 'GOLD' ? 'bg-warning' : 
-                              user.customerTier == 'SILVER' ? 'bg-secondary' : 'bg-bronze'}"
+                              user.customerTier == 'SILVER' ? 'bg-primary' : 'bg-info'}"
               th:text="${user.customerTier}">TIER</span>
       </td>
       <td>

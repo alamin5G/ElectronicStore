@@ -37,7 +37,7 @@
                         <dt class="col-sm-4">Order Number:</dt><dd class="col-sm-8" th:text="${order.orderNumber}"></dd>
                         <dt class="col-sm-4">Order Date:</dt><dd class="col-sm-8" th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm')}"></dd> <dt class="col-sm-4">Customer:</dt>
                         <dd class="col-sm-8">
-                            <span th:text="${order.userFullName ?: 'N/A'}"></span><br>
+                            <span th:text="${order.userName ?: 'N/A'}"></span><br>
                             <small class="text-muted" th:text="${order.userEmail}"></small>
                         </dd>
                         <dt class="col-sm-4">Payment Method:</dt><dd class="col-sm-8" th:text="${order.paymentMethod}"></dd>

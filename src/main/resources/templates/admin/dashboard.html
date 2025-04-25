@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/header :: head(~{::link})}">
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <header th:replace="~{layout/navbar :: header}"></header>
-<main class="container mt-4 flex-grow-1">
-    <h2>Admin Dashboard</h2>
+
+<main class="container-fluid py-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+
+
     <div class="row">
         <!-- User Management Card -->
         <div class="col-md-4 mb-4">
@@ -21,7 +26,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Products Card -->
         <div class="col-md-4 mb-4">
             <div class="card text-center">
@@ -35,7 +40,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Brands Card -->
         <div class="col-md-4 mb-4">
             <div class="card text-center">
@@ -45,12 +50,12 @@
                     </div>
                     <h5 class="card-title">Manage Brands</h5>
                     <p class="card-text">Add, edit, or delete product brands.</p>
-                    <a href="/admin/brand" class="btn btn-primary">Go to Brands</a>
+                    <a href="/admin/brands" class="btn btn-primary">Go to Brands</a>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="row">
         <!-- Categories Card -->
         <div class="col-md-4 mb-4">
@@ -65,7 +70,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Warranty Card -->
         <div class="col-md-4 mb-4">
             <div class="card text-center">
@@ -75,12 +80,254 @@
                     </div>
                     <h5 class="card-title">Manage Warranty</h5>
                     <p class="card-text">Add, edit, or delete product warranties.</p>
-                    <a href="/admin/warranty" class="btn btn-primary">Go to Warranties</a>
+                    <a href="/admin/warranties" class="btn btn-primary">Go to Warranties</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Overview Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Total Orders Card -->
+        <div class="col-md-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Orders</h6>
+                            <h2 class="my-2" th:text="${stats.totalOrders}">0</h2>
+                            <p class="mb-0 small">
+                                <span th:text="${stats.todayOrders}">0</span> orders today
+                            </p>
+                        </div>
+                        <i class="fas fa-shopping-cart fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Card -->
+        <div class="col-md-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Revenue</h6>
+                            <h2 class="my-2">৳<span
+                                    th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 0, 'POINT')}">0</span>
+                            </h2>
+                            <p class="mb-0 small">
+                                ৳<span
+                                    th:text="${#numbers.formatDecimal(stats.todayRevenue, 1, 'COMMA', 0, 'POINT')}">0</span>
+                                today
+                            </p>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Card -->
+        <div class="col-md-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Products</h6>
+                            <h2 class="my-2" th:text="${stats.totalProducts}">0</h2>
+                            <p class="mb-0 small">
+                                <span th:text="${stats.lowStockProducts}">0</span> low stock items
+                            </p>
+                        </div>
+                        <i class="fas fa-box-open fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Card -->
+        <div class="col-md-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-0">Total Users</h6>
+                            <h2 class="my-2" th:text="${stats.totalUsers}">0</h2>
+                            <p class="mb-0 small">
+                                <span th:text="${stats.newUsersToday}">0</span> new today
+                            </p>
+                        </div>
+                        <i class="fas fa-users fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <!-- Orders Chart -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Orders Last 7 Days</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="ordersChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Revenue Last 7 Days</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Row -->
+    <div class="row">
+        <!-- Recent Orders -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Orders</h5>
+                    <a href="/admin/orders" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Order #</th>
+                                <th>Customer</th>
+                                <th>Status</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="order : ${recentOrders}">
+                                <td>
+                                    <a th:href="@{/admin/orders/{id}(id=${order.orderId})}"
+                                       th:text="${order.orderNumber}"
+                                       class="text-decoration-none">
+                                    </a>
+                                </td>
+                                <td th:text="${order.shippingName}">Customer Name</td>
+                                <!-- Replace the problematic span with this -->
+                                <td>
+                                    <span th:class="${'badge ' +
+                                          (order.status.name() == 'PENDING' ? 'bg-warning' :
+                                          (order.status.name() == 'PROCESSING' ? 'bg-info' :
+                                          (order.status.name() == 'SHIPPED' ? 'bg-primary' :
+                                          (order.status.name() == 'DELIVERED' ? 'bg-success' :
+                                          (order.status.name() == 'CANCELLED' ? 'bg-danger' : 'bg-secondary')))))}">
+                                        <span th:text="${order.status}"></span>
+                                    </span>
+                                </td>
+                                <td class="text-end">৳<span
+                                        th:text="${#numbers.formatDecimal(order.totalAmount, 1, 'COMMA', 0, 'POINT')}">0</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Products -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Low Stock Products</h5>
+                    <a href="/admin/products" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <!-- Low Stock Products table -->
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th class="text-end">Stock</th>
+                                <th class="text-end">Min. Level</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="product : ${lowStockProducts}">
+                                <td>
+                                    <a th:href="@{/admin/products/__${product.productId}__}"
+                                       th:text="${product.name}"
+                                       class="text-decoration-none">
+                                    </a>
+                                </td>
+                                <td th:text="${product.categoryName}">Category</td>
+                                <td class="text-end" th:text="${product.stockQuantity}">0</td>
+                                <td class="text-end" th:text="${product.minimumStockLevel}">0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </main>
-<footer th:replace="~{layout/footer :: footer}"></footer>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+
+<!-- Initialize Charts -->
+<script th:inline="javascript">
+    // Get chart data from Thymeleaf
+    const orderData = /*[[${stats.last7DaysOrders}]]*/ [];
+    const revenueData = /*[[${stats.last7DaysRevenue}]]*/ [];
+
+    // Orders Chart
+    new Chart(document.getElementById('ordersChart'), {
+        type: 'line',
+        data: {
+            labels: orderData.map(point => point.label),
+            datasets: [{
+                label: 'Orders',
+                data: orderData.map(point => point.value),
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // Revenue Chart
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'bar',
+        data: {
+            labels: revenueData.map(point => point.label),
+            datasets: [{
+                label: 'Revenue (৳)',
+                data: revenueData.map(point => point.value),
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgb(75, 192, 192)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
 </body>
 </html>

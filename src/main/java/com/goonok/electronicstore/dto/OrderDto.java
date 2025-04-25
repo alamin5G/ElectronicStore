@@ -40,7 +40,7 @@ public class OrderDto {
     private String paymentMethod;
 
     private Long userId; // ID of the user who placed the order
-    private String userFullName; // <-- ADDED
+    private String userName; // <-- ADDED
     private String userEmail;    // <-- ADDED
     private List<OrderItemDto> orderItems = new ArrayList<>();
 }

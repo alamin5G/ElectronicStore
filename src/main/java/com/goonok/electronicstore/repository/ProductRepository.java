@@ -182,5 +182,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     Page<Product> findByBrand_BrandIdAndProductIdNot(Long brandId, Long productIdToExclude, Pageable pageable); // <-- ADDED METHOD
 
 
+    int countByStockQuantityLessThanEqual(int threshold);
+    Page<Product> findByStockQuantityLessThanEqual(int threshold, Pageable pageable);
+
 
 }

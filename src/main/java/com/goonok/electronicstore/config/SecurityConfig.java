@@ -1,6 +1,7 @@
 package com.goonok.electronicstore.config;
 
 
+import com.goonok.electronicstore.security.AuthenticatedUserRedirectFilter;
 import com.goonok.electronicstore.security.CustomLogoutSuccessHandler;
 import com.goonok.electronicstore.security.CustomAuthenticationSuccessHandler;
 import com.goonok.electronicstore.service.CustomUserDetailsService;
@@ -91,7 +92,6 @@ public class SecurityConfig {
                         .usernameParameter("email") // Username parameter in the form
                         .failureUrl("/login?error=true") // Redirect to this URL on login failure
                         .successHandler(authenticationSuccessHandler) // Use the custom success handler
-                        //.defaultSuccessUrl("/login/success", true) // Redirect after successful login
                         .permitAll() // Allow everyone to access the login page
                 )
                 .logout(logout -> logout
@@ -101,38 +101,13 @@ public class SecurityConfig {
                 )
                 .userDetailsService(customUserDetailsService);
 
-        // Custom filter to redirect authenticated users from /login, /register, /specialAccessForAdmin
-        // http.addFilterBefore(new RedirectAuthenticatedUserFilter(), UsernamePasswordAuthenticationFilter.class);
+        // Add the custom filter to handle authenticated users trying to access protected URLs
+        http.addFilterBefore(
+                new AuthenticatedUserRedirectFilter("/login", "/register", "/specialAccessForAdmin"),
+                UsernamePasswordAuthenticationFilter.class
+        );
 
         return http.build();
     }
 
-    /*
-    // Custom filter to redirect authenticated users
-    public static class RedirectAuthenticatedUserFilter extends OncePerRequestFilter {
-
-        @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-                throws ServletException, IOException {
-
-            String[] protectedUrls = {"/login", "/register", "/specialAccessForAdmin"};
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-            if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-                for (String url : protectedUrls) {
-                    if (request.getRequestURI().equals(url)) {
-                        if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
-                            response.sendRedirect("/admin/dashboard");
-                        } else if (auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_USER"))) {
-                            response.sendRedirect("/user/profile");
-                        }
-                        return;
-                    }
-                }
-            }
-
-            filterChain.doFilter(request, response);
-        }
-    }
-     */
 }

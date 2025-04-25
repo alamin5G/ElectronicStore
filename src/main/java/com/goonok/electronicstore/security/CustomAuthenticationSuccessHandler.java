@@ -7,18 +7,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Component
-public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     private final UserRepository userRepository;
 
     public CustomAuthenticationSuccessHandler(UserRepository userRepository) {
         this.userRepository = userRepository;
+        // Exclude these URLs from the saved request redirect
+        setAlwaysUseDefaultTargetUrl(false);
     }
 
     @Override
@@ -36,12 +39,21 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             userRepository.save(user);
         }
 
-        // Redirect based on role
-        if (authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            response.sendRedirect("/admin/dashboard");
+        // Check if the request was for a protected URL that we want to override
+        String requestUrl = request.getRequestURI();
+        if (requestUrl.equals("/login") || requestUrl.equals("/register") || 
+            requestUrl.equals("/specialAccessForAdmin")) {
+            
+            // Redirect based on role
+            if (authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                response.sendRedirect("/admin/dashboard");
+            } else {
+                response.sendRedirect("/user/profile");
+            }
         } else {
-            response.sendRedirect("/user/profile");
+            // For other URLs, use the parent class behavior which will redirect to the originally requested URL
+            super.onAuthenticationSuccess(request, response, authentication);
         }
     }
 }

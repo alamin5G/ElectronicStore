@@ -2,15 +2,18 @@ package com.goonok.electronicstore.repository;
 
 import com.goonok.electronicstore.enums.OrderStatus;
 import com.goonok.electronicstore.model.Order;
+import com.goonok.electronicstore.dto.ChartDataPoint;
 import com.goonok.electronicstore.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
 import java.util.Optional;
 import java.math.BigDecimal;
 import java.util.List;
+import java.time.LocalDateTime;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
@@ -18,7 +21,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     /**
      * Finds all orders placed by a specific user, ordered by date descending.
-     * @param user The user entity.
+     *
+     * @param user     The user entity.
      * @param pageable Pagination information.
      * @return A page of the user's orders.
      */
@@ -26,6 +30,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     /**
      * Finds all orders placed by a specific user (non-paginated version if needed).
+     *
      * @param user The user entity.
      * @return A list of the user's orders.
      */
@@ -51,4 +56,22 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     boolean existsByTransactionId(String transactionId);
 
 
-}
+    // For dashboard stats
+    @Query("SELECT COUNT(o) FROM Order o WHERE DATE(o.orderDate) = CURRENT_DATE")
+    long countTodayOrders();
+
+    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.status != 'CANCELLED'")
+    BigDecimal calculateTotalRevenue();
+
+    @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE DATE(o.orderDate) = CURRENT_DATE AND o.status != 'CANCELLED'")
+    BigDecimal calculateTodayRevenue();
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.paymentStatus = 'PENDING'")
+    long countPendingPayments();
+
+
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.status = :status")
+    long countOrdersByStatus(@Param("status") OrderStatus status);
+
+    }

@@ -23,6 +23,13 @@ import java.math.BigDecimal;
 import java.util.*;
 import jakarta.persistence.criteria.Predicate;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.stream.Collectors;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 @Service
 @Transactional
@@ -446,6 +453,44 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUserId(userId);
     }
 
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countTotalUsers() {
+        // Use count() instead of findAll().size() for better performance
+        return userRepository.count();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int countNewUsersToday() {
+        return userRepository.getUsersCreatedToday();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AdminUserViewDto> getRecentUsers(int limit) {
+        // Get recent users with pagination
+        Pageable pageable = PageRequest.of(0, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<User> recentUsers = userRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        // Map to DTOs and include basic stats
+        return recentUsers.stream()
+                .map(user -> {
+                    AdminUserViewDto dto = modelMapper.map(user, AdminUserViewDto.class);
+
+                    // Add basic user statistics
+                    dto.setTotalOrders(orderRepository.countByUser(user));
+                    dto.setTotalSpent(orderRepository.calculateTotalSpentByUser(user));
+                    dto.setLastOrderDate(orderRepository.findTopByUserOrderByCreatedAtDesc(user)
+                            .map(Order::getCreatedAt)
+                            .orElse(null));
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
 
     @Override
