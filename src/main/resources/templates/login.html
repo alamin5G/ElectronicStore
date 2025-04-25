@@ -58,6 +58,21 @@
         </form>
       </div></div></div></div></main>
 
+<div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${successMessage}">
+    <span th:text="${successMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="alert alert-info alert-dismissible fade show" role="alert" th:if="${infoMessage}">
+    <span th:text="${infoMessage}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="text-center mt-3">
+    <p>New user? <a th:href="@{/register}">Register here</a></p>
+    <p>Didn't receive verification email? <a th:href="@{/verify/request}">Request a new one</a></p>
+</div>
+
 <footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
 
 </body>

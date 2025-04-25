@@ -31,31 +31,31 @@ public class RegistrationController {
     // Handle user registration
     @PostMapping("/register")
     public String registerUser(@Valid User user, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
-
-        if (userService.isEmailExists(user.getEmail())) {
-            model.addAttribute("error", "An account already exists for this email.");
-            return "registration";
-        }
-        
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("error", "Please fix the errors in the form.");
-            return "registration";
-        }
-
-
-
-
-
-        try {
-            // Register the user, assign the USER role, and send the verification email
-            userService.registerUser(user);
-            redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please check your email to verify your account.");
-            return "redirect:/login";  // Redirect to login after successful registration
-        } catch (Exception e) {
-            model.addAttribute("error", "An error occurred during registration. Please try again." + e.getMessage());
-            return "registration";
-        }
+    if (userService.isEmailExists(user.getEmail())) {
+        model.addAttribute("error", "An account already exists for this email.");
+        return "registration";
     }
+    
+    if (bindingResult.hasErrors()) {
+        model.addAttribute("error", "Please fix the errors in the form.");
+        return "registration";
+    }
+
+    try {
+        // Make sure there are no addresses in the user object during registration
+        user.setAddresses(null);
+        
+        // Register the user, assign the USER role, and send the verification email
+        userService.registerUser(user);
+        redirectAttributes.addFlashAttribute("successMessage", 
+    "Registration successful! Please check your email to verify your account. " +
+    "If you don't receive the email within a few minutes, check your spam folder or use the 'Request verification email' link on the login page.");
+        return "redirect:/login";
+    } catch (Exception e) {
+        model.addAttribute("error", "An error occurred during registration. Please try again.");
+        return "registration";
+    }
+}
 
     // Handle email verification token
 
