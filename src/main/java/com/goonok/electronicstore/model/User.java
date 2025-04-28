@@ -37,7 +37,6 @@ public class User {
     private String email;
 
     @NotEmpty(message = "Password is required")
-    // Password strength validation is usually handled in DTO/Service, not here.
     @Column(nullable = false) // Added DB constraint consistency
     private String password; // Remember to store the HASHED password [cite: 50]
 

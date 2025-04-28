@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <title>Invalid Token - Electronic Store</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container mt-4 flex-grow-1 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5 col-xl-4">
+            <div class="card shadow-sm">
+                <div class="card-body p-4 p-md-5 text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem;"></i>
+                    </div>
+
+                    <h3 class="mb-3">Invalid or Expired Link</h3>
+
+                    <p class="text-muted mb-4" th:text="${errorMessage}">The password reset link is invalid or has expired.</p>
+
+                    <div class="d-grid">
+                        <a th:href="@{/forgot-password}" class="btn btn-primary">Request New Password Reset Link</a>
+                    </div>
+
+                    <p class="mt-4 mb-0">
+                        <a th:href="@{/login}" class="text-decoration-none">Back to login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+</body>
+</html>

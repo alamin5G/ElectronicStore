@@ -99,4 +99,9 @@ public interface UserService {
     long countTotalUsers();
     int countNewUsersToday();
     List<AdminUserViewDto> getRecentUsers(int limit);
+
+    // Add these to UserService.java
+    void createPasswordResetTokenForUser(String email);
+    boolean validatePasswordResetToken(String token);
+    void resetPassword(String token, String newPassword);
 }

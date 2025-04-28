@@ -73,7 +73,8 @@ public class SecurityConfig {
             "/search/**",
             // Public parts of cart/checkout/order/payment if applicable (e.g., viewing cart)
             "/cart/**", // Might need more specific rules later
-            "/payment"  // Might need more specific rules later
+            "/payment",  // Might need more specific rules later
+            "/forgot-password", "/reset-password",
             // Review other paths like /checkout/**, /order/** - should they be fully public?
     };
 
