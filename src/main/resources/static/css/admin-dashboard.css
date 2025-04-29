@@ -1,0 +1,231 @@
+/* admin-dashboard.css */
+:root {
+    --section-products: rgba(246, 242, 255, 0.8);
+    --section-users: rgba(240, 255, 244, 0.8);
+    --section-orders: rgba(255, 245, 240, 0.8);
+    --section-messages: rgba(240, 248, 255, 0.8);
+
+    --card-products: linear-gradient(135deg, #A88BEB 0%, #8B60ED 100%);
+    --card-users: linear-gradient(135deg, #63E6BE 0%, #40C997 100%);
+    --card-orders: linear-gradient(135deg, #FFA897 0%, #FF7B65 100%);
+    --card-messages: linear-gradient(135deg, #74C0FC 0%, #4DABF7 100%);
+}
+
+/* Main Container */
+main.container-fluid {
+    background: #f8f9fd;
+    padding: 2rem;
+}
+
+/* Section Styling */
+.dashboard-section {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 20px;
+    position: relative;
+}
+
+.dashboard-section::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    border-radius: 3px;
+}
+
+/* Product Management Section */
+.section-products {
+    background: var(--section-products);
+}
+
+.section-products::before {
+    background: var(--card-products);
+}
+
+/* User Management Section */
+.section-users {
+    background: var(--section-users);
+}
+
+.section-users::before {
+    background: var(--card-users);
+}
+
+/* Orders Section */
+.section-orders {
+    background: var(--section-orders);
+}
+
+.section-orders::before {
+    background: var(--card-orders);
+}
+
+/* Messages Section */
+.section-messages {
+    background: var(--section-messages);
+}
+
+.section-messages::before {
+    background: var(--card-messages);
+}
+
+/* Section Headers */
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+}
+
+.section-header i {
+    font-size: 2rem;
+    margin-right: 1rem;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Cards Styling */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Stats Cards */
+.stats-card {
+    color: white;
+    padding: 1.5rem;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card.products {
+    background: var(--card-products);
+}
+
+.stats-card.users {
+    background: var(--card-users);
+}
+
+.stats-card.orders {
+    background: var(--card-orders);
+}
+
+.stats-card.messages {
+    background: var(--card-messages);
+}
+
+.stats-card i {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    font-size: 5rem;
+    opacity: 0.2;
+    transform: rotate(-15deg);
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover i {
+    transform: rotate(0deg) scale(1.1);
+    opacity: 0.3;
+}
+
+/* Management Cards */
+.management-card {
+    background: white;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.management-card i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.management-card:hover i {
+    transform: scale(1.2);
+}
+
+/* Tables */
+.table-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.table-card .card-header {
+    background: white;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.5rem;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: rgba(0, 0, 0, 0.02);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    border: none;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+/* Badges */
+.badge {
+    padding: 0.5em 1em;
+    border-radius: 30px;
+    font-weight: 500;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-section {
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.dashboard-section:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.dashboard-section:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.dashboard-section:nth-child(4) {
+    animation-delay: 0.3s;
+}

@@ -43,6 +43,8 @@
                                 <input type="radio" name="selectedAddressId" th:id="'address_' + ${address.addressId}"
                                        th:value="${address.addressId}" required
                                        th:checked="${selectedAddressId == address.addressId}">
+                                <p class="mb-1 fw-bold" th:text="${address.recipientName}"></p>
+                                <p class="mb-1 fw-bold" th:text="${address.recipientPhone}"></p>
                                 <p class="mb-1 fw-bold" th:text="${address.street}"></p>
                                 <p class="mb-1 small" th:text="${address.city + ', ' + address.postalCode +', ' + address.state}"></p>
                                 <div class="mt-2">

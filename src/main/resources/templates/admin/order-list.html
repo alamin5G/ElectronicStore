@@ -40,7 +40,7 @@
                         <th>Order #</th>
                         <th>Date</th>
                         <th>Customer</th> <th>Total</th>
-                        <th>Payment</th>
+                        <th>Pay Status</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -57,7 +57,16 @@
                             <small class="text-muted" th:text="${order.userEmail}"></small>
                         </td>
                         <td th:text="'৳' + ${#numbers.formatDecimal(order.totalAmount, 1, 'COMMA', 2, 'POINT')}">Total</td>
-                        <td th:text="${order.paymentMethod}">Payment</td>
+                        <td>
+    <span class="badge status-badge"
+          th:classappend="${
+            order.paymentStatus == T(com.goonok.electronicstore.enums.PaymentStatus).COMPLETED ? 'bg-success' : 
+            (order.paymentStatus == T(com.goonok.electronicstore.enums.PaymentStatus).PENDING ? 'bg-warning text-dark' : 
+            (order.paymentStatus == T(com.goonok.electronicstore.enums.PaymentStatus).FAILED ? 'bg-danger' : 
+            (order.paymentStatus == T(com.goonok.electronicstore.enums.PaymentStatus).REFUNDED ? 'bg-info text-dark' :
+            'bg-secondary')))}"
+          th:text="${order.paymentStatus}">Payment</span>
+</td>
                         <td>
     <span class="badge status-badge"
           th:classappend="${
