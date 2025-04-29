@@ -4,6 +4,7 @@ import com.goonok.electronicstore.dto.AdminUserViewDto;
 import com.goonok.electronicstore.dto.DashboardStatsDto;
 import com.goonok.electronicstore.dto.OrderDto;
 import com.goonok.electronicstore.enums.OrderStatus;
+import com.goonok.electronicstore.service.interfaces.ContactService;
 import com.goonok.electronicstore.service.interfaces.OrderService;
 import com.goonok.electronicstore.service.interfaces.ProductService;
 import com.goonok.electronicstore.service.interfaces.UserService;
@@ -45,6 +46,8 @@ public class AdminDashboardController {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private ContactService contactService;
 
     @GetMapping
     public String showDashboard(Model model) {
@@ -57,13 +60,17 @@ public class AdminDashboardController {
                     .pendingOrders(orderService.countOrdersByStatus(OrderStatus.PENDING))
                     .shippedOrders(orderService.countOrdersByStatus(OrderStatus.SHIPPED))
                     .deliveredOrders(orderService.countOrdersByStatus(OrderStatus.DELIVERED))
-                    .totalRevenue(orderService.calculateTotalRevenue())
+                    .totalSell(orderService.calculateTotalRevenue())
                     .lowStockProducts(productService.countLowStockProducts(LOW_STOCK_THRESHOLD))
                     // New stats
                     .todayOrders(orderService.countTodayOrders())
                     .todayRevenue(orderService.calculateTodayRevenue())
                     .pendingPayments(orderService.countPendingPayments())
                     .newUsersToday(userService.countNewUsersToday())
+                    // Contact message stats
+                    .totalMessages(contactService.countTotalMessages())
+                    .unreadMessages(contactService.countUnreadMessages())
+                    .newMessagesToday(contactService.countNewMessagesToday())
                     .build();
 
             model.addAttribute("stats", stats);
@@ -72,6 +79,8 @@ public class AdminDashboardController {
             model.addAttribute("recentOrders", orderService.getRecentOrders(LEAST_VIEW_LIMIT));
             model.addAttribute("lowStockProducts", productService.getLowStockProductsList(LOW_STOCK_THRESHOLD));
             model.addAttribute("recentUsers", userService.getRecentUsers(LEAST_VIEW_LIMIT));
+            // Add recent messages
+            model.addAttribute("recentMessages", contactService.getRecentMessages(LEAST_VIEW_LIMIT));
 
         } catch (Exception e) {
             log.error("Error loading dashboard data", e);
@@ -80,6 +89,8 @@ public class AdminDashboardController {
 
         return "admin/dashboard";
     }
+
+
 
 
     private void handleDashboardError(Model model) {
@@ -91,7 +102,7 @@ public class AdminDashboardController {
                 .pendingOrders(0)
                 .shippedOrders(0)
                 .deliveredOrders(0)
-                .totalRevenue(BigDecimal.ZERO)
+                .totalSell(BigDecimal.ZERO)
                 .lowStockProducts(0)
                 .todayOrders(0)
                 .todayRevenue(BigDecimal.ZERO)
@@ -99,6 +110,10 @@ public class AdminDashboardController {
                 .newUsersToday(0)
                 .last7DaysOrders(Collections.emptyList())
                 .last7DaysRevenue(Collections.emptyList())
+                // Add default values for contact message stats
+                .totalMessages(0L)
+                .unreadMessages(0L)
+                .newMessagesToday(0L)
                 .build());
     }
 }

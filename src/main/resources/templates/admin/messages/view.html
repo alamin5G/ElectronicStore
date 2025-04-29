@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container py-4">
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Message Details</h2>
+                <div>
+                    <a th:href="@{/admin/messages}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Messages
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="row">
+        <!-- Message Details -->
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Message Content</h5>
+
+                        <span th:class="${'badge ' +
+                            (message.status != null ?
+                                (message.status.name() == 'NEW' ? 'bg-danger' :
+                                (message.status.name() == 'IN_PROGRESS' ? 'bg-primary' :
+                                (message.status.name() == 'WAITING_FOR_RESPONSE' ? 'bg-warning text-dark' :
+                                (message.status.name() == 'RESOLVED' ? 'bg-success' :
+                                (message.status.name() == 'CLOSED' ? 'bg-secondary' : 'bg-info'))))) : 'bg-secondary')}">
+                            <span th:text="${message.status != null ? message.status.displayName : 'Unknown'}">Status</span>
+                        </span>
+
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="fw-bold mb-1" th:text="${message.name}">Sender Name</h6>
+                                <p class="text-muted small mb-0" th:text="${message.email}">sender@example.com</p>
+                            </div>
+                            <div>
+                                <span class="text-muted small" th:text="${#temporals.format(message.createdAt, 'dd-MM-yyyy HH:mm')}">
+                                    Date
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-3">
+                        <p th:text="${message.message}" style="white-space: pre-line;">Message content</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Notes -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Admin Notes</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/admin/messages/{id}/update-status(id=${message.id})}" method="post">
+                        <div class="mb-3">
+                            <textarea class="form-control" id="adminNotes" name="adminNotes" rows="4"
+                                      th:text="${message.adminNotes}"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <div class="input-group" style="max-width: 250px;">
+                                <select class="form-select" id="status" name="status">
+                                    <option th:each="statusOption : ${statuses}"
+                                            th:value="${statusOption}"
+                                            th:text="${statusOption.displayName}"
+                                            th:selected="${statusOption == message.status}">
+                                    </option>
+                                </select>
+                                <button type="submit" class="btn btn-primary">Update Status</button>
+                            </div>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                Delete Message
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Customer Information -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-0">
+                            <span class="fw-bold">Name:</span>
+                            <span th:text="${message.name}">Customer Name</span>
+                        </li>
+                        <li class="list-group-item px-0">
+                            <span class="fw-bold">Email:</span>
+                            <a th:href="'mailto:' + ${message.email}" th:text="${message.email}">customer@example.com</a>
+                        </li>
+                        <li class="list-group-item px-0">
+                            <span class="fw-bold">Submitted:</span>
+                            <span th:text="${#temporals.format(message.createdAt, 'dd-MM-yyyy HH:mm')}">Date</span>
+                        </li>
+                        <li class="list-group-item px-0" th:if="${message.read}">
+                            <span class="fw-bold">Read:</span>
+                            <span th:text="${#temporals.format(message.readAt, 'dd-MM-yyyy HH:mm')}">Date</span>
+                        </li>
+                        <li class="list-group-item px-0" th:if="${message.resolvedAt != null}">
+                            <span class="fw-bold">Resolved:</span>
+                            <span th:text="${#temporals.format(message.resolvedAt, 'dd-MM-yyyy HH:mm')}">Date</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Assignment -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Assignment</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">
+                        <span class="fw-bold">Currently assigned to:</span>
+                        <span th:text="${message.assignedAdminName != null && !message.assignedAdminName.isEmpty() ? message.assignedAdminName : 'Unassigned'}"
+                              th:class="${message.assignedAdminName == null || message.assignedAdminName.isEmpty() ? 'text-muted' : ''}">
+                            Admin Name
+                        </span>
+                    </p>
+
+                    <form th:action="@{/admin/messages/{id}/assign(id=${message.id})}" method="post">
+                        <div class="input-group">
+                            <select class="form-select" id="adminId" name="adminId" required>
+                                <option value="" selected disabled>Select admin...</option>
+                                <!-- This would be populated with actual admins from your database -->
+                                <option th:each="admin : ${admins}"
+                                        th:value="${admin.adminId}"
+                                        th:text="${admin.user.name}"
+                                        th:selected="${message.assignedAdminId != null && message.assignedAdminId == admin.adminId}">
+                                    Admin Name
+                                </option>
+                            </select>
+                            <button type="submit" class="btn btn-outline-primary">Assign</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Reply -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Quick Reply</h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/admin/messages/{id}/reply(id=${message.id})}" method="post">
+                        <div class="mb-3">
+                            <textarea class="form-control" id="replyMessage" name="replyMessage" rows="4"
+                                      placeholder="Type your reply here..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-reply me-2"></i>Send Reply
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Message Timeline -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Timeline</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item px-3 py-3">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 32px; height: 32px;">
+                                        <i class="fas fa-envelope text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <p class="mb-0">Message received</p>
+                                    <p class="text-muted small mb-0" th:text="${#temporals.format(message.createdAt, 'dd-MM-yyyy HH:mm')}">
+                                        Date
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item px-3 py-3" th:if="${message.read}">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-info rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 32px; height: 32px;">
+                                        <i class="fas fa-eye text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <p class="mb-0">Message read</p>
+                                    <p class="text-muted small mb-0" th:text="${#temporals.format(message.readAt, 'dd-MM-yyyy HH:mm')}">
+                                        Date
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item px-3 py-3" th:if="${message.status.name() != 'NEW' && message.lastUpdatedAt != null}">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 32px; height: 32px;">
+                                        <i class="fas fa-sync-alt text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <p class="mb-0">Status changed to <span th:text="${message.status.displayName}">Status</span></p>
+                                    <p class="text-muted small mb-0" th:text="${#temporals.format(message.lastUpdatedAt, 'dd-MM-yyyy HH:mm')}">
+                                        Date
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="list-group-item px-3 py-3" th:if="${message.status.name() == 'RESOLVED' && message.resolvedAt != null}">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-success rounded-circle d-flex align-items-center justify-content-center"
+                                         style="width: 32px; height: 32px;">
+                                        <i class="fas fa-check text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="ms-3">
+                                    <p class="mb-0">Message resolved</p>
+                                    <p class="text-muted small mb-0" th:text="${#temporals.format(message.resolvedAt, 'dd-MM-yyyy HH:mm')}">
+                                        Date
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this message? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form th:action="@{/admin/messages/{id}/delete(id=${message.id})}" method="post">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+</body>
+</html>

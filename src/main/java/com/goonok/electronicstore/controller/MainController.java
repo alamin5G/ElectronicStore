@@ -1,8 +1,6 @@
 package com.goonok.electronicstore.controller;
 
 import com.goonok.electronicstore.dto.ProductDto; // Import DTO
-import com.goonok.electronicstore.model.Brand;
-import com.goonok.electronicstore.model.Category;
 import com.goonok.electronicstore.service.BrandService;
 import com.goonok.electronicstore.service.CategoryService;
 import com.goonok.electronicstore.service.interfaces.ProductService;
@@ -119,23 +117,6 @@ public class MainController {
         return "product/product-listing"; // e.g., templates/product/product-listing.html
     }
 
-    /**
-     * Displays the About Us page.
-     */
-    @GetMapping("/about")
-    public String about(Model model) {
-        model.addAttribute("pageTitle", "About Us");
-        return "visitor/about-us"; // Ensure this template exists
-    }
-
-    /**
-     * Displays the Contact Us page.
-     */
-    @GetMapping("/contact")
-    public String contact(Model model) {
-        model.addAttribute("pageTitle", "Contact Us");
-        return "visitor/contact"; // Ensure this template exists
-    }
 
 
 }

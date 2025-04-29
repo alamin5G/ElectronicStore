@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/contact.css}">
+</head>
+<body>
+<header th:replace="~{layout/navbar :: header}"></header>
+<main class="container py-5">
+    <!-- Contact Us Hero Section -->
+    <div class="row mb-5">
+        <div class="col-lg-12 text-center">
+            <h1 class="display-4 fw-bold text-primary mb-4">Get In Touch</h1>
+            <p class="lead mb-0">Have questions about our products or services? We're here to help!</p>
+            <p class="text-muted">Our team is ready to assist you with any inquiries.</p>
+        </div>
+    </div>
+
+    <div class="row g-5">
+        <!-- Contact Information -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4 p-lg-5">
+                    <h3 class="fw-bold mb-4 border-bottom pb-3">Contact Information</h3>
+
+                    <div class="d-flex mb-4">
+                        <div class="flex-shrink-0 bg-primary text-white rounded-circle p-3 me-3">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold">Our Location</h5>
+                            <p class="text-muted mb-0">123 Tech Street, Digital City</p>
+                            <p class="text-muted mb-0">Dhaka, Bangladesh</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-4">
+                        <div class="flex-shrink-0 bg-primary text-white rounded-circle p-3 me-3">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold">Phone Number</h5>
+                            <p class="text-muted mb-0">+880 123-456-7890</p>
+                            <p class="text-muted mb-0">+880 987-654-3210</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-4">
+                        <div class="flex-shrink-0 bg-primary text-white rounded-circle p-3 me-3">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold">Email Address</h5>
+                            <p class="text-muted mb-0">info@electronicstore.com</p>
+                            <p class="text-muted mb-0">support@electronicstore.com</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex">
+                        <div class="flex-shrink-0 bg-primary text-white rounded-circle p-3 me-3">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold">Business Hours</h5>
+                            <p class="text-muted mb-0">Monday-Friday: 9am to 6pm</p>
+                            <p class="text-muted mb-0">Saturday: 10am to 4pm</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <h5 class="fw-bold mb-3">Follow Us</h5>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="btn btn-outline-primary rounded-circle">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-info rounded-circle">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-danger rounded-circle">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="btn btn-outline-dark rounded-circle">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4 p-lg-5">
+                    <h3 class="fw-bold mb-4 border-bottom pb-3">Send Us a Message</h3>
+
+                    <!-- Success Message -->
+                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span th:text="${successMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+
+
+                    <form th:action="@{/send-message}" method="post" th:object="${contactMessage}" id="contactForm" novalidate>
+
+                        <!-- Error Message -->
+                        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <span th:text="${errorMessage}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Your Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}"
+                                       required minlength="2" maxlength="100"
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                    Please enter your name.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}"
+                                       required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                                    Please enter a valid email address.
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="subject" name="subject" th:field="*{subject}"
+                                       required minlength="5" maxlength="200"
+                                       th:classappend="${#fields.hasErrors('subject')} ? 'is-invalid' : ''">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}">
+                                    Please enter a subject for your message.
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="message" class="form-label">Your Message <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="message" rows="5" th:field="*{message}"
+                                          required minlength="10" maxlength="2000"
+                                          th:classappend="${#fields.hasErrors('message')} ? 'is-invalid' : ''"></textarea>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('message')}" th:errors="*{message}">
+                                    Please enter your message.
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="agreeTerms" required
+                                           th:classappend="${#fields.hasErrors('global')} ? 'is-invalid' : ''">
+                                    <label class="form-check-label" for="agreeTerms">
+                                        I agree to the terms and privacy policy
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        You must agree before submitting.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Map -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <div class="ratio ratio-21x9">
+                        <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3648.0380363972577!2d90.3880845753402!3d23.888269878576576!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c469610d01b9%3A0xaa41c726134f443b!2sIUBAT%20-%20International%20University%20of%20Business%20Agriculture%20and%20Technology!5e0!3m2!1sen!2sbd!4v1745884134936!5m2!1sen!2sbd"
+                                width="600" height="450" style="border:0;"
+                                allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                        ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+
+<script>
+    // Form validation script
+    (function () {
+        'use strict'
+
+        // Fetch all forms that we want to apply validation styles to
+        const forms = document.querySelectorAll('#contactForm')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+
+            // Add real-time validation feedback
+            const inputs = form.querySelectorAll('input, textarea')
+            inputs.forEach(input => {
+                input.addEventListener('blur', () => {
+                    // Check validity on blur
+                    if (input.checkValidity()) {
+                        input.classList.remove('is-invalid')
+                        input.classList.add('is-valid')
+                    } else {
+                        input.classList.remove('is-valid')
+                        input.classList.add('is-invalid')
+                    }
+                })
+            })
+        })
+    })()
+</script>
+</body>
+</html>

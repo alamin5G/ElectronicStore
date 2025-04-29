@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head(~{::link})}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Message Status</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a th:href="@{/admin/messages(status='ALL')}"
+                       th:class="${selectedStatus == 'ALL' ? 'list-group-item list-group-item-action active' : 'list-group-item list-group-item-action'}">
+                        All Messages
+                        <span class="badge bg-secondary float-end" th:text="${messages.totalElements}">0</span>
+                    </a>
+                    <a th:href="@{/admin/messages(status='NEW')}"
+                       th:class="${selectedStatus == 'NEW' ? 'list-group-item list-group-item-action active' : 'list-group-item list-group-item-action'}">
+                        New
+                        <span class="badge bg-danger float-end" th:text="${newCount}">0</span>
+                    </a>
+                    <a th:href="@{/admin/messages(status='IN_PROGRESS')}"
+                       th:class="${selectedStatus == 'IN_PROGRESS' ? 'list-group-item list-group-item-action active' : 'list-group-item list-group-item-action'}">
+                        In Progress
+                        <span class="badge bg-primary float-end" th:text="${inProgressCount}">0</span>
+                    </a>
+                    <a th:href="@{/admin/messages(status='WAITING_FOR_RESPONSE')}"
+                       th:class="${selectedStatus == 'WAITING_FOR_RESPONSE' ? 'list-group-item list-group-item-action active' : 'list-group-item list-group-item-action'}">
+                        Waiting for Response
+                        <span class="badge bg-warning float-end" th:text="${waitingCount}">0</span>
+                    </a>
+                    <a th:href="@{/admin/messages(status='RESOLVED')}"
+                       th:class="${selectedStatus == 'RESOLVED' ? 'list-group-item list-group-item-action active' : 'list-group-item list-group-item-action'}">
+                        Resolved
+                        <span class="badge bg-success float-end" th:text="${resolvedCount}">0</span>
+                    </a>
+                    <a th:href="@{/admin/messages(status='CLOSED')}"
+                       th:class="${selectedStatus == 'CLOSED' ? 'list-group-item list-group-item-action active' : 'list-group-item list-group-item-action'}">
+                        Closed
+                        <span class="badge bg-secondary float-end" th:text="${closedCount}">0</span>
+                    </a>
+                    <a th:href="@{/admin/messages(unreadOnly=true)}"
+                       th:class="${unreadOnly ? 'list-group-item list-group-item-action active' : 'list-group-item list-group-item-action'}">
+                        Unread
+                        <span class="badge bg-info float-end" th:text="${unreadCount}">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="card shadow-sm">
+
+
+                <!-- Alert Messages -->
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show m-3" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <!-- Messages Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Status</th>
+                            <th>From</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Date</th>
+                            <th>Assigned To</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="message : ${messages}" th:class="${!message.read ? 'fw-bold' : ''}">
+                            <td>
+                                <span th:class="${'badge ' +
+                                    (message.status != null ?
+                                        (message.status.name() == 'NEW' ? 'bg-danger' :
+                                        (message.status.name() == 'IN_PROGRESS' ? 'bg-primary' :
+                                        (message.status.name() == 'WAITING_FOR_RESPONSE' ? 'bg-warning text-dark' :
+                                        (message.status.name() == 'RESOLVED' ? 'bg-success' :
+                                        (message.status.name() == 'CLOSED' ? 'bg-secondary' : 'bg-info'))))) : 'bg-secondary')}">
+                                    <span th:text="${message.status != null ? message.status.displayName : 'Unknown'}">Status</span>
+                                </span>
+                            </td>
+                            <td th:text="${message.name}">Sender Name</td>
+                            <td th:text="${message.email}">Email</td>
+                            <td>
+                                <a th:href="@{/admin/messages/{id}(id=${message.id})}"
+                                   th:text="${#strings.abbreviate(message.message, 30)}">
+                                    Message Preview
+                                </a>
+                            </td>
+                            <td th:text="${#temporals.format(message.createdAt, 'dd-MM-yyyy HH:mm')}">Date</td>
+                            <td th:text="${message.assignedAdminName != null ? message.assignedAdminName : 'Unassigned'}">
+                                Assigned Admin
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a th:href="@{/admin/messages/{id}(id=${message.id})}"
+                                       class="btn btn-outline-primary" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger" title="Delete"
+                                            data-bs-toggle="modal" th:data-bs-target="'#deleteModal-' + ${message.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Delete Confirmation Modal -->
+                                <div class="modal fade" th:id="'deleteModal-' + ${message.id}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to delete this message?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form th:action="@{/admin/messages/{id}/delete(id=${message.id})}" method="post">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${messages.empty}">
+                            <td colspan="7" class="text-center py-4">No messages found</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                    <div>
+                        Showing <span th:text="${messages.numberOfElements}">0</span> of
+                        <span th:text="${messages.totalElements}">0</span> messages
+                    </div>
+
+                    <nav th:if="${messages.totalPages > 1}">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/messages(page=${currentPage - 1}, size=${messages.size}, status=${selectedStatus}, unreadOnly=${unreadOnly})}">&laquo;</a>
+                            </li>
+
+                            <li class="page-item" th:each="i : ${#numbers.sequence(0, messages.totalPages - 1)}"
+                                th:classappend="${currentPage == i ? 'active' : ''}">
+                                <a class="page-link" th:href="@{/admin/messages(page=${i}, size=${messages.size}, status=${selectedStatus}, unreadOnly=${unreadOnly})}"
+                                   th:text="${i + 1}">1</a>
+                            </li>
+
+                            <li class="page-item" th:classappend="${currentPage == messages.totalPages - 1 ? 'disabled' : ''}">
+                                <a class="page-link" th:href="@{/admin/messages(page=${currentPage + 1}, size=${messages.size}, status=${selectedStatus}, unreadOnly=${unreadOnly})}">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+</body>
+</html>

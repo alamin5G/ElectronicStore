@@ -84,6 +84,76 @@
                 </div>
             </div>
         </div>
+        <!-- Contact Messages Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-envelope fa-3x text-info"></i>
+                    </div>
+                    <h5 class="card-title">Contact Messages</h5>
+                    <p class="card-text">
+                        <span class="fw-bold text-danger" th:text="${stats.unreadMessages}">0</span> unread messages
+                        (<span th:text="${stats.newMessagesToday}">0</span> new today)
+                    </p>
+                    <a href="/admin/messages" class="btn btn-primary">Manage Messages</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Messages -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Messages</h5>
+                    <a href="/admin/messages" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Status</th>
+                                <th>From</th>
+                                <th>Email</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="message : ${recentMessages}" th:class="${!message.read ? 'fw-bold' : ''}">
+                                <td>
+                                    <span th:class="${'badge ' +
+                                        (message.status != null ?
+                                            (message.status.name() == 'NEW' ? 'bg-danger' :
+                                            (message.status.name() == 'IN_PROGRESS' ? 'bg-primary' :
+                                            (message.status.name() == 'WAITING_FOR_RESPONSE' ? 'bg-warning text-dark' :
+                                            (message.status.name() == 'RESOLVED' ? 'bg-success' :
+                                            (message.status.name() == 'CLOSED' ? 'bg-secondary' : 'bg-info'))))) : 'bg-secondary')}">
+                                        <span th:text="${message.status != null ? message.status.displayName : 'Unknown'}"></span>
+                                    </span>
+                                </td>
+                                <td th:text="${message.name}">Sender Name</td>
+                                <td th:text="${message.email}">Email</td>
+                                <td>
+                                    <a th:href="@{/admin/messages/{id}(id=${message.id})}"
+                                       th:text="${#strings.abbreviate(message.message, 30)}">
+                                        Message Preview
+                                    </a>
+                                </td>
+                                <td th:text="${#temporals.format(message.createdAt, 'dd-MM-yyyy HH:mm')}">Date</td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(recentMessages)}">
+                                <td colspan="5" class="text-center py-3">No recent messages</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Stats Overview Cards -->
@@ -106,15 +176,15 @@
             </div>
         </div>
 
-        <!-- Revenue Card -->
+        <!-- Sell Card -->
         <div class="col-md-3">
             <div class="card bg-success text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="card-title mb-0">Total Revenue</h6>
+                            <h6 class="card-title mb-0">Total Sell</h6>
                             <h2 class="my-2">৳<span
-                                    th:text="${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 0, 'POINT')}">0</span>
+                                    th:text="${#numbers.formatDecimal(stats.totalSell, 1, 'COMMA', 0, 'POINT')}">0</span>
                             </h2>
                             <p class="mb-0 small">
                                 ৳<span

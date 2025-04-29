@@ -1,8 +1,6 @@
 package com.goonok.electronicstore.service.impl; // Example implementation package
 
 import com.goonok.electronicstore.dto.*;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import com.goonok.electronicstore.enums.OrderStatus;
 import com.goonok.electronicstore.enums.PaymentStatus;
 import com.goonok.electronicstore.exception.ResourceNotFoundException;
@@ -23,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -182,7 +179,7 @@ public class OrderServiceImpl implements OrderService {
         cartService.clearCart(userEmail);
 
         // 7. TODO: Send Order Confirmation Email
-        //sendOrderConfirmationEmail(savedOrder);
+        sendOrderConfirmationEmail(savedOrder);
 
         log.info("Order placed successfully: Order Number {}", savedOrder.getOrderNumber());
 
@@ -423,7 +420,7 @@ public class OrderServiceImpl implements OrderService {
                 "Best regards,\n" +
                 "The Electronic Store Team";
 
-        emailService.sendOrderConfirmationEmail(user, subject, message);
+        emailService.composeAndSendEmail(user, subject, message);
     };
 
     // Updated mapping helpers to handle potential nulls

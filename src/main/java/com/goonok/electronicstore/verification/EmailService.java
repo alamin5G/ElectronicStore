@@ -1,6 +1,5 @@
 package com.goonok.electronicstore.verification;
 
-import com.goonok.electronicstore.model.Order;
 import com.goonok.electronicstore.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,17 +89,18 @@ public class EmailService {
         }
     }
 
-    public void sendOrderConfirmationEmail(User user, String subject, String body){
+    public void composeAndSendEmail(User user, String subject, String body) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(mailFrom);
         mailMessage.setReplyTo(reply_to);
         mailMessage.setTo(user.getEmail());
         mailMessage.setSubject(subject);
         mailMessage.setText(body);
-        try{
+        try {
             mailSender.send(mailMessage);
-            log.info("Email sent successfully");
-        } catch (MailException e) {}
-
+            log.info("Email sent successfully to: {}", user.getEmail());
+        } catch (MailException e) {
+            log.error("Failed to send email to: {}", user.getEmail(), e);
+        }
     }
 }

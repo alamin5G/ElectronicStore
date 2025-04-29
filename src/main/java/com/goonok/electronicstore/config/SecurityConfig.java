@@ -60,7 +60,7 @@ public class SecurityConfig {
             "/brand-logos/**",    // Allow access to brand logos
             // ---------------------
 
-            "/about", "/contact", "/send-message",
+            "/about", "/contact", "/send-message", "/track-ticket",
             "/layout/**", // Be careful with layout, might expose too much? Usually CSS/JS is enough.
             "/products/**", // Public product browsing URLs
             // "/category/**", // Usually accessed via /products?categoryId=...
