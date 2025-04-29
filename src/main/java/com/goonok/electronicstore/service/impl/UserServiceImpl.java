@@ -60,6 +60,70 @@ public class UserServiceImpl implements UserService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    // In UserServiceImpl.java
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Override
+    public void createPasswordResetTokenForUser(String email) {
+        Optional<User> userOptional = userRepository.findByEmailIgnoreCase(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+        
+            // Delete any existing tokens for this user
+            Optional<PasswordResetToken> existingToken = passwordResetTokenRepository.findByUser(user);
+            existingToken.ifPresent(passwordResetTokenRepository::delete);
+        
+            // Create new token
+            PasswordResetToken resetToken = new PasswordResetToken(user);
+            passwordResetTokenRepository.save(resetToken);
+        
+            // Send email
+            emailService.sendPasswordResetEmail(user, resetToken.getToken());
+        }
+        // We don't want to reveal if an email exists or not, so we don't throw an exception
+    }
+
+    @Override
+    public boolean validatePasswordResetToken(String token) {
+        Optional<PasswordResetToken> tokenOptional = passwordResetTokenRepository.findByToken(token);
+    
+        if (tokenOptional.isEmpty()) {
+            return false;
+        }
+    
+        PasswordResetToken resetToken = tokenOptional.get();
+    
+        if (resetToken.isExpired() || resetToken.isUsed()) {
+            return false;
+        }
+    
+        return true;
+    }
+
+    @Override
+    public void resetPassword(String token, String newPassword) {
+        Optional<PasswordResetToken> tokenOptional = passwordResetTokenRepository.findByToken(token);
+    
+        if (tokenOptional.isPresent()) {
+            PasswordResetToken resetToken = tokenOptional.get();
+        
+            if (!resetToken.isExpired() && !resetToken.isUsed()) {
+                User user = resetToken.getUser();
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+            
+                // Mark token as used
+                resetToken.setUsed(true);
+                passwordResetTokenRepository.save(resetToken);
+            } else {
+                throw new IllegalArgumentException("Token has expired or already been used");
+            }
+        } else {
+            throw new ResourceNotFoundException("Invalid token");
+        }
+    }
+
 
     // --- Registration & Verification (Keep as is) ---
     @Transactional

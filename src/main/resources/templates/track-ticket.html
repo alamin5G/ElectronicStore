@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head(~{::title})}">
+    <title>Track Your Support Ticket - Electronic Store</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Track Your Support Ticket</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Alert Messages -->
+                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+
+                    <p class="mb-4">Enter your ticket ID and email address to check the status of your support request.</p>
+
+                    <form th:action="@{/track-ticket}" th:object="${trackingForm}" method="post">
+                        <div class="mb-3">
+                            <label for="ticketId" class="form-label">Ticket ID</label>
+                            <input type="number" class="form-control" id="ticketId" th:field="*{ticketId}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('ticketId')}" th:errors="*{ticketId}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Track Ticket</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <small class="text-muted">Need to submit a new inquiry? <a th:href="@{/contact}">Contact Us</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+</body>
+</html>

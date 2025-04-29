@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: head(~{::title})}">
+    <title>Ticket Details - Electronic Store</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<header th:replace="~{layout/navbar :: header}"></header>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Ticket #<span th:text="${message.id}">123</span></h4>
+                    <span th:class="${'badge ' +
+                        (message.status != null ?
+                            (message.status.name() == 'NEW' ? 'bg-danger' :
+                            (message.status.name() == 'IN_PROGRESS' ? 'bg-primary' :
+                            (message.status.name() == 'WAITING_FOR_RESPONSE' ? 'bg-warning text-dark' :
+                            (message.status.name() == 'RESOLVED' ? 'bg-success' :
+                            (message.status.name() == 'CLOSED' ? 'bg-secondary' : 'bg-info'))))) : 'bg-secondary')}">
+                        <span th:text="${message.status != null ? message.status.displayName : 'Unknown'}">Status</span>
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5 class="card-title" th:text="${message.subject}">Ticket Subject</h5>
+                        <div class="d-flex justify-content-between text-muted small mb-3">
+                            <span>From: <span th:text="${message.name}">John Doe</span></span>
+                            <span>Submitted: <span th:text="${#temporals.format(message.createdAt, 'dd-MM-yyyy HH:mm')}">01-01-2023</span></span>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <small class="text-muted">Your message:</small>
+                            </div>
+                            <div class="card-body">
+                                <p th:text="${message.message}" style="white-space: pre-line;">Message content</p>
+                            </div>
+                        </div>
+
+                        <!-- Status Timeline -->
+                        <h6 class="border-bottom pb-2 mb-3">Ticket Status</h6>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item px-0">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 32px; height: 32px;">
+                                            <i class="fas fa-envelope text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <p class="mb-0">Message received</p>
+                                        <p class="text-muted small mb-0" th:text="${#temporals.format(message.createdAt, 'dd-MM-yyyy HH:mm')}">Date</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0" th:if="${message.status.name() != 'NEW' && message.lastUpdatedAt != null}">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 32px; height: 32px;">
+                                            <i class="fas fa-sync-alt text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <p class="mb-0">Status updated to <span th:text="${message.status.displayName}">Status</span></p>
+                                        <p class="text-muted small mb-0" th:text="${#temporals.format(message.lastUpdatedAt, 'dd-MM-yyyy HH:mm')}">Date</p>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item px-0" th:if="${message.status.name() == 'RESOLVED' && message.resolvedAt != null}">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0">
+                                        <div class="bg-success rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 32px; height: 32px;">
+                                            <i class="fas fa-check text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <p class="mb-0">Ticket resolved</p>
+                                        <p class="text-muted small mb-0" th:text="${#temporals.format(message.resolvedAt, 'dd-MM-yyyy HH:mm')}">Date</p>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between">
+                        <a th:href="@{/track-ticket}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </a>
+                        <a th:href="@{/contact}" class="btn btn-primary">
+                            <i class="fas fa-pen me-2"></i>Submit New Inquiry
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}" class="mt-auto"></footer>
+</body>
+</html>
