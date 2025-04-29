@@ -5,14 +5,9 @@ import com.goonok.electronicstore.security.AuthenticatedUserRedirectFilter;
 import com.goonok.electronicstore.security.CustomLogoutSuccessHandler;
 import com.goonok.electronicstore.security.CustomAuthenticationSuccessHandler;
 import com.goonok.electronicstore.service.CustomUserDetailsService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -65,7 +60,7 @@ public class SecurityConfig {
             "/brand-logos/**",    // Allow access to brand logos
             // ---------------------
 
-            "/about", "/services", "/contact", "/latest-news",
+            "/about", "/contact", "/send-message",
             "/layout/**", // Be careful with layout, might expose too much? Usually CSS/JS is enough.
             "/products/**", // Public product browsing URLs
             // "/category/**", // Usually accessed via /products?categoryId=...
