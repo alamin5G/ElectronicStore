@@ -101,9 +101,27 @@ public class OrderServiceImpl implements OrderService {
         }
 
 
+        // After setting payment method, add this code block
+        if (PaymentMethod.COD.equals(order.getPaymentMethod())) {
+            order.setTransactionId("COD-" + generateOrderNumber()); // Generate a unique COD transaction ID
+            order.setPaymentStatus(PaymentStatus.PENDING);
+        } else if (PaymentMethod.valueOf(checkoutDto.getSelectedPaymentMethod()) == PaymentMethod.BKASH ||
+                PaymentMethod.valueOf(checkoutDto.getSelectedPaymentMethod()) == PaymentMethod.NAGAD) {
+            String txnId = checkoutDto.getTransactionId();
+            // Check if transaction ID already exists
+            if (orderRepository.existsByTransactionId(txnId)) {
+                throw new IllegalStateException("Transaction ID already used in another order");
+            }
+            order.setTransactionId(checkoutDto.getTransactionId());
+            order.setPaymentNotes(checkoutDto.getPaymentNotes());
+            order.setPaymentSubmissionDate(LocalDateTime.now());
+            order.setStatus(OrderStatus.PENDING);
+            order.setPaymentStatus(PaymentStatus.AWAITING_VERIFICATION);
+        }
+
         // Set payment details if mobile payment
         // For mobile payments, validate transaction ID
-        if (PaymentMethod.valueOf(checkoutDto.getSelectedPaymentMethod()) == PaymentMethod.BKASH ||
+       /* if (PaymentMethod.valueOf(checkoutDto.getSelectedPaymentMethod()) == PaymentMethod.BKASH ||
                 PaymentMethod.valueOf(checkoutDto.getSelectedPaymentMethod()) == PaymentMethod.NAGAD) {
 
             String txnId = checkoutDto.getTransactionId();
@@ -122,7 +140,7 @@ public class OrderServiceImpl implements OrderService {
         } else {
             order.setStatus(OrderStatus.PENDING);
             order.setPaymentStatus(PaymentStatus.AWAITING_VERIFICATION);
-        }
+        }*/
 
         // Calculate totals
         BigDecimal subtotal = currentCart.getCartTotalPrice();
