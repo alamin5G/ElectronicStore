@@ -13,7 +13,8 @@
     background-color: #e7f1ff; /* Light blue background */
 }
 .address-card-selectable input[type="radio"] {
-    display: none; /* Hide the actual radio button */
+    display: inline-block; /* Hide the actual radio button */
+
 }
 /* Style for sidebar */
 .profile-actions .list-group-item { border-left: 0; border-right: 0; }
