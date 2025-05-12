@@ -1,5 +1,3 @@
-I'll create a comprehensive README.md file for your Electronic Store application.
-
 # Electronic Store E-Commerce Application
 
 An advanced Spring Boot e-commerce platform for electronics retail, featuring a complete shopping experience for customers and a robust admin management system.
