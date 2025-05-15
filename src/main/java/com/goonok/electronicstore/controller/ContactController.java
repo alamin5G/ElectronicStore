@@ -97,7 +97,7 @@ public class ContactController {
         member1.put("bio", "Alamin has over 2 years of experience in the electronics industry.");
         member1.put("image", "/images/team/alamin.jpg");
         member1.put("linkedin", "https://Linkedin.com/in/alamin5g");
-        member1.put("twitter", "https://X.com/alamin5g");
+        member1.put("x", "https://X.com/alamin5g");
         member1.put("email", "alaminvai5g@gmail.com");
 
         Map<String, String> member2 = new HashMap<>();
@@ -106,7 +106,7 @@ public class ContactController {
         member2.put("bio", "Riad leads our technical team with her expertise in the latest electronic innovations.");
         member2.put("image", "/images/team/riad.jpg");
         member2.put("linkedin", "https://x.com/Elhan_Rid");
-        member2.put("twitter", "www.linkedin.com/in/abrar-hanif-riad");
+        member2.put("x", "www.linkedin.com/in/abrar-hanif-riad");
         member2.put("email", "ahriad.cse@gmail.com");
 
 
