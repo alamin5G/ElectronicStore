@@ -103,10 +103,10 @@ public class ContactController {
         Map<String, String> member2 = new HashMap<>();
         member2.put("name", "Abu Hanif Riad");
         member2.put("position", "CTO");
-        member2.put("bio", "Riad leads our technical team with her expertise in the latest electronic innovations.");
+        member2.put("bio", "Riad leads our technical team with his expertise in the latest electronic innovations.");
         member2.put("image", "/images/team/riad.jpg");
-        member2.put("linkedin", "https://x.com/Elhan_Rid");
-        member2.put("x", "www.linkedin.com/in/abrar-hanif-riad");
+        member2.put("x", "https://x.com/Elhan_Rid");
+        member2.put("linkedin", "www.linkedin.com/in/abrar-hanif-riad");
         member2.put("email", "ahriad.cse@gmail.com");
 
 
