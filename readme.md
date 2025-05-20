@@ -192,89 +192,68 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ⭐️ If you find this project helpful, please give it a star on GitHub!
 
+| #  | Transaction Function                                  | Type | Est. FTRs           | Est. DETs (Academic MVP) | Revised Complexity | UFP |
+|----|-------------------------------------------------------|------|---------------------|-------------------------|--------------------|-----|
+|    | **External Inputs (EIs)**                             |      |                     |                         |                    |     |
+| 1  | Customer Registration                                | EI   | 1 (User)            | ~8 (core fields)        | Low                | 3   |
+| 2  | Customer Login                                       | EI   | 1 (User)            | ~3                      | Low                | 3   |
+| 3  | Customer Profile Update (core fields)                | EI   | 1 (User)            | ~6                      | Low                | 3   |
+| 4  | Add New Address                                      | EI   | 2 (Address, User)   | ~6                      | Low                | 3   |
+| 5  | Edit Address                                         | EI   | 1 (Address)         | ~6                      | Low                | 3   |
+| 6  | Delete Address                                       | EI   | 1 (Address)         | ~1                      | Low                | 3   |
+| 7  | Add Product to Cart                                  | EI   | 2 (CartItem, Prod)  | ~3                      | Low                | 3   |
+| 8  | Update Cart Item Quantity                            | EI   | 1 (CartItem)        | ~2                      | Low                | 3   |
+| 9  | Remove Cart Item                                     | EI   | 1 (CartItem)        | ~1                      | Low                | 3   |
+| 10 | Place Order (simplified COD)                         | EI   | 3 (Order, OI, Prod) | ~15 (core order details)| Average            | 4   |
+| 11 | Submit Payment Details (Manual TrxID)                | EI   | 1 (Order)           | ~2                      | Low                | 3   |
+| 12 | Admin: Add New Product (core fields)                 | EI   | 3 (Prod, Cat, Brand)| ~12                     | Average            | 4   |
+| 13 | Admin: Edit Product (core fields)                    | EI   | 3 (Prod, Cat, Brand)| ~12                     | Average            | 4   |
+| 14 | Admin: Delete Product                                | EI   | 1 (Product)         | ~1                      | Low                | 3   |
+| 15 | Admin: Add New Category (simple)                     | EI   | 1 (Category)        | ~2                      | Low                | 3   |
+| 16 | Admin: Edit Category (simple)                        | EI   | 1 (Category)        | ~2                      | Low                | 3   |
+| 17 | Admin: Delete Category                               | EI   | 1 (Category)        | ~1                      | Low                | 3   |
+| 18 | Admin: Add New Brand (simple)                        | EI   | 1 (Brand)           | ~2                      | Low                | 3   |
+| 19 | Admin: Edit Brand (simple)                           | EI   | 1 (Brand)           | ~2                      | Low                | 3   |
+| 20 | Admin: Delete Brand                                  | EI   | 1 (Brand)           | ~1                      | Low                | 3   |
+| 21 | Admin: Add New Warranty (simple)                     | EI   | 1 (Warranty)        | ~2                      | Low                | 3   |
+| 22 | Admin: Edit Warranty (simple)                        | EI   | 1 (Warranty)        | ~2                      | Low                | 3   |
+| 23 | Admin: Delete Warranty                               | EI   | 1 (Warranty)        | ~1                      | Low                | 3   |
+| 24 | Admin: Update Order Status                           | EI   | 1 (Order)           | ~2                      | Low                | 3   |
+| 25 | Admin: Update Payment Status                         | EI   | 1 (Order)           | ~2                      | Low                | 3   |
+| 26 | Admin: Toggle User Status                            | EI   | 1 (User)            | ~2                      | Low                | 3   |
+| 27 | Admin: Update User Roles (basic)                     | EI   | 2 (User, Role)      | ~2                      | Low                | 3   |
+| 28 | Admin: Handle Contact Message (view/mark done)       | EI   | 1 (ContactMessage)  | ~2                      | Low                | 3   |
+| 29 | Change Password                                      | EI   | 1 (User)            | ~3                      | Low                | 3   |
+|    | **Subtotal for EIs**                                 |      |                     |                         |                    | 88  |
+|    | **External Outputs (EOs)**                           |      |                     |                         |                    |     |
+| 30 | Display Order Confirmation (core details)            | EO   | 3 (Order, OI, User) | ~15                     | Low                | 4   |
+| 31 | Display Order History List (basic)                   | EO   | 2 (Order, User)     | ~8                      | Low                | 4   |
+| 32 | Display Detailed Order (core details)                | EO   | 3 (Order, OI, Prod) | ~18                     | Low                | 4   |
+| 33 | Display User Profile (core details)                  | EO   | 2 (User, Address)   | ~10                     | Low                | 4   |
+| 34 | Display Product Listing (basic filters)              | EO   | 3 (Prod, Cat, Brand)| ~15                     | Low                | 4   |
+| 35 | Display Product Details (core info)                  | EO   | 3 (Prod, Cat, Brand)| ~20                     | Average            | 5   |
+| 36 | Display Shopping Cart (core info)                    | EO   | 2 (CartItem, Prod)  | ~10                     | Low                | 4   |
+| 37 | Admin: Dashboard Statistics (key metrics only)       | EO   | 3 (Order, User, Prod)| ~10                    | Low                | 4   |
+| 38 | Admin: List of Products (core fields)                | EO   | 1 (Product)         | ~10                     | Low                | 4   |
+| 39 | Admin: List of Categories (names only)               | EO   | 1 (Category)        | ~2                      | Low                | 4   |
+| 40 | Admin: List of Brands (names only)                   | EO   | 1 (Brand)           | ~2                      | Low                | 4   |
+| 41 | Admin: List of Warranties (names only)               | EO   | 1 (Warranty)        | ~2                      | Low                | 4   |
+| 42 | Admin: List of Orders (core fields)                  | EO   | 1 (Order)           | ~10                     | Low                | 4   |
+| 43 | Admin: List of Users (core fields)                   | EO   | 1 (User)            | ~8                      | Low                | 4   |
+| 44 | Email: Order Confirmation (simple template)          | EO   | 2 (Order, User)     | ~10                     | Low                | 4   |
+| 45 | Email: Registration (simple template)                | EO   | 1 (User)            | ~5                      | Low                | 4   |
+|    | **Subtotal for EOs**                                 |      |                     |                         |                    | 62  |
+|    | **External Inquiries (EQs)**                         |      |                     |                         |                    |     |
+| 46 | Search Products (basic keyword)                      | EQ   | 1 (Product)         | ~5                      | Low                | 3   |
+| 47 | View Contact Page (static)                           | EQ   | 0                   | ~3                      | Low                | 3   |
+| 48 | View About Page (static)                             | EQ   | 0                   | ~3                      | Low                | 3   |
+| 49 | Admin: View User Details (core info)                 | EQ   | 1 (User)            | ~10                     | Low                | 3   |
+| 50 | Admin: View Product Edit Form (core fields)          | EQ   | 1 (Product)         | ~15                     | Low                | 3   |
+| 51 | Admin: View Order Details (core info)                | EQ   | 2 (Order, OI)       | ~15                     | Low                | 3   |
+|    | **Subtotal for EQs**                                 |      |                     |                         |                    | 18  |
+|    | **TOTAL UFP for Transaction Functions**              |      |                     |                         |                    | 168 |
+
 # Unadjusted Function Point Contribution Analysis
-
-## Table 5-1: Transaction Functions Detailed Analysis
-
-### External Inputs (EIs)
-
-| # | Transaction Function | Type | FTRs | DETs | Complexity | UFP |
-|---|---------------------|------|------|------|------------|-----|
-| 1 | Customer Registration | EI | 1 (User) | ~12 (name, email, pass, phone, address fields) | Average | 4 |
-| 2 | Customer Login | EI | 1 (User) | ~3 (email, pass, remember_me) | Low | 3 |
-| 3 | Customer Profile Update | EI | 1 (User) | ~10 (name, phone, gender - excluding address, password) | Average | 4 |
-| 4 | Add New Address | EI | 2 (Address, User) | ~8 (street, city, zip, country, type, is_default) | Average | 4 |
-| 5 | Edit Address | EI | 1 (Address) | ~8 (as above) | Average | 4 |
-| 6 | Delete Address | EI | 1 (Address) | ~1 (address_id) | Low | 3 |
-| 7 | Add Product to Cart | EI | 2 (CartItem, Product) | ~4 (product_id, quantity, user_id/session_id) | Low | 3 |
-| 8 | Update Cart Item Quantity | EI | 1 (CartItem) | ~2 (cart_item_id, new_quantity) | Low | 3 |
-| 9 | Remove Cart Item | EI | 1 (CartItem) | ~1 (cart_item_id) | Low | 3 |
-| 10 | Place Order | EI | 4 (Order, OrderItem, Product, User) | ~25 (shipping details, items, payment choice) | High | 6 |
-| 11 | Submit Payment Details | EI | 1 (Order) | ~3 (order_id, trx_id, payment_method_confirm) | Low | 3 |
-| 12 | Admin: Add New Product | EI | 4 (Product, Category, Brand, Warranty) | ~20 (name, desc, price, stock, etc.) | High | 6 |
-| 13 | Admin: Edit Product | EI | 4 (Product, Cat, Brand, War) | ~20 (as above + product_id) | High | 6 |
-| 14 | Admin: Delete Product | EI | 1 (Product) | ~1 (product_id) | Low | 3 |
-| 15 | Admin: Add New Category | EI | 1 (Category) | ~3 (name, desc, parent_cat_id) | Low | 3 |
-| 16 | Admin: Edit Category | EI | 1 (Category) | ~3 (as above + cat_id) | Low | 3 |
-| 17 | Admin: Delete Category | EI | 1 (Category) | ~1 (cat_id) | Low | 3 |
-| 18 | Admin: Add New Brand | EI | 1 (Brand) | ~3 (name, logo_path, desc) | Low | 3 |
-| 19 | Admin: Edit Brand | EI | 1 (Brand) | ~3 (as above + brand_id) | Low | 3 |
-| 20 | Admin: Delete Brand | EI | 1 (Brand) | ~1 (brand_id) | Low | 3 |
-| 21 | Admin: Add New Warranty | EI | 1 (Warranty) | ~3 (type, duration_months, details) | Low | 3 |
-| 22 | Admin: Edit Warranty | EI | 1 (Warranty) | ~3 (as above + warranty_id) | Low | 3 |
-| 23 | Admin: Delete Warranty | EI | 1 (Warranty) | ~1 (warranty_id) | Low | 3 |
-| 24 | Admin: Update Order Status | EI | 1 (Order) | ~2 (order_id, new_status) | Low | 3 |
-| 25 | Admin: Update Payment Status | EI | 1 (Order) | ~3 (order_id, payment_status, notes) | Low | 3 |
-| 26 | Admin: Toggle User Status | EI | 1 (User) | ~2 (user_id, new_status) | Low | 3 |
-| 27 | Admin: Update User Roles | EI | 2 (User, Role) | ~2 (user_id, role_id) | Low | 3 |
-| 28 | Admin: Handle Contact Message | EI | 1 (ContactMessage) | ~3 (message_id, reply_text, status) | Low | 3 |
-| 29 | Change Password | EI | 1 (User) | ~3 (old_pass, new_pass, confirm_pass) | Low | 3 |
-| | **Subtotal for EIs** | | | | | **100** |
-
-### External Outputs (EOs)
-
-| # | Transaction Function | Type | FTRs | DETs | Complexity | UFP |
-|---|---------------------|------|------|------|------------|-----|
-| 30 | Display Order Confirmation | EO | 4 (Order, OI, User, Product) | ~25 (order details, items, customer info) | Average | 5 |
-| 31 | Display Order History List | EO | 2 (Order, User) | ~10 (order_id, date, total, status per order) | Average | 5 |
-| 32 | Display Detailed Order | EO | 4 (Order, OI, Prod, User) | ~30 (full order details) | Average | 5 |
-| 33 | Display User Profile | EO | 2 (User, Address) | ~15 (profile fields, address fields) | Average | 5 |
-| 34 | Display Product Listing | EO | 4 (Prod, Cat, Brand, War) | ~25 (product details, filters, pagination) | Average | 5 |
-| 35 | Display Product Details | EO | 4 (Prod, Cat, Brand, War) | ~30 (specs, images, related items) | High | 7 |
-| 36 | Display Shopping Cart | EO | 2 (CartItem, Product) | ~15 (item details, quantity, price, total) | Average | 5 |
-| 37 | Admin: Dashboard Statistics | EO | 4 (Order, User, Prod, Cat) | ~20 (counts, sums, recent items) | Average | 5 |
-| 38 | Admin: List of Products | EO | 1 (Product) | ~15 (id, name, price, stock, category per product) | Average | 5 |
-| 39 | Admin: List of Categories | EO | 1 (Category) | ~5 (id, name, product_count per category) | Low | 4 |
-| 40 | Admin: List of Brands | EO | 1 (Brand) | ~4 (id, name, logo per brand) | Low | 4 |
-| 41 | Admin: List of Warranties | EO | 1 (Warranty) | ~4 (id, type, duration per warranty) | Low | 4 |
-| 42 | Admin: List of Orders | EO | 1 (Order) | ~15 (id, customer, date, total, status per order) | Average | 5 |
-| 43 | Admin: List of Users | EO | 1 (User) | ~10 (id, name, email, status per user) | Average | 5 |
-| 44 | Email: Order Confirmation | EO | 3 (Order, User, OI) | ~20 (templated email with order data) | Average | 5 |
-| 45 | Email: Registration | EO | 1 (User) | ~10 (templated email with user data) | Average | 5 |
-| | **Subtotal for EOs** | | | | | **74** |
-
-### External Inquiries (EQs)
-
-| # | Transaction Function | Type | FTRs | DETs | Complexity | UFP |
-|---|---------------------|------|------|------|------------|-----|
-| 46 | Search Products | EQ | 3 (Prod, Cat, Brand) | ~8 (search term, filters → product list) | Average | 4 |
-| 47 | View Contact Page | EQ | 0-1 | ~5 (static info or basic fields) | Low | 3 |
-| 48 | View About Page | EQ | 0-1 | ~5 (static info) | Low | 3 |
-| 49 | Admin: View User Details | EQ | 2 (User, Address) | ~20 (all user fields and addresses) | Average | 4 |
-| 50 | Admin: View Product Edit Form | EQ | 4 (Prod, Cat, Brand, War) | ~25 (all product fields in form) | High | 6 |
-| 51 | Admin: View Order Details | EQ | 4 (Order, OI, User, Prod) | ~30 (all order data for display) | High | 6 |
-| | **Subtotal for EQs** | | | | | **26** |
-
-### Summary
-
-| Function Type | Count | UFP |
-|---------------|-------|-----|
-| External Inputs (EI) | 29 | 100 |
-| External Outputs (EO) | 16 | 74 |
-| External Inquiries (EQ) | 6 | 26 |
-| **TOTAL** | **51** | **200** |
-
-*Note: FTR = File Type Referenced, DET = Data Element Type, UFP = Unadjusted Function Points*
 
 
 | #  | General System Characteristic      | Degree of Influence (DI) |
