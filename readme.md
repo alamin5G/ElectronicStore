@@ -275,3 +275,22 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 | **TOTAL** | **51** | **200** |
 
 *Note: FTR = File Type Referenced, DET = Data Element Type, UFP = Unadjusted Function Points*
+
+
+| #  | General System Characteristic      | Degree of Influence (DI) |
+|----|-----------------------------------|-------------------------|
+| 1  | Data Communications               | 3                       |
+| 2  | Distributed Data Processing       | 2                       |
+| 3  | Performance                       | 4                       |
+| 4  | Heavily Used Configuration        | 3                       |
+| 5  | Transaction Rate                  | 3                       |
+| 6  | Online Data Entry                 | 5                       |
+| 7  | End-User Efficiency               | 4                       |
+| 8  | Online Update                     | 4                       |
+| 9  | Complex Processing                | 3                       |
+| 10 | Reusability                       | 3                       |
+| 11 | Installation Ease                 | 3                       |
+| 12 | Operational Ease                  | 3                       |
+| 13 | Multiple Sites                    | 1                       |
+| 14 | Facilitate Change                 | 4                       |
+|    | **Total Degree of Influence (TDI)** | **49**                |
