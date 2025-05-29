@@ -22,6 +22,23 @@ An advanced Spring Boot e-commerce platform for electronics retail, featuring a 
 - **User Management**: View and manage customer accounts and permissions
 - **Contact Message Management**: Handle customer inquiries
 
+## 📸 Screenshots
+![Home Page](/screenshot/6.png)
+![Product Listing](/screenshot/8.png)
+![Admin Dashboard](/screenshot/3.png)
+![Admin Dashboard](/screenshot/4.png)
+![Cart Page](/screenshot/9.png)
+![Checkout Page](/screenshot/10.png)
+![Select Payment Page](/screenshot/11.png)
+![Order Overview](/screenshot/12.png)
+![Order Placement details](/screenshot/13.png)
+![User Profile](/screenshot/7.png)
+![Admin Add Product](/screenshot/5.png)
+![Admin User Management](/screenshot/16.png)
+![Admin Order Management](/screenshot/14.png)
+![Admin Product Management](/screenshot/15.png)
+![User Registration](/screenshot/1.png)
+![User Login](/screenshot/2.png)
 ## 🛠️ Technology Stack
 
 ### Backend
